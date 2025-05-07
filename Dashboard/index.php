@@ -31,6 +31,7 @@
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Rounded" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded" rel="stylesheet" />
+  
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="../Style/sidebar.css">
 </head>
@@ -81,6 +82,10 @@
       </ul>
     </div>
   </div>
+
+  <button class="toggle-btn-two d-none" onclick="toggleSidebar()">
+    <i class="fas fa-bars"></i>
+  </button>
 
   <!-- Main Content -->
   <main class="main-content position-relative border-radius-lg ps-5 pt-3" style="margin-left: 250px;">
