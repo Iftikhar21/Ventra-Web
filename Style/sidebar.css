@@ -1,0 +1,154 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap');
+
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background-color: #f8f9fa;
+    }
+
+    .sidebar {
+      width: 250px;
+      height: 100vh;
+      background-color: #003366;
+      color: #fff;
+      position: fixed;
+      top: 0;
+      left: 0;
+      transition: width 0.3s;
+      overflow: hidden;
+      z-index: 1000;
+    }
+
+    .sidebar.collapsed {
+      width: 70px;
+    }
+
+    .sidebar .logo {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      padding: 25px 15px;
+    }
+
+    .sidebar .logo span {
+      font-size: 1.2rem;
+      font-weight: 500;
+    }
+
+    .sidebar .logo img {
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      object-fit: cover;
+    }
+
+    .sidebar .nav-link {
+      color: white;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 20px;
+      transition: all 0.3s ease;
+    }
+
+    .sidebar .nav-link:hover,
+    .sidebar .nav-link.active {
+      transition: all 0.3s ease;
+      transform: scale(1.05);
+      background-color: #27548A;
+    }
+
+    .sidebar .nav-text {
+      transition: opacity 0.3s, width 0.3s;
+      white-space: nowrap;
+    }
+
+    .sidebar.collapsed .nav-text {
+      opacity: 0;
+      width: 0;
+      overflow: hidden;
+    }
+
+    .collapse-menu {
+      background-color: #002b5c;
+    }
+
+    .sidebar.collapsed .collapse-menu {
+      display: none !important;
+    }
+
+    .collapse-menu .nav-link {
+      padding-left: 50px;
+      font-size: 0.95rem;
+      color: #ffffffcc;
+    }
+
+    .collapse-menu .nav-link:hover,
+    .collapse-menu .nav-link.active {
+      background-color: #1c3e66;
+      color: #fff;
+    }
+
+    .toggle-btn {
+      position: fixed;
+      margin-top: 7px;
+      left: 260px;
+      background: none;
+      border: none;
+      color: #333;
+      font-size: 1.8rem;
+      z-index: 1100;
+      transition: all 0.3s ease;
+    }
+
+    .toggle-btn:hover {
+      cursor: pointer;
+      transition: all 0.3s ease;
+      color: red;
+    }
+
+    .sidebar.collapsed + .toggle-btn {
+      left: 90px;
+    }
+
+    .main-content {
+      margin-left: 250px;
+      padding: 30px;
+      transition: margin-left 0.3s;
+    }
+
+    .sidebar.collapsed ~ .main-content {
+      margin-left: 70px;
+    }
+
+    .sidebar-bottom {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+    }
+
+    .sidebar-bottom .nav-item {
+      font-size: 0.95rem;
+    }
+
+    .sidebar-bottom .nav-item a:hover {
+      background-color: red;
+    }
+
+    .main-content {
+        padding: 30px;
+        transition: margin-left 0.3s;
+    }
+
+    .main-content nav .text-nowrap {
+        font-size: 1.2rem;
+    }
+
+    .main-content nav .nav-item {
+        list-style: none;
+    }
+
+    .main-content nav .nav-item a {
+        margin-top: 7px;
+    }

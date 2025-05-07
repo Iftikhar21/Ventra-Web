@@ -1,0 +1,77 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+
+body {
+    font-family: 'Poppins';
+    background-color: #F1EFEC;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.login-container {
+    display: flex;
+    max-width: 960px;
+    width: 100%;
+    height: 600px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    overflow: hidden;
+}
+.form-section {
+    flex: 1;
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    background-color: #fdfaf6;
+}
+.image-section {
+    flex: 1;
+    background: url('/mnt/data/38fb696a-da72-445a-8f17-97828c658883.png') no-repeat center center/cover;
+    position: relative;
+}
+.image-section .overlay {
+    /* position: absolute; */
+    bottom: 30px;
+    left: 30px;
+    color: white;
+}
+.image-section .overlay img {
+    width: 100%;
+    height: 100%;
+}
+.form-control {
+    border-radius: 0;
+}
+.form-check-label {
+    margin-left: 5px;
+}
+.form-title {
+    font-size: 30px;
+    font-weight: 600;
+    margin-bottom: 20px;
+}
+.text-muted {
+    margin-bottom: 30px;
+}
+.btn-black {
+    background-color: black;
+    color: white;
+    border: none;
+}
+.btn-black:hover {
+    color: #f5f5f5;
+    background-color: #333;
+}
+.btn-google {
+    background-color: white;
+    color: black;
+    border: 1px solid #ccc;
+}
+.btn-google img {
+    height: 20px;
+    margin-right: 10px;
+}
+.signup-link {
+    margin-top: 20px;
+}
