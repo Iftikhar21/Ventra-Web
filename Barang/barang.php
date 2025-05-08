@@ -1,6 +1,7 @@
 <?php
   session_start();
   include '../Model/crudBarang.php';
+  include '../Model/crudKategori.php';
 
   if (!isset($_SESSION['username'])) {
     header("Location: ../Login/FormLogin.php"); // Redirect kalau belum login
@@ -8,6 +9,7 @@
   }
 
   $data = getAllBarang();
+  $dataKategori = getAllKategori();
   $username = $_SESSION['username'];
 ?>
 
@@ -109,14 +111,32 @@
       </div>
 
       <div class="container">
+        <h3 class="fw-bold mb-3">> Data Barang</h3>
         <a class="btn btn-success d-flex align-items-center mb-4" href="addBarang.php" style="width: 200px;">
             <span class="material-symbols-rounded me-2">add</span>
             Tambah Barang
         </a>
+        <!-- Filter Input di Luar Tabel -->
+        <div class="row mb-3">
+          <div class="col-md-3">
+            <input type="text" id="filterKode" class="form-control" placeholder="Cari Kode Barang" onkeyup="filterTable(1, this.value)">
+          </div>
+          <div class="col-md-3">
+            <input type="text" id="filterNama" class="form-control" placeholder="Cari Nama Barang" onkeyup="filterTable(2, this.value)">
+          </div>
+          <div class="col-md-3">
+            <select id="filterKategori" class="form-select" onchange="filterTable(6, this.value)">
+              <option value="">Semua Kategori</option>
+              <?php foreach ($dataKategori as $kategori): ?>
+                  <option value="<?= $kategori['nama_kategori']; ?>"><?= $kategori['nama_kategori']; ?></option>
+              <?php endforeach; ?>
+            </select>
+          </div>
+        </div>
         <div class="table-responsive">
           <table class="table table-striped table-bordered">
               <thead class="table-primary">
-                  <tr>
+                  <tr class="text-center">
                       <th>#</th>
                       <th>Kode Barang</th>
                       <th>Nama Barang</th>
@@ -125,12 +145,12 @@
                       <th>Bahan</th>
                       <th>Kategori</th>
                       <th>Stock</th>
-                      <th>Action</th>
+                      <th>Aksi</th>
                   </tr>
               </thead>
               <tbody id="myTable">
                   <?php $no = 1; foreach ($data as $barang): ?>
-                  <tr>
+                  <tr class="text-center">
                       <td><?= $no++; ?></td>
                       <td><?= $barang['Kode_Brg']; ?></td>
                       <td><?= $barang['Nama_Brg']; ?></td>
@@ -152,6 +172,43 @@
                               <i class="material-symbols-rounded" style="color: #fff; margin-top: 2px;">edit</i>
                           </a>
                           <a href="hapusBarang.php?Kode_Brg=<?= $barang['Kode_Brg']; ?>" class="btn btn-danger btn-sm">
+                              <i class="material-symbols-rounded" style="margin-top: 2px;">delete</i>
+                          </a>
+                      </td>
+                  </tr>
+                  <?php endforeach; ?>
+              </tbody>
+          </table>
+          <div class="d-flex justify-content-between align-items-center mt-3">
+            <button class="btn btn-primary btn-sm" onclick="prevPage()">Sebelumnya</button>
+            <span id="pageInfo" class="fw-bold"></span>
+            <button class="btn btn-success btn-sm" onclick="nextPage()">Berikutnya</button>
+          </div>
+        </div>
+        <h3 class="fw-bold mb-3 mt-3">> Kategori</h3>
+        <a class="btn btn-success d-flex align-items-center mb-4" href="addKategori.php" style="width: 200px;">
+            <span class="material-symbols-rounded me-2">add</span>
+            Tambah Kategori
+        </a>
+        <div class="table-responsive">
+          <table class="table table-striped table-bordered text-center">
+              <thead class="table-primary">
+                  <tr>
+                      <th>#</th>
+                      <th>Nama Kategori</th>
+                      <th class="text-center">Aksi</th>
+                  </tr>
+              </thead>
+              <tbody id="myTable">
+                  <?php $no = 1; foreach ($dataKategori as $kategori): ?>
+                  <tr>
+                      <td><?= $no++; ?></td>
+                      <td><?= $kategori['nama_kategori']; ?></td>
+                      <td class="text-center">
+                          <a href="editKategori.php?id_kategori=<?= $kategori['id_kategori']; ?>" class="btn btn-warning btn-sm">
+                              <i class="material-symbols-rounded" style="color: #fff; margin-top: 2px;">edit</i>
+                          </a>
+                          <a href="hapusKategori.php?id_kategori=<?= $kategori['id_kategori']; ?>" class="btn btn-danger btn-sm">
                               <i class="material-symbols-rounded" style="margin-top: 2px;">delete</i>
                           </a>
                       </td>

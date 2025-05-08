@@ -16,7 +16,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Ventra POS Dashboard</title>
+  <title>Ventra POS Event</title>
 
   <!-- Bootstrap & Icon Fonts -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
@@ -88,7 +88,7 @@
           <button class="toggle-btn" onclick="toggleSidebar()">
             <span class="material-symbols-rounded">menu</span>
           </button>
-          <h2 class="text-dark fw-bold m-0">Dashboard</h2>
+          <h2 class="text-dark fw-bold m-0">Event</h2>
           <div class="d-flex align-items-center gap-4">
             <div id="clock" class="text-nowrap fw-semibold text-dark"></div> |
             <div id="date" class="text-nowrap fw-semibold text-dark"></div> |
@@ -108,12 +108,32 @@
         <p class="text-muted">Lihat Data Event</p>
       </div>
       <div class="container">
-        <a class="btn btn-success d-flex align-items-center mb-4" href="addEvent.php" style="width: 200px;">
+        <h2 class="fw-bold">> Data Event</h2>
+        <a class="btn btn-success d-flex align-items-center mb-4 mt-3" href="addEvent.php" style="width: 200px;">
             <span class="material-symbols-rounded me-2">add</span>
             Tambah Event
         </a>
+        <!-- Filter Input di Luar Tabel -->
+        <div class="row mb-3">
+          <div class="col-md-3">
+            <label for="filterKode" class="form-label">ID Event</label>
+            <input type="text" id="filterKode" class="form-control" placeholder="Cari ID Event" onkeyup="filterTable(1, this.value)">
+          </div>
+          <div class="col-md-3">
+            <label for="filterNama" class="form-label">Nama Event</label>
+            <input type="text" id="filterNama" class="form-control" placeholder="Cari Nama Event" onkeyup="filterTable(2, this.value)">
+          </div>
+          <div class="col-md-3">
+            <label for="filterWaktuAktif" class="form-label">Waktu Aktif</label>
+            <input type="date" id="filterWaktuAktif" class="form-control" placeholder="Cari Waktu Aktif" onkeyup="filterTable(3, this.value)">
+          </div>
+          <div class="col-md-3">
+            <label for="filterWaktuAktif" class="form-label">Waktu Non Aktif</label>
+            <input type="date" id="filterWaktuNonAktif" class="form-control" placeholder="Cari Waktu Non Aktif" onkeyup="filterTable(4, this.value)">
+          </div>
+        </div>
         <div class="table-responsive">
-          <table class="table table-striped table-bordered">
+          <table class="table table-striped table-bordered text-center">
               <thead class="table-primary">
                   <tr class="text-center">
                       <th>ID Event</th>
@@ -139,11 +159,16 @@
                           <a href="hapusEvent.php?id_event=<?= $event['id_event']; ?>" class="btn btn-danger btn-sm">
                               <i class="material-symbols-rounded" style="margin-top: 2px;">delete</i>
                           </a>
-                      </td>
+                        </td>
                     </tr>
                 <?php endforeach; ?>
               </tbody>
           </table>
+          <div class="d-flex justify-content-between align-items-center mt-3">
+            <button class="btn btn-primary btn-sm" onclick="prevPage()">Sebelumnya</button>
+            <span id="pageInfo" class="fw-bold"></span>
+            <button class="btn btn-success btn-sm" onclick="nextPage()">Berikutnya</button>
+          </div>
         </div>
       </div>
     </div>

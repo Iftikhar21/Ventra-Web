@@ -1,6 +1,10 @@
 <?php
   session_start();
   include '../Model/crudBarang.php';
+  include '../Model/crudKategori.php';
+
+  $dataKategori = getAllKategori();
+
 
   if (!isset($_SESSION['username'])) {
     header("Location: ../Login/FormLogin.php"); // Redirect kalau belum login
@@ -108,6 +112,12 @@
         </a>
       </li>
       <li class="nav-item">
+        <a class="nav-link" href="../Event/event.php">
+          <i class="material-symbols-rounded">event</i>
+          <span class="nav-text">Event</span>
+        </a>
+      </li>
+      <li class="nav-item">
         <a class="nav-link" href="../Laporan/laporan.php">
           <div class="d-flex align-items-center gap-2">
             <i class="material-symbols-rounded">bar_chart</i>
@@ -199,10 +209,17 @@
                     <label for="Gambar" class="form-label">Gambar (Upload)</label>
                     <input type="file" class="form-control" name="Gambar" accept="image/*" required value="<?php echo $gambar?>">
                 </div>
-    
+
                 <div class="mb-3">
-                    <label for="Kategori" class="form-label">Kategori</label>
-                    <input type="text" class="form-control" name="Kategori" required value="<?php echo $kategori?>">
+                  <label for="Kategori" class="form-label">Kategori</label>
+                  <select name="Kategori" class="form-control" required>
+                    <option value="" selected disabled><?php echo $kategori?></option>
+                    <?php foreach ($dataKategori as $kategori): ?>
+                      <option value="<?= $kategori['nama_kategori'] ?>">
+                        <?= $kategori['nama_kategori'] ?>
+                      </option>
+                    <?php endforeach; ?>
+                  </select>
                 </div>
     
                 <div class="mb-3">
@@ -211,7 +228,7 @@
                 </div>
     
                 <button class="btn btn-success d-flex align-items-center" type="submit" name="btnEdit">
-                    <span class="material-symbols-rounded me-2">add</span>
+                    <span class="material-symbols-rounded me-2">check</span>
                     Simpan
                 </button>
             </form>

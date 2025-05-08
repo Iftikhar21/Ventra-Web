@@ -1,6 +1,5 @@
 <?php
   session_start();
-  include '../Model/crudBarang.php';
   include '../Model/crudKategori.php';
 
   if (!isset($_SESSION['username'])) {
@@ -8,24 +7,16 @@
     exit();
   }
 
-  $data = getAllBarang();
-  $dataKategori = getAllKategori();
+  $data = getAllKategori();
   $username = $_SESSION['username'];
 ?>
 
 <?php
     if (isset($_POST['btnTambah'])) {
-        $kodeBarang = $_POST['Kode_Brg'];
-        $namaBarang = $_POST['Nama_Brg'];
-        $modal = $_POST['Modal'];
-        $hargaJual = $_POST['HargaJual'];
-        $ukuran = $_POST['Ukuran'];
-        $bahan = $_POST['Bahan'];
-        $gambar = $_POST['Gambar'];
-        $kategori = $_POST['Kategori'];
-        $stock = $_POST['Stock'];
+        $idKategori = $_POST['id_kategori'];
+        $namaKategori = $_POST['nama_kategori'];
 
-        addBarang($kodeBarang, $namaBarang, $hargaJual, $modal, $ukuran, $bahan, $gambar, $kategori, $stock);
+        addKategori($idKategori, $namaKategori);
 
         header("Location: barang.php"); // sesuaikan lokasi redirect
         exit();
@@ -72,12 +63,6 @@
         <a class="nav-link" href="../Karyawan/karyawan.php">
           <i class="material-symbols-rounded">assignment_ind</i>
           <span class="nav-text">Karyawan</span>
-        </a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="../Event/event.php">
-          <i class="material-symbols-rounded">event</i>
-          <span class="nav-text">Event</span>
         </a>
       </li>
       <li class="nav-item">
@@ -137,57 +122,13 @@
           <form action="" method="POST" enctype="multipart/form-data">
                 <div class="row mb-3">
                     <div class="col">
-                    <label for="Nama_Brg" class="form-label">Nama Barang</label>
-                    <input type="text" class="form-control" name="Nama_Brg" required>
+                        <label for="id_kategori" class="form-label">ID Kategori</label>
+                        <input type="number" class="form-control" name="id_kategori" required disabled>
                     </div>
                     <div class="col">
-                    <label for="Kode_Brg" class="form-label">Kode Barang</label>
-                    <input type="number" class="form-control" name="Kode_Brg" required>
+                        <label for="nama_kategori" class="form-label">Nama Kategori</label>
+                        <input type="text" class="form-control" name="nama_kategori" required>
                     </div>
-                </div>
-    
-                <div class="row mb-3">
-                    <div class="col">
-                    <label for="Modal" class="form-label">Harga Modal</label>
-                    <input type="number" class="form-control" name="Modal" required>
-                    </div>
-                    <div class="col">
-                    <label for="HargaJual" class="form-label">Harga Jual</label>
-                    <input type="number" class="form-control" name="HargaJual" required>
-                    </div>
-                </div>
-    
-                <div class="row mb-3">
-                    <div class="col">
-                    <label for="Ukuran" class="form-label">Ukuran</label>
-                    <input type="text" class="form-control" name="Ukuran" required>
-                    </div>
-                    <div class="col">
-                    <label for="Bahan" class="form-label">Bahan</label>
-                    <input type="text" class="form-control" name="Bahan" required>
-                    </div>
-                </div>
-    
-                <div class="mb-3">
-                    <label for="Gambar" class="form-label">Gambar (Upload)</label>
-                    <input type="file" class="form-control" name="Gambar" accept="image/*" required>
-                </div>
-    
-                <div class="mb-3">
-                  <label for="Kategori" class="form-label">Kategori</label>
-                  <select name="Kategori" class="form-control" required>
-                    <option value="" selected disabled>-- Pilih Kategori --</option>
-                    <?php foreach ($dataKategori as $kategori): ?>
-                      <option value="<?= $kategori['nama_kategori'] ?>">
-                        <?= $kategori['nama_kategori'] ?>
-                      </option>
-                    <?php endforeach; ?>
-                  </select>
-                </div>
-    
-                <div class="mb-3">
-                    <label for="Stock" class="form-label">Stok</label>
-                    <input type="number" class="form-control" name="Stock" required>
                 </div>
     
                 <button class="btn btn-success d-flex align-items-center" type="submit" name="btnTambah">

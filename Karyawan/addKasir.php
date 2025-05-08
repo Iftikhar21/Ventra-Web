@@ -1,33 +1,24 @@
 <?php
   session_start();
-  include '../Model/crudBarang.php';
-  include '../Model/crudKategori.php';
+  include '../Model/crudKaryawan.php';
 
   if (!isset($_SESSION['username'])) {
     header("Location: ../Login/FormLogin.php"); // Redirect kalau belum login
     exit();
   }
-
-  $data = getAllBarang();
-  $dataKategori = getAllKategori();
   $username = $_SESSION['username'];
 ?>
 
 <?php
     if (isset($_POST['btnTambah'])) {
-        $kodeBarang = $_POST['Kode_Brg'];
-        $namaBarang = $_POST['Nama_Brg'];
-        $modal = $_POST['Modal'];
-        $hargaJual = $_POST['HargaJual'];
-        $ukuran = $_POST['Ukuran'];
-        $bahan = $_POST['Bahan'];
-        $gambar = $_POST['Gambar'];
-        $kategori = $_POST['Kategori'];
-        $stock = $_POST['Stock'];
+        $idKasir = $_POST['id_kasir'];
+        $namaEvent = $_POST['nama_kasir']; // ini akan undefined karena tidak dikembalikan
+        $waktuAktif = $_POST['waktu_aktif'];
+        $waktuNonAktif = $_POST['waktu_non_aktif'];
 
-        addBarang($kodeBarang, $namaBarang, $hargaJual, $modal, $ukuran, $bahan, $gambar, $kategori, $stock);
+        addKasir($idEvent, $namaEvent, $waktuAktif, $waktuNonAktif);
 
-        header("Location: barang.php"); // sesuaikan lokasi redirect
+        header("Location: karyawan.php"); // sesuaikan lokasi redirect
         exit();
     }
 ?>
@@ -37,7 +28,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Ventra POS Barang</title>
+  <title>Ventra POS Event</title>
 
   <!-- Bootstrap & Icon Fonts -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
@@ -63,7 +54,7 @@
         </a>
       </li>
       <li class="nav-item">
-        <a class="nav-link active" href="../Barang/barang.php">
+        <a class="nav-link" href="../Barang/barang.php">
           <i class="material-symbols-rounded">inventory_2</i>
           <span class="nav-text">Barang</span>
         </a>
@@ -75,7 +66,7 @@
         </a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="../Event/event.php">
+        <a class="nav-link active" href="../Event/event.php">
           <i class="material-symbols-rounded">event</i>
           <span class="nav-text">Event</span>
         </a>
@@ -92,7 +83,7 @@
     <div class="sidebar-bottom">
       <ul class="nav flex-column">
         <li class="nav-item">
-          <a class="nav-link" href="#">
+          <a class="nav-link" href="../Login/logout.php">
             <i class="material-symbols-rounded">logout</i>
             <span class="nav-text">Logout</span>
           </a>
@@ -109,7 +100,7 @@
           <button class="toggle-btn" onclick="toggleSidebar()">
             <span class="material-symbols-rounded">menu</span>
           </button>
-          <h2 class="text-dark fw-bold m-0">Barang</h2>
+          <h2 class="text-dark fw-bold m-0">Dashboard</h2>
           <div class="d-flex align-items-center gap-4">
             <div id="clock" class="text-nowrap fw-semibold text-dark"></div> |
             <div id="date" class="text-nowrap fw-semibold text-dark"></div> |
@@ -121,73 +112,39 @@
                 <ul class="dropdown-menu">
                     <li><a class="dropdown-item" href="../Barang/tabelBarang.php">Profile</a></li>
                     <li><hr class="dropdown-divider"></li>
-                    <li><a class="dropdown-item" href="../Pelanggan/tabelanggota.php">Logout</a></li>
+                    <li><a class="dropdown-item" href="../Login/logout.php">Logout</a></li>
                 </ul>
             </li>
           </div>
         </nav>
-        <p class="text-muted">Lihat Data Barang</p>
-        <a class="btn btn-info d-flex align-items-center" href="barang.php" style="width: 100px;">
+        <p class="text-muted">Lihat Data Event</p>
+        <a class="btn btn-info d-flex align-items-center" href="event.php" style="width: 100px;">
             <span class="material-symbols-rounded me-2">chevron_left</span>
             Back
         </a>
-
       </div>
       <div class="container">
           <form action="" method="POST" enctype="multipart/form-data">
                 <div class="row mb-3">
                     <div class="col">
-                    <label for="Nama_Brg" class="form-label">Nama Barang</label>
-                    <input type="text" class="form-control" name="Nama_Brg" required>
+                        <label for="id_kasir" class="form-label">ID Kasir</label>
+                        <input type="number" class="form-control" name="id_kasir" required disabled>
                     </div>
                     <div class="col">
-                    <label for="Kode_Brg" class="form-label">Kode Barang</label>
-                    <input type="number" class="form-control" name="Kode_Brg" required>
+                        <label for="nama_kasir" class="form-label">Nama Kasir</label>
+                        <input type="text" class="form-control" name="nama_kasir" required>
                     </div>
                 </div>
     
                 <div class="row mb-3">
                     <div class="col">
-                    <label for="Modal" class="form-label">Harga Modal</label>
-                    <input type="number" class="form-control" name="Modal" required>
+                    <label for="waktu_aktif" class="form-label">Waktu Aktif</label>
+                    <input type="date" class="form-control" name="waktu_aktif" required>
                     </div>
                     <div class="col">
-                    <label for="HargaJual" class="form-label">Harga Jual</label>
-                    <input type="number" class="form-control" name="HargaJual" required>
+                    <label for="waktu_non_aktif" class="form-label">Waktu Non Aktif</label>
+                    <input type="date" class="form-control" name="waktu_non_aktif" required>
                     </div>
-                </div>
-    
-                <div class="row mb-3">
-                    <div class="col">
-                    <label for="Ukuran" class="form-label">Ukuran</label>
-                    <input type="text" class="form-control" name="Ukuran" required>
-                    </div>
-                    <div class="col">
-                    <label for="Bahan" class="form-label">Bahan</label>
-                    <input type="text" class="form-control" name="Bahan" required>
-                    </div>
-                </div>
-    
-                <div class="mb-3">
-                    <label for="Gambar" class="form-label">Gambar (Upload)</label>
-                    <input type="file" class="form-control" name="Gambar" accept="image/*" required>
-                </div>
-    
-                <div class="mb-3">
-                  <label for="Kategori" class="form-label">Kategori</label>
-                  <select name="Kategori" class="form-control" required>
-                    <option value="" selected disabled>-- Pilih Kategori --</option>
-                    <?php foreach ($dataKategori as $kategori): ?>
-                      <option value="<?= $kategori['nama_kategori'] ?>">
-                        <?= $kategori['nama_kategori'] ?>
-                      </option>
-                    <?php endforeach; ?>
-                  </select>
-                </div>
-    
-                <div class="mb-3">
-                    <label for="Stock" class="form-label">Stok</label>
-                    <input type="number" class="form-control" name="Stock" required>
                 </div>
     
                 <button class="btn btn-success d-flex align-items-center" type="submit" name="btnTambah">

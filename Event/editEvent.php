@@ -176,7 +176,7 @@
                 </div>
     
                 <button class="btn btn-success d-flex align-items-center" type="submit" name="btnEdit">
-                    <span class="material-symbols-rounded me-2">add</span>
+                    <span class="material-symbols-rounded me-2">check</span>
                     Simpan
                 </button>
             </form>

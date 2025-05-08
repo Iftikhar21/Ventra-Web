@@ -42,4 +42,38 @@
         $jumlahKasir = $result->fetch_assoc()['jumlah_kolom'];
         return $jumlahKasir;
     }
+
+    function addKasir($idKasir, $namaKasir, $waktuAktif, $waktuNonAktif) {
+        $koneksi = Connection();
+        $sql = "INSERT INTO ventra_kasir (ID, Nama, WaktuAktif, WaktuNonAktif) 
+                    VALUES ('$idKasir', '$namaKasir', '$waktuAktif', '$waktuNonAktif')";
+        $hasil = 0;
+        if (mysqli_query($koneksi, $sql)) {
+             $hasil = 1;
+             mysqli_close($koneksi);
+             return $hasil;
+        }
+    }
+
+    function editKasir ($idKasir, $namaKasir, $waktuAktif, $waktuNonAktif) {
+        $koneksi = Connection();
+        $sql = "UPDATE ventra_kasir SET Nama = '$namaKasir', WaktuAktif = '$waktuAktif', WaktuNonAktif = '$waktuNonAktif'
+                    WHERE ID = '$idKasir'";
+        if (mysqli_query($koneksi, $sql)) {
+             $hasil = 1;
+             mysqli_close($koneksi);
+             return $hasil;
+        } 
+    }
+
+    function deleteKasir ($idKasir) {
+        $koneksi = Connection();
+        $sql = "DELETE FROM ventra_kasir WHERE ID = '$idKasir'";
+        $hasil = 0;
+        if (mysqli_query($koneksi, $sql)) {
+            $hasil = 1;
+            mysqli_close($koneksi);
+            return $hasil;
+        }
+    }
 ?>

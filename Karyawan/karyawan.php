@@ -16,7 +16,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Ventra POS Karyawan</title>
+  <title>Ventra POS Kasir</title>
 
   <!-- Bootstrap & Icon Fonts -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
@@ -107,28 +107,65 @@
         </nav>
         <p class="text-muted">Lihat Data Karyawan</p>
       </div>
-      <div class="table-responsive">
-            <table class="table table-striped table-bordered">
-                <thead class="table-primary">
-                    <tr>
-                        <th>ID Kasir</th>
-                        <th>Nama Kasir</th>
-                        <th>Waktu Aktif</th>
-                        <th>Waktu Non Aktif</th>
-                    </tr>
-                </thead>
-                <tbody id="myTable">
-                    <?php $no = 1; foreach ($data as $karyawan): ?>
-                    <tr>
-                        <td><?= $karyawan['ID']; ?></td>
-                        <td><?= $karyawan['Nama']; ?></td>
-                        <td><?= $karyawan['WaktuAktif']; ?></td>
-                        <td><?= $karyawan['WaktuNonAktif']; ?></td>
-                    </tr>
-                    <?php endforeach; ?>
-                </tbody>
-            </table>
+      <div class="container">
+        <h2 class="fw-bold">> Data Kasir</h2>
+        <a class="btn btn-success d-flex align-items-center mb-4 mt-3" href="addKasir.php" style="width: 250px;">
+            <span class="material-symbols-rounded me-2">add</span>
+            Tambah Anggota Kasir
+        </a>
+        <!-- Filter Input di Luar Tabel -->
+        <div class="row mb-3">
+          <div class="col-md-3">
+            <input type="text" id="filterKode" class="form-control" placeholder="Cari ID Kasir" oninput="filterTable()">
+          </div>
+          <div class="col-md-3">
+            <input type="text" id="filterNama" class="form-control" placeholder="Cari Nama Kasir" oninput="filterTable()">
+          </div>
+          <div class="col-md-3">
+            <input type="date" id="filterWaktuAktif" class="form-control" onchange="filterTable()">
+          </div>
+          <div class="col-md-3">
+            <input type="date" id="filterWaktuNonAktif" class="form-control" onchange="filterTable()">
+          </div>
         </div>
+
+        <div class="table-responsive">
+              <table class="table table-striped table-bordered text-center">
+                  <thead class="table-primary">
+                      <tr>
+                          <th>ID Kasir</th>
+                          <th>Nama Kasir</th>
+                          <th>Waktu Aktif</th>
+                          <th>Waktu Non Aktif</th>
+                          <th class="text-center">Aksi</th>
+                      </tr>
+                  </thead>
+                  <tbody id="myTable">
+                      <?php $no = 1; foreach ($data as $karyawan): ?>
+                      <tr>
+                          <td><?= $karyawan['ID']; ?></td>
+                          <td><?= $karyawan['Nama']; ?></td>
+                          <td><?= $karyawan['WaktuAktif']; ?></td>
+                          <td><?= $karyawan['WaktuNonAktif']; ?></td>
+                          <td class="text-center">
+                            <a href="editKasir.php?ID=<?= $karyawan['ID']; ?>" class="btn btn-warning btn-sm">
+                                <i class="material-symbols-rounded" style="color: #fff; margin-top: 2px;">edit</i>
+                            </a>
+                            <a href="hapusEvent.php?ID=<?= $karyawan['ID']; ?>" class="btn btn-danger btn-sm">
+                                <i class="material-symbols-rounded" style="margin-top: 2px;">delete</i>
+                            </a>
+                          </td>
+                      </tr>
+                      <?php endforeach; ?>
+                  </tbody>
+              </table>
+              <div class="d-flex justify-content-between align-items-center mt-3">
+                <button class="btn btn-primary btn-sm" onclick="prevPage()">Sebelumnya</button>
+                <span id="pageInfo" class="fw-bold"></span>
+                <button class="btn btn-success btn-sm" onclick="nextPage()">Berikutnya</button>
+              </div>
+          </div>
+      </div>
     </div>
   </div>
 
