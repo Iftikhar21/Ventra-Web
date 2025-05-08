@@ -1,21 +1,13 @@
 <?php
   session_start();
-  include '../Model/crudBarang.php';
-  include '../Model/crudKaryawan.php';
-  include '../Model/crudTransaksi.php';
+  include '../Model/crudEvent.php';
 
   if (!isset($_SESSION['username'])) {
     header("Location: ../Login/FormLogin.php"); // Redirect kalau belum login
     exit();
   }
 
-  $jumlahProduk = getTotalBarang();
-  $jumlahKasir = getTotalKasir(); 
-  $jumlahTransaksi = getTotalTransaksi();
-  $jumlahBarangMenipis = getTotalBarangMenipis();
-  $dataBarangMenipis = getBarangMenipis();
-
-
+  $data = getAllEvent();
   $username = $_SESSION['username'];
 ?>
 
@@ -62,13 +54,13 @@
         </a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="../Event/event.php">
+        <a class="nav-link active" href="../Event/event.php">
           <i class="material-symbols-rounded">event</i>
           <span class="nav-text">Event</span>
         </a>
       </li>
       <li class="nav-item">
-        <a class="nav-link active" href="../Laporan/laporan.php">
+        <a class="nav-link" href="../Laporan/laporan.php">
           <div class="d-flex align-items-center gap-2">
             <i class="material-symbols-rounded">bar_chart</i>
             <span class="nav-text">Laporan</span>
@@ -113,7 +105,46 @@
             </li>
           </div>
         </nav>
-        <p class="text-muted">Lihat Data Bulan Ini</p>
+        <p class="text-muted">Lihat Data Event</p>
+      </div>
+      <div class="container">
+        <a class="btn btn-success d-flex align-items-center mb-4" href="addEvent.php" style="width: 200px;">
+            <span class="material-symbols-rounded me-2">add</span>
+            Tambah Event
+        </a>
+        <div class="table-responsive">
+          <table class="table table-striped table-bordered">
+              <thead class="table-primary">
+                  <tr class="text-center">
+                      <th>ID Event</th>
+                      <th>Nama Event</th>
+                      <th>Total Diskon</th>
+                      <th>Waktu Aktif</th>
+                      <th>Waktu Non Aktif</th>
+                      <th>Aksi</th>
+                  </tr>
+              </thead>
+              <tbody id="myTable">
+                <?php $no = 1; foreach ($data as $event): ?>
+                    <tr>
+                        <td><?= $event['id_event']; ?></td>
+                        <td><?= $event['nama_event']; ?></td>
+                        <td class="text-center"><?= $event['total_diskon']; ?> %</td>
+                        <td><?= $event['waktu_aktif']; ?></td>
+                        <td><?= $event['waktu_non_aktif']; ?></td>
+                        <td class="text-center">
+                          <a href="editEvent.php?id_event=<?= $event['id_event']; ?>" class="btn btn-warning btn-sm">
+                              <i class="material-symbols-rounded" style="color: #fff; margin-top: 2px;">edit</i>
+                          </a>
+                          <a href="hapusEvent.php?id_event=<?= $event['id_event']; ?>" class="btn btn-danger btn-sm">
+                              <i class="material-symbols-rounded" style="margin-top: 2px;">delete</i>
+                          </a>
+                      </td>
+                    </tr>
+                <?php endforeach; ?>
+              </tbody>
+          </table>
+        </div>
       </div>
     </div>
   </div>

@@ -63,6 +63,12 @@
         </a>
       </li>
       <li class="nav-item">
+        <a class="nav-link" href="../Event/event.php">
+          <i class="material-symbols-rounded">event</i>
+          <span class="nav-text">Event</span>
+        </a>
+      </li>
+      <li class="nav-item">
         <a class="nav-link" href="../Laporan/laporan.php">
           <div class="d-flex align-items-center gap-2">
             <i class="material-symbols-rounded">bar_chart</i>
@@ -165,6 +171,19 @@
           </div>
         </div>
       </div>
+
+    </div>
+    <div class="container mt-4">
+      <div class="container-analytics">
+        <div class="title">
+          <h4>Jumlah Transaksi per Bulan</h4>
+        </div>
+        <div class="col-12 mt-4">
+            <div class="chart-container">
+                <canvas id="chartBar"></canvas>
+            </div>
+        </div>
+      </div>
     </div>
   </main>
 
@@ -220,6 +239,9 @@
 
   <!-- Scripts -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
   <script src="index.js"></script>
   <script src="../js/sidebar.js"></script>
 </body>

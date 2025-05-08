@@ -54,6 +54,12 @@
         </a>
       </li>
       <li class="nav-item">
+        <a class="nav-link" href="../Event/event.php">
+          <i class="material-symbols-rounded">event</i>
+          <span class="nav-text">Event</span>
+        </a>
+      </li>
+      <li class="nav-item">
         <a class="nav-link" href="../Laporan/laporan.php">
           <div class="d-flex align-items-center gap-2">
             <i class="material-symbols-rounded">bar_chart</i>

@@ -1,22 +1,27 @@
 <?php
   session_start();
-  include '../Model/crudBarang.php';
-  include '../Model/crudKaryawan.php';
-  include '../Model/crudTransaksi.php';
+  include '../Model/crudEvent.php';
 
   if (!isset($_SESSION['username'])) {
     header("Location: ../Login/FormLogin.php"); // Redirect kalau belum login
     exit();
   }
-
-  $jumlahProduk = getTotalBarang();
-  $jumlahKasir = getTotalKasir(); 
-  $jumlahTransaksi = getTotalTransaksi();
-  $jumlahBarangMenipis = getTotalBarangMenipis();
-  $dataBarangMenipis = getBarangMenipis();
-
-
   $username = $_SESSION['username'];
+?>
+
+<?php
+    if (isset($_POST['btnTambah'])) {
+        $idEvent = $_POST['id_event'];
+        $namaEvent = $_POST['nama_event'];
+        $totalDiskon = $_POST['total_diskon']; // ini akan undefined karena tidak dikembalikan
+        $waktuAktif = $_POST['waktu_aktif'];
+        $waktuNonAktif = $_POST['waktu_non_aktif'];
+
+        addEvent($idEvent, $namaEvent, $totalDiskon, $waktuAktif, $waktuNonAktif);
+
+        header("Location: event.php"); // sesuaikan lokasi redirect
+        exit();
+    }
 ?>
 
 <!DOCTYPE html>
@@ -24,7 +29,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Ventra POS Dashboard</title>
+  <title>Ventra POS Event</title>
 
   <!-- Bootstrap & Icon Fonts -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
@@ -62,13 +67,13 @@
         </a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="../Event/event.php">
+        <a class="nav-link active" href="../Event/event.php">
           <i class="material-symbols-rounded">event</i>
           <span class="nav-text">Event</span>
         </a>
       </li>
       <li class="nav-item">
-        <a class="nav-link active" href="../Laporan/laporan.php">
+        <a class="nav-link" href="../Laporan/laporan.php">
           <div class="d-flex align-items-center gap-2">
             <i class="material-symbols-rounded">bar_chart</i>
             <span class="nav-text">Laporan</span>
@@ -113,7 +118,48 @@
             </li>
           </div>
         </nav>
-        <p class="text-muted">Lihat Data Bulan Ini</p>
+        <p class="text-muted">Lihat Data Event</p>
+        <a class="btn btn-info d-flex align-items-center" href="event.php" style="width: 100px;">
+            <span class="material-symbols-rounded me-2">chevron_left</span>
+            Back
+        </a>
+      </div>
+      <div class="container">
+          <form action="" method="POST" enctype="multipart/form-data">
+                <div class="row mb-3">
+                    <div class="col">
+                        <label for="id_event" class="form-label">Id Event</label>
+                        <input type="number" class="form-control" name="id_event" required disabled>
+                    </div>
+                    <div class="col">
+                        <label for="nama_event" class="form-label">Nama Event</label>
+                        <input type="text" class="form-control" name="nama_event" required>
+                    </div>
+                </div>
+    
+                <div class="row mb-3">
+                    <div class="col">
+                    <label for="waktu_aktif" class="form-label">Waktu Aktif</label>
+                    <input type="date" class="form-control" name="waktu_aktif" required>
+                    </div>
+                    <div class="col">
+                    <label for="waktu_non_aktif" class="form-label">Waktu Non Aktif</label>
+                    <input type="date" class="form-control" name="waktu_non_aktif" required>
+                    </div>
+                </div>
+    
+                <div class="row mb-3">
+                    <div class="col">
+                    <label for="total_diskon" class="form-label">Total Diskon</label>
+                    <input type="number" class="form-control" name="total_diskon" required>
+                    </div>
+                </div>
+    
+                <button class="btn btn-success d-flex align-items-center" type="submit" name="btnTambah">
+                    <span class="material-symbols-rounded me-2">add</span>
+                    Simpan
+                </button>
+            </form>
       </div>
     </div>
   </div>

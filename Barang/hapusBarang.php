@@ -1,4 +1,5 @@
 <?php
+    session_start();
     include '../Model/crudBarang.php';
 
     if (!isset($_SESSION['username'])) {

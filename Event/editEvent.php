@@ -1,14 +1,52 @@
 <?php
   session_start();
-  include '../Model/crudBarang.php';
+  include '../Model/crudEvent.php';
 
   if (!isset($_SESSION['username'])) {
     header("Location: ../Login/FormLogin.php"); // Redirect kalau belum login
     exit();
   }
-
-  $data = getAllBarang();
   $username = $_SESSION['username'];
+?>
+
+<?php 
+    if (isset($_GET['id_event'])) {
+        $idEvent = $_GET['id_event'];
+    } else {
+        echo "Masukkan ID Event";
+        exit();
+    }
+    $data = getEvent($idEvent);
+    if (empty($data)) {
+        echo "ID Event Tidak Ditemukan !";
+        exit();
+    } else {
+        $event = $data[0]; // Ambil data pertama
+
+        $idEvent = $event['id_event'];
+        $namaEvent = $event['nama_event'];
+        $totalDiskon = $event['total_diskon']; // ini akan undefined karena tidak dikembalikan
+        $waktuAktif = $event['waktu_aktif'];
+        $waktuNonAktif = $event['waktu_non_aktif'];
+    }
+?>
+
+<?php
+    if (isset($_POST['btnEdit'])) {
+        $idEvent = $_POST['id_event'];
+        $namaEvent = $_POST['nama_event'];
+        $totalDiskon = $_POST['total_diskon']; // ini akan undefined karena tidak dikembalikan
+        $waktuAktif = $_POST['waktu_aktif'];
+        $waktuNonAktif = $_POST['waktu_non_aktif'];
+
+        $result = editEvent($idEvent, $namaEvent, $totalDiskon, $waktuAktif, $waktuNonAktif);
+        if ($result) {
+            header("Location:event.php");
+            exit();
+        } else {
+            echo "<div class='alert alert-danger mt-3'>Gagal memperbarui barang.</div>";
+        }
+    }
 ?>
 
 <!DOCTYPE html>
@@ -54,12 +92,6 @@
         </a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="../Event/event.php">
-          <i class="material-symbols-rounded">event</i>
-          <span class="nav-text">Event</span>
-        </a>
-      </li>
-      <li class="nav-item">
         <a class="nav-link" href="../Laporan/laporan.php">
           <div class="d-flex align-items-center gap-2">
             <i class="material-symbols-rounded">bar_chart</i>
@@ -71,7 +103,7 @@
     <div class="sidebar-bottom">
       <ul class="nav flex-column">
         <li class="nav-item">
-          <a class="nav-link" href="../Login/logout.php">
+          <a class="nav-link" href="#">
             <i class="material-symbols-rounded">logout</i>
             <span class="nav-text">Logout</span>
           </a>
@@ -100,66 +132,54 @@
                 <ul class="dropdown-menu">
                     <li><a class="dropdown-item" href="../Barang/tabelBarang.php">Profile</a></li>
                     <li><hr class="dropdown-divider"></li>
-                    <li><a class="dropdown-item" href="../Login/logout.php">Logout</a></li>
+                    <li><a class="dropdown-item" href="../Pelanggan/tabelanggota.php">Logout</a></li>
                 </ul>
             </li>
           </div>
         </nav>
         <p class="text-muted">Lihat Data Barang</p>
-      </div>
-
-      <div class="container">
-        <a class="btn btn-success d-flex align-items-center mb-4" href="addBarang.php" style="width: 200px;">
-            <span class="material-symbols-rounded me-2">add</span>
-            Tambah Barang
+        <a class="btn btn-info d-flex align-items-center" href="barang.php" style="width: 100px;">
+            <span class="material-symbols-rounded me-2">chevron_left</span>
+            Back
         </a>
-        <div class="table-responsive">
-          <table class="table table-striped table-bordered">
-              <thead class="table-primary">
-                  <tr>
-                      <th>#</th>
-                      <th>Kode Barang</th>
-                      <th>Nama Barang</th>
-                      <th>Harga Jual</th>
-                      <th>Ukuran</th>
-                      <th>Bahan</th>
-                      <th>Kategori</th>
-                      <th>Stock</th>
-                      <th>Action</th>
-                  </tr>
-              </thead>
-              <tbody id="myTable">
-                  <?php $no = 1; foreach ($data as $barang): ?>
-                  <tr>
-                      <td><?= $no++; ?></td>
-                      <td><?= $barang['Kode_Brg']; ?></td>
-                      <td><?= $barang['Nama_Brg']; ?></td>
-                      <td>Rp <?= number_format($barang['HargaJual'], 0, ',', '.'); ?></td>
-                      <td><?= $barang['Ukuran']; ?></td>
-                      <td><?= $barang['Bahan']; ?></td>
-                      <td><?= $barang['Kategori']; ?></td>
-                      <td class="text-center">
-                          <?php if ($barang['Stock'] < 5): ?>
-                          <span class="badge bg-danger"><?= $barang['Stock']; ?></span>
-                          <?php elseif ($barang['Stock'] < 10): ?>
-                          <span class="badge bg-warning"><?= $barang['Stock']; ?></span>
-                          <?php else: ?>
-                          <span class="badge bg-success"><?= $barang['Stock']; ?></span>
-                          <?php endif; ?>
-                      </td>
-                      <td class="text-center">
-                          <a href="editBarang.php?Kode_Brg=<?= $barang['Kode_Brg']; ?>" class="btn btn-warning btn-sm">
-                              <i class="material-symbols-rounded" style="color: #fff; margin-top: 2px;">edit</i>
-                          </a>
-                          <a href="hapusBarang.php?Kode_Brg=<?= $barang['Kode_Brg']; ?>" class="btn btn-danger btn-sm">
-                              <i class="material-symbols-rounded" style="margin-top: 2px;">delete</i>
-                          </a>
-                      </td>
-                  </tr>
-                  <?php endforeach; ?>
-              </tbody>
-          </table>
-        </div>
+
+      </div>
+      <div class="container">
+          <form action="" method="POST" enctype="multipart/form-data">
+          <div class="row mb-3">
+                    <div class="col">
+                        <label for="id_event" class="form-label">Id Event</label>
+                        <input type="number" class="form-control" name="id_event" required value="<?php echo $idEvent?>" readonly>
+                    </div>
+                    <div class="col">
+                        <label for="nama_event" class="form-label">Nama Event</label>
+                        <input type="text" class="form-control" name="nama_event" required value="<?php echo $namaEvent?>">
+                    </div>
+                </div>
+    
+                <div class="row mb-3">
+                    <div class="col">
+                    <label for="waktu_aktif" class="form-label">Waktu Aktif</label>
+                    <input type="date" class="form-control" name="waktu_aktif" required value="<?php echo $waktuAktif?>">
+                    </div>
+                    <div class="col">
+                    <label for="waktu_non_aktif" class="form-label">Waktu Non Aktif</label>
+                    <input type="date" class="form-control" name="waktu_non_aktif" required value="<?php echo $waktuNonAktif?>">
+                    </div>
+                </div>
+    
+                <div class="row mb-3">
+                    <div class="col">
+                    <label for="total_diskon" class="form-label">Total Diskon</label>
+                    <input type="number" class="form-control" name="total_diskon" required value="<?php echo $waktuNonAktif?>">
+                    </div>
+                </div>
+    
+                <button class="btn btn-success d-flex align-items-center" type="submit" name="btnEdit">
+                    <span class="material-symbols-rounded me-2">add</span>
+                    Simpan
+                </button>
+            </form>
       </div>
     </div>
   </div>
