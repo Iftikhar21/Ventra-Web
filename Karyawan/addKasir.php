@@ -28,11 +28,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Ventra POS Event</title>
+  <title>Ventra POS Kasir</title>
 
   <!-- Bootstrap & Icon Fonts -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Rounded" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded" rel="stylesheet" />
   <link rel="stylesheet" href="style.css">
@@ -60,13 +61,13 @@
         </a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="../Karyawan/karyawan.php">
+        <a class="nav-link active" href="../Karyawan/karyawan.php">
           <i class="material-symbols-rounded">assignment_ind</i>
           <span class="nav-text">Karyawan</span>
         </a>
       </li>
       <li class="nav-item">
-        <a class="nav-link active" href="../Event/event.php">
+        <a class="nav-link" href="../Event/event.php">
           <i class="material-symbols-rounded">event</i>
           <span class="nav-text">Event</span>
         </a>
@@ -82,6 +83,12 @@
     </ul>
     <div class="sidebar-bottom">
       <ul class="nav flex-column">
+        <li class="nav-item-settings">
+          <a class="nav-link" href="../Settings/settings.php">
+            <i class="material-symbols-rounded">settings</i>
+            <span class="nav-text">Settings</span>
+          </a>
+        </li>
         <li class="nav-item">
           <a class="nav-link" href="../Login/logout.php">
             <i class="material-symbols-rounded">logout</i>
@@ -100,25 +107,33 @@
           <button class="toggle-btn" onclick="toggleSidebar()">
             <span class="material-symbols-rounded">menu</span>
           </button>
-          <h2 class="text-dark fw-bold m-0">Dashboard</h2>
+          <h2 class="text-dark fw-bold m-0">Karyawan</h2>
           <div class="d-flex align-items-center gap-4">
             <div id="clock" class="text-nowrap fw-semibold text-dark"></div> |
             <div id="date" class="text-nowrap fw-semibold text-dark"></div> |
             <div class="text-nowrap fw-semibold">Hi, <?=$username;?> !</div>
-            <li class="nav-item dropdown">
-                <a href="#" class="text-body text-decoration-none nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                  <i class="material-symbols-rounded fs-4">account_circle</i>
+            <div class="dropdown">
+                <a class="user-avatar dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="material-symbols-rounded">account_circle</i>
                 </a>
-                <ul class="dropdown-menu">
-                    <li><a class="dropdown-item" href="../Barang/tabelBarang.php">Profile</a></li>
+                <ul class="dropdown-menu dropdown-menu-end">
+                    <li>
+                        <a class="dropdown-item" href="../Profile/profile.php">
+                            <i class="fas fa-user-circle me-2"></i> Profile
+                        </a>
+                    </li>
                     <li><hr class="dropdown-divider"></li>
-                    <li><a class="dropdown-item" href="../Login/logout.php">Logout</a></li>
+                    <li>
+                        <a class="dropdown-item" href="../Login/logout.php">
+                            <i class="fas fa-sign-out-alt me-2"></i> Logout
+                        </a>
+                    </li>
                 </ul>
-            </li>
+            </div>
           </div>
         </nav>
         <p class="text-muted">Lihat Data Event</p>
-        <a class="btn btn-info d-flex align-items-center" href="event.php" style="width: 100px;">
+        <a class="btn btn-info d-flex align-items-center" href="karyawan.php" style="width: 100px;">
             <span class="material-symbols-rounded me-2">chevron_left</span>
             Back
         </a>
