@@ -4,3 +4,37 @@
     box-shadow: 0 10px 20px rgba(0,0,0,0.1);
     background-color: #fff;
 }
+
+.table-card td img {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+}
+
+.row .image {
+    display: flex;
+    justify-content: center;
+    margin: 10px;
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+}
+
+.row .image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+#cropImageModal .modal-body {
+    height: 60vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#crop-image {
+    max-width: 100%;
+    max-height: 100%;
+    display: block;
+}  

@@ -21,7 +21,7 @@
         $hargaJual = $_POST['HargaJual'];
         $ukuran = $_POST['Ukuran'];
         $bahan = $_POST['Bahan'];
-        $gambar = $_POST['Gambar'];
+        $gambar = $_FILES['Gambar']['tmp_name'];
         $kategori = $_POST['Kategori'];
         $stock = $_POST['Stock'];
 
@@ -42,6 +42,7 @@
   <!-- Bootstrap & Icon Fonts -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Rounded" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded" rel="stylesheet" />
@@ -183,26 +184,34 @@
                     </div>
                 </div>
     
-                <div class="mb-3">
+                <div class="row mb-3">
+                  <div class="mb-3">
+                    <label for="Kategori" class="form-label">Kategori</label>
+                    <select name="Kategori" class="form-control" required>
+                      <option value="" selected disabled>-- Pilih Kategori --</option>
+                      <?php foreach ($dataKategori as $kategori): ?>
+                        <option value="<?= $kategori['nama_kategori'] ?>">
+                          <?= $kategori['nama_kategori'] ?>
+                        </option>
+                      <?php endforeach; ?>
+                    </select>
+                  </div>
+      
+                  <div class="mb-3">
+                      <label for="Stock" class="form-label">Stok</label>
+                      <input type="number" class="form-control" name="Stock" required>
+                  </div>
+                </div>
+
+                <div class="row mb-3 align-items-center">
+                  <div class="col-md-6">
                     <label for="Gambar" class="form-label">Gambar (Upload)</label>
-                    <input type="file" class="form-control" name="Gambar" accept="image/*" required>
-                </div>
-    
-                <div class="mb-3">
-                  <label for="Kategori" class="form-label">Kategori</label>
-                  <select name="Kategori" class="form-control" required>
-                    <option value="" selected disabled>-- Pilih Kategori --</option>
-                    <?php foreach ($dataKategori as $kategori): ?>
-                      <option value="<?= $kategori['nama_kategori'] ?>">
-                        <?= $kategori['nama_kategori'] ?>
-                      </option>
-                    <?php endforeach; ?>
-                  </select>
-                </div>
-    
-                <div class="mb-3">
-                    <label for="Stock" class="form-label">Stok</label>
-                    <input type="number" class="form-control" name="Stock" required>
+                    <input type="file" class="form-control" id="input-photo" name="Gambar" accept="image/*" required>
+                  </div>
+                  <div class="col-md-6 text-center">
+                    <label class="form-label d-block">Preview Gambar</label>
+                    <img id="preview-gambar" alt="Gambar Barang" class="img-thumbnail" style="max-height: 200px;">
+                  </div>
                 </div>
     
                 <button class="btn btn-success d-flex align-items-center" type="submit" name="btnTambah">
@@ -214,9 +223,87 @@
     </div>
   </div>
 
+  <div class="modal fade" id="cropImageModal" tabindex="-1">
+      <div class="modal-dialog modal-xl modal-dialog-centered">
+          <div class="modal-content">
+          <div class="modal-header">
+              <h5 class="modal-title">Crop Image</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body">
+              <img id="crop-image" style="max-width: 100%; max-height: 100%;" />
+          </div>
+          <div class="modal-footer">
+              <button class="btn btn-success" onclick="cropImage()">Crop</button>
+          </div>
+          </div>
+      </div>
+  </div>
+
   <!-- Scripts -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+
   <script src="index.js"></script>
   <script src="../js/sidebar.js"></script>
+
+    <script>
+
+    let cropper;
+    
+    document.getElementById('input-photo').addEventListener('change', function (e) {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function (event) {
+                const image = document.getElementById('crop-image');
+                image.src = event.target.result;
+
+                const modalEl = document.getElementById('cropImageModal');
+                const modal = new bootstrap.Modal(modalEl);
+
+                // Pastikan modal muncul
+                console.log("Modal akan ditampilkan");
+                modal.show();
+
+                modalEl.addEventListener('shown.bs.modal', function onShow() {
+                    modalEl.removeEventListener('shown.bs.modal', onShow); // hanya sekali saat modal ditampilkan
+                    if (cropper) cropper.destroy();
+
+                    cropper = new Cropper(image, {
+                        aspectRatio: 1,
+                        viewMode: 1,
+                        autoCropArea: 1,
+                        responsive: true,
+                        background: false
+                    });
+                });
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+
+
+    function cropImage() {
+        if (cropper) {
+            const canvas = cropper.getCroppedCanvas({
+                width: 300,
+                height: 300,
+            });
+
+            // Update image preview
+            document.getElementById('preview-gambar').src = canvas.toDataURL();
+
+            // Hapus cropper
+            cropper.destroy();
+            cropper = null;
+
+            // Tutup modal
+            const modalEl = document.getElementById('cropImageModal');
+            const modal = bootstrap.Modal.getInstance(modalEl);
+            modal.hide();
+        }
+    }
+  </script>
 </body>
 </html>

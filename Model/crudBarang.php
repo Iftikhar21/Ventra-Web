@@ -83,7 +83,13 @@
 
     function addBarang($kodeBarang, $namaBarang, $hargaJual, $modal, $ukuran, $bahan, $gambar, $kategori, $stock) {
         $koneksi = Connection();
-        $sql = "INSERT INTO ventra_produk (Kode_Brg, Nama_Brg, HargaJual, Modal, Ukuran, Bahan, Gambar, Kategori, Stock) VALUES ('$kodeBarang', '$namaBarang', '$hargaJual', '$modal', '$ukuran', '$bahan', '$gambar', '$kategori', '$stock')";
+
+        $photoData = file_get_contents($gambar);
+        // Escape agar aman dimasukkan ke SQL
+        $photoData = mysqli_real_escape_string($koneksi, $photoData);
+
+        $sql = "INSERT INTO ventra_produk (Kode_Brg, Nama_Brg, HargaJual, Modal, Ukuran, Bahan, Gambar, Kategori, Stock) 
+                VALUES ('$kodeBarang', '$namaBarang', '$hargaJual', '$modal', '$ukuran', '$bahan', '$photoData', '$kategori', '$stock')";
         $hasil = 0;
         if (mysqli_query($koneksi, $sql)) {
              $hasil = 1;
@@ -94,8 +100,19 @@
 
     function editBarang ($kodeBarang, $namaBarang, $hargaJual, $modal, $ukuran, $bahan, $gambar, $kategori, $stock) {
         $koneksi = Connection();
-        $sql = "UPDATE ventra_produk SET Nama_Brg = '$namaBarang', HargaJual = '$hargaJual', Modal = '$modal', Ukuran = '$ukuran', 
-                    Bahan = '$bahan', Gambar = '$gambar', Kategori = '$kategori', Stock = '$stock' WHERE Kode_Brg = '$kodeBarang'";
+
+         // Siapkan SQL tanpa update photo terlebih dahulu
+        if ($gambar && file_exists($gambar)) {
+            $photoData = file_get_contents($gambar);
+            $photoData = mysqli_real_escape_string($koneksi, $photoData);
+            $sql = "UPDATE ventra_produk SET Nama_Brg = '$namaBarang', HargaJual = '$hargaJual', Modal = '$modal', Ukuran = '$ukuran', 
+                    Bahan = '$bahan', Gambar = '$photoData', Kategori = '$kategori', Stock = '$stock' WHERE Kode_Brg = '$kodeBarang'";
+        } else {
+            $sql = "UPDATE ventra_produk SET Nama_Brg = '$namaBarang', HargaJual = '$hargaJual', Modal = '$modal', Ukuran = '$ukuran', 
+                    Bahan = '$bahan', Kategori = '$kategori', Stock = '$stock' WHERE Kode_Brg = '$kodeBarang'";
+        }
+    
+        $hasil = 0;
         if (mysqli_query($koneksi, $sql)) {
              $hasil = 1;
              mysqli_close($koneksi);

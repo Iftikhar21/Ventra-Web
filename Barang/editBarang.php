@@ -33,7 +33,7 @@
         $hargaJual = $barang['HargaJual'];
         $ukuran = $barang['Ukuran'];
         $bahan = $barang['Bahan'];
-        $gambar = $barang['Gambar'];
+        $gambar = base64_encode($barang['Gambar']); // BLOB dari DB → base64
         $kategori = $barang['Kategori'];
         $stock = $barang['Stock'];
     }
@@ -50,18 +50,20 @@
         $kategori = $_POST['Kategori'];
         $stock = $_POST['Stock'];
 
-        // Handle Gambar
-        if (isset($_FILES['Gambar']) && $_FILES['Gambar']['error'] === 0) {
-            $gambar = $_FILES['Gambar']['name'];
-            $tmpName = $_FILES['Gambar']['tmp_name'];
-            move_uploaded_file($tmpName, "../Img/" . $gambar);
-        } else {
-            $gambar = $data['Gambar']; // pakai gambar lama kalau tidak upload baru
+        // Jika ada gambar baru, simpan gambar tersebut
+        $photoTmp = isset($_FILES['Gambar']['tmp_name']) && $_FILES['Gambar']['error'] === 0
+                    ? $_FILES['Gambar']['tmp_name']
+                    : null;
+
+        // Jika tidak ada gambar baru, gunakan gambar lama
+        if ($photoTmp === null) {
+            // Pertahankan gambar lama, tidak mengubahnya
+            $photoTmp = $barang['Gambar']; // Gambar lama dari DB
         }
 
-        $result = editBarang($kodeBarang, $namaBarang, $hargaJual, $modal, $ukuran, $bahan, $gambar, $kategori, $stock);
+        $result = editBarang($kodeBarang, $namaBarang, $hargaJual, $modal, $ukuran, $bahan, $photoTmp, $kategori, $stock);
         if ($result) {
-            header("Location:barang.php");
+            header("Location: barang.php");
             exit();
         } else {
             echo "<div class='alert alert-danger mt-3'>Gagal memperbarui barang.</div>";
@@ -79,6 +81,7 @@
   <!-- Bootstrap & Icon Fonts -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Rounded" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded" rel="stylesheet" />
@@ -215,33 +218,51 @@
                         <input type="text" class="form-control" name="Ukuran" required value="<?php echo $ukuran?>">
                     </div>
                     <div class="col">
-                    <label for="Bahan" class="form-label">Bahan</label>
-                    <input type="text" class="form-control" name="Bahan" required value="<?php echo $bahan?>">
+                        <label for="Bahan" class="form-label">Bahan</label>
+                        <input type="text" class="form-control" name="Bahan" required value="<?php echo $bahan?>">
                     </div>
                 </div>
     
-                <div class="mb-3">
-                    <label for="Gambar" class="form-label">Gambar (Upload)</label>
-                    <input type="file" class="form-control" name="Gambar" accept="image/*" required value="<?php echo $gambar?>">
-                </div>
-
-                <div class="mb-3">
-                  <label for="Kategori" class="form-label">Kategori</label>
-                  <select name="Kategori" class="form-control" required>
-                    <option value="" selected disabled><?php echo $kategori?></option>
-                    <?php foreach ($dataKategori as $kategori): ?>
-                      <option value="<?= $kategori['nama_kategori'] ?>">
-                        <?= $kategori['nama_kategori'] ?>
-                      </option>
-                    <?php endforeach; ?>
-                  </select>
-                </div>
-    
-                <div class="mb-3">
+                <div class="row mb-3">
+                  <div class="col">
+                    <label for="Kategori" class="form-label">Kategori</label>
+                    <!-- <select name="Kategori" class="form-control" required>
+                      <option value="" selected disabled>-- Pilih Kategori --</option>
+                      <?php foreach ($dataKategori as $kategori): ?>
+                        <option value="<?= $kategori['nama_kategori'] ?>" <?php echo ($kategori['nama_kategori'] == $kategori ? 'selected' : ''); ?>>
+                          <?= $kategori['nama_kategori'] ?>
+                        </option>
+                      <?php endforeach; ?>
+                    </select> -->
+                    <select name="Kategori" class="form-control" required>
+                      <option value="" selected disabled>-- Pilih Kategori --</option>
+                      <?php foreach ($dataKategori as $kategoriItem): ?>
+                        <option value="<?= $kategoriItem['nama_kategori'] ?>" 
+                          <?php echo ($kategoriItem['nama_kategori'] == $barang['Kategori'] ? 'selected' : ''); ?>>
+                          <?= $kategoriItem['nama_kategori'] ?>
+                        </option>
+                      <?php endforeach; ?>
+                    </select>
+                  </div>
+                    
+                  <div class="col">
                     <label for="Stock" class="form-label">Stok</label>
                     <input type="number" class="form-control" name="Stock" required value="<?php echo $stock?>">
+                  </div>
                 </div>
-    
+                  
+                <div class="row mb-3 align-items-center">
+                    <div class="col-md-6">
+                        <label for="Gambar" class="form-label">Gambar (Upload)</label>
+                        <input type="file" class="form-control" id="input-photo" name="Gambar" accept="image/*">
+                    </div>
+                    <div class="col-md-6 text-center">
+                        <label class="form-label d-block">Preview Gambar</label>
+                        <img id="preview-gambar" alt="Gambar Barang" class="img-thumbnail" style="max-height: 200px;">
+                    </div>
+                </div>
+
+                
                 <button class="btn btn-success d-flex align-items-center" type="submit" name="btnEdit">
                     <span class="material-symbols-rounded me-2">check</span>
                     Simpan
@@ -251,9 +272,106 @@
     </div>
   </div>
 
+  <div class="modal fade" id="cropImageModal" tabindex="-1">
+      <div class="modal-dialog modal-xl modal-dialog-centered">
+          <div class="modal-content">
+          <div class="modal-header">
+              <h5 class="modal-title">Crop Image</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body">
+              <img id="crop-image" style="max-width: 100%; max-height: 100%;" />
+          </div>
+          <div class="modal-footer">
+              <button class="btn btn-success" onclick="cropImage()">Crop</button>
+          </div>
+          </div>
+      </div>
+  </div>
+
   <!-- Scripts -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>    
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+
   <script src="index.js"></script>
   <script src="../js/sidebar.js"></script>
+
+  <script>
+      // Isi dari PHP (base64 gambar)
+      const gambarBase64 = "<?= $gambar ?>";
+
+      // Tampilkan gambar ke dalam <img>
+      if (gambarBase64) {
+          const img = document.getElementById("preview-gambar");
+          img.src = "data:image/jpeg;base64," + gambarBase64;
+      } else {
+          // Jika tidak ada gambar lama, biarkan placeholder kosong
+          document.getElementById("preview-gambar").src = "";
+      }
+
+      document.getElementById('input-photo').addEventListener('change', function () {
+          const file = this.files[0];
+          if (file) {
+              const reader = new FileReader();
+              reader.onload = function (e) {
+                  document.getElementById('preview-gambar').src = e.target.result;
+              };
+              reader.readAsDataURL(file);
+          }
+      });
+
+    let cropper;
+
+    document.getElementById('input-photo').addEventListener('change', function (e) {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function (event) {
+                const image = document.getElementById('crop-image');
+                image.src = event.target.result;
+
+                const modalEl = document.getElementById('cropImageModal');
+                const modal = new bootstrap.Modal(modalEl);
+                modal.show();
+
+                modalEl.addEventListener('shown.bs.modal', function onShow() {
+                    modalEl.removeEventListener('shown.bs.modal', onShow); // supaya hanya sekali
+                    if (cropper) cropper.destroy();
+
+                    cropper = new Cropper(image, {
+                        aspectRatio: 1,
+                        viewMode: 1,
+                        autoCropArea: 1,
+                        responsive: true,
+                        background: false
+                    });
+                });
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+
+    function cropImage() {
+        if (cropper) {
+            const canvas = cropper.getCroppedCanvas({
+                width: 300,
+                height: 300,
+            });
+
+            // Update image preview
+            document.getElementById('preview-gambar').src = canvas.toDataURL();
+
+            // Hapus cropper
+            cropper.destroy();
+            cropper = null;
+
+            // Tutup modal
+            const modalEl = document.getElementById('cropImageModal');
+            const modal = bootstrap.Modal.getInstance(modalEl);
+            modal.hide();
+        }
+    }
+  </script>
+
 </body>
 </html>

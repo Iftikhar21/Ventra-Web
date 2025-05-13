@@ -148,16 +148,16 @@
             </select>
           </div>
         </div>
-        <div class="table-responsive">
-          <table class="table table-striped table-bordered">
+        <div class="table-card table-responsive">
+          <table class="table table-striped table-borderless table-hover">
               <thead class="table-primary">
                   <tr class="text-center">
                       <th>#</th>
                       <th>Kode Barang</th>
+                      <th>Gambar</th>
                       <th>Nama Barang</th>
                       <th>Harga Jual</th>
                       <th>Ukuran</th>
-                      <th>Bahan</th>
                       <th>Kategori</th>
                       <th>Stock</th>
                       <th>Aksi</th>
@@ -168,10 +168,12 @@
                   <tr class="text-center">
                       <td><?= $no++; ?></td>
                       <td><?= $barang['Kode_Brg']; ?></td>
+                      <td>
+                        <img src="data:image/jpeg;base64,<?= base64_encode($barang['Gambar']); ?>"  alt="Image Product">
+                      </td>
                       <td><?= $barang['Nama_Brg']; ?></td>
                       <td>Rp <?= number_format($barang['HargaJual'], 0, ',', '.'); ?></td>
                       <td><?= $barang['Ukuran']; ?></td>
-                      <td><?= $barang['Bahan']; ?></td>
                       <td><?= $barang['Kategori']; ?></td>
                       <td class="text-center">
                           <?php if ($barang['Stock'] < 5): ?>
