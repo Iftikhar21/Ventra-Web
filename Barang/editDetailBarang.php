@@ -1,31 +1,58 @@
 <?php
-  session_start();
-  include '../Model/crudBarang.php';
-  include '../Model/crudKategori.php';
+    session_start();
+    include '../Model/crudBarang.php';
+    include '../Model/crudKategori.php';
 
-  if (!isset($_SESSION['username'])) {
-    header("Location: ../Login/FormLogin.php"); // Redirect kalau belum login
-    exit();
-  }
-
-  $data = getAllBarang();
-  $dataKategori = getAllKategori();
-  $username = $_SESSION['username'];
-?>
-
-<?php
-    if (isset($_POST['btnTambah'])) {
-        $id = $_POST['id'];
-        $namaBarang = $_POST['Nama_Brg'];
-        $bahan = $_POST['Bahan'];
-        $harga = $_POST['harga_jual'];
-        $gambar = $_FILES['Gambar']['tmp_name'];
-        $kategori = $_POST['Kategori'];
-
-        addBarang($id, $namaBarang, $bahan, $harga, $gambar, $kategori);
-
-        header("Location: barang.php"); // sesuaikan lokasi redirect
+    if (!isset($_SESSION['username'])) {
+        header("Location: ../Login/FormLogin.php");
         exit();
+    }
+
+    $username = $_SESSION['username'];
+
+    // Ambil kode barang dari URL
+    $kodeBarang = isset($_GET['Kode_Brg']) ? $_GET['Kode_Brg'] : '';
+
+    // Ambil data detail barang
+    $data = getDetailBarangByEdit($kodeBarang);
+    if (!$data) {
+        echo "<script>alert('Barang tidak ditemukan!');</script>";
+        echo "<script>window.location='detailBarang.php';</script>";
+        exit;
+    }
+
+    $data = $data[0];
+    $produk_id = $data['produk_id'];
+
+    // Update detail barang jika form disubmit
+    if (isset($_POST['btnUpdate'])) {
+        $kodeBarangBaru = $_POST['kodeBarang']; // Kode Barang baru dari form
+        $kodeBarangLama = $_GET['Kode_Brg']; // Kode Barang lama dari URL
+        
+        $ukuran = $_POST['ukuran'];
+        $stock = $_POST['stock'];
+        $barcode = $_POST['barcode'];
+        
+        // Inisialisasi $patternData sebagai null
+        $patternData = null;
+        
+        // Cek apakah ada file baru diupload
+        if ($_FILES['pattern']['error'] === UPLOAD_ERR_OK) {
+            $patternTmp = $_FILES['pattern']['tmp_name'];
+            $patternData = file_get_contents($patternTmp);
+        }
+        
+        // Panggil fungsi update dengan parameter baru
+        $result = updateDetailBarang($kodeBarangLama, $kodeBarangBaru, $produk_id, $ukuran, $patternData, $barcode, $stock);
+        
+        if ($result == 1) {
+            echo "<script>alert('Detail barang berhasil diperbarui!');</script>";
+            // Redirect dengan Kode Barang baru jika berubah
+            $redirectKode = ($kodeBarangBaru != $kodeBarangLama) ? $kodeBarangBaru : $kodeBarangLama;
+            echo "<script>window.location='detailBarang.php?id={$produk_id}';</script>";
+        } else {
+            echo "<script>alert('Gagal memperbarui detail barang!');</script>";
+        }
     }
 ?>
 
@@ -114,7 +141,7 @@
           <button class="toggle-btn" onclick="toggleSidebar()">
             <span class="material-symbols-rounded">menu</span>
           </button>
-          <h2 class="text-dark fw-bold m-0">Barang</h2>
+          <h2 class="text-dark fw-bold m-0">Detail Barang</h2>
           <div class="d-flex align-items-center gap-4">
             <div id="clock" class="text-nowrap fw-semibold text-dark"></div> |
             <div id="date" class="text-nowrap fw-semibold text-dark"></div> |
@@ -139,66 +166,62 @@
             </div>
           </div>
         </nav>
-        <p class="text-muted">Lihat Data Barang</p>
-        <a class="btn btn-info d-flex align-items-center" href="barang.php" style="width: 100px;">
+        <p class="text-muted">Lihat Data Detail Barang</p>
+        <a class="btn btn-info d-flex align-items-center" href="detailBarang.php" style="width: 100px;">
             <span class="material-symbols-rounded me-2">chevron_left</span>
             Back
         </a>
-
       </div>
+
       <div class="container">
+        <h3 class="fw-bold mb-3">> Edit Detail Barang</h3>
         <form action="" method="POST" enctype="multipart/form-data">
-          <div class="col">
-              <input type="hidden" class="form-control" name="id" id="kodeBarang" required >
-          </div>
-          <div class="row mb-3">
+            <input type="hidden" name="produk_id" value="<?= $id ?>">
+            <input type="hidden" name="barcode" id="barcodeInput">
+            <div class="row mb-3">
               <div class="col">
-                  <label for="Nama_Brg" class="form-label">Nama Barang</label>
-                  <input type="text" class="form-control" name="Nama_Brg" required>
+                  <label for="kodeBarang" class="form-label">Kode Barang</label>
+                  <input type="text" class="form-control" name="kodeBarang" id="kodeBarang" required value="<?= $data['Kode_Brg'] ?>">
               </div>
               <div class="col">
-                  <label for="Bahan" class="form-label">Bahan</label>
-                  <input type="text" class="form-control" name="Bahan" required>
+                  <label for="ukuran" class="form-label">Ukuran</label>
+                  <input type="text" class="form-control" name="ukuran" required value="<?= $data['ukuran'] ?>">
+              </div>
+              <div class="col">
+                  <label for="stock" class="form-label">Stok</label>
+                  <input type="text" class="form-control" name="stock" required value="<?= $data['stock'] ?>">
               </div>
           </div>
 
           <div class="row mb-3">
-              <div class="col">
-                  <label for="harga_jual" class="form-label">Harga</label>
-                  <input type="number" class="form-control" name="harga_jual" required>
-              </div>
-              <div class="col">
-                <label for="Kategori" class="form-label">Kategori</label>
-                <select name="Kategori" class="form-control" required>
-                  <option value="" selected disabled>-- Pilih Kategori --</option>
-                  <?php foreach ($dataKategori as $kategori): ?>
-                    <option value="<?= $kategori['id_kategori'] ?>">
-                      <?= $kategori['nama_kategori'] ?>
-                    </option>
-                  <?php endforeach; ?>
-                </select>
+            <div class="col-12">
+                <label for="barcode" class="form-label">Preview Barcode</label>
+            </div>
+            <div class="col barcode">
+                <svg id="barcode"></svg>
             </div>
           </div>
+
 
           <div class="row mb-3 align-items-center">
             <div class="col-md-6">
-              <label for="Gambar" class="form-label">Gambar (Upload)</label>
-              <input type="file" class="form-control" id="input-photo" name="Gambar" accept="image/*" required>
+              <label for="pattern" class="form-label">Pattern (Upload)</label>
+              <input type="file" class="form-control" id="input-photo" name="pattern" accept="image/*">
             </div>
             <div class="col-md-6 text-center">
-              <label class="form-label d-block">Preview Gambar</label>
-              <img id="preview-gambar" alt="Gambar Barang" class="img-thumbnail" style="max-height: 200px;">
+              <label class="form-label d-block">Preview Pattern</label>
+              <img id="preview-pattern" alt="Gambar Barang" class="img-thumbnail" style="max-height: 200px;">
             </div>
           </div>
 
-          <button class="btn btn-success d-flex align-items-center" type="submit" name="btnTambah">
-              <span class="material-symbols-rounded me-2">add</span>
+          <button class="btn btn-success d-flex align-items-center" type="submit" name="btnUpdate">
+              <span class="material-symbols-rounded me-2">check</span>
               Simpan
           </button>
         </form>
       </div>
     </div>
-  </div>
+  </main>
 
   <div class="modal fade" id="cropImageModal" tabindex="-1">
       <div class="modal-dialog modal-xl modal-dialog-centered">
@@ -217,6 +240,7 @@
       </div>
   </div>
 
+
   <!-- Scripts -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
@@ -227,7 +251,7 @@
   <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
 
-    <script>
+  <script>
 
     let cropper;
     
@@ -272,7 +296,7 @@
             });
 
             // Update image preview
-            document.getElementById('preview-gambar').src = canvas.toDataURL();
+            document.getElementById('preview-pattern').src = canvas.toDataURL();
 
             // Hapus cropper
             cropper.destroy();
@@ -287,46 +311,116 @@
   </script>
 
   <script>
-      function printBarcode() {
-          const printWindow = window.open('', '_blank');
-          const svgContent = document.getElementById('result').outerHTML;
+    function generateBarcode(value) {
+            if (value && value.length > 0) {
+                JsBarcode("#barcode", value, {
+                    format: "CODE128",
+                    displayValue: true,
+                    lineColor: "#000",
+                    width: 2,
+                    height: 50,
+                    fontSize: 14
+                });
+                document.getElementById("barcodeInput").value = value;
+            }
+        }
 
-          printWindow.document.write(`
-              <html>
-              <head><title>Print Barcode</title></head>
-              <body style="text-align:center;">
-                  ${svgContent}
-                  <script>
-                      window.onload = function() {
-                          window.print();
-                          window.onafterprint = function() { window.close(); };
-                      };
-                  <\/script>
-              </body>
-              </html>
-          `);
-          printWindow.document.close();
-      }
+        // Generate barcode saat halaman dimuat
+        document.addEventListener('DOMContentLoaded', function() {
+            const kodeBarang = document.getElementById('kodeBarang').value;
+            generateBarcode(kodeBarang);
+            
+            // Tetap pertahankan event listener untuk input perubahan
+            document.getElementById('kodeBarang').addEventListener('input', function() {
+                generateBarcode(this.value);
+            });
+        });
+   function printBarcode() {
+        // Dapatkan barcode yang dipilih
+        const selectedBarcodes = [];
+        document.querySelectorAll('.barcode-check:checked').forEach(checkbox => {
+            selectedBarcodes.push(checkbox.dataset.barcode);
+        });
+        
+        if (selectedBarcodes.length === 0) {
+            alert('Pilih minimal satu barcode untuk dicetak!');
+            return;
+        }
+        
+        // Simpan konten asli
+        const originalContent = document.body.innerHTML;
+        
+        // Buat konten untuk dicetak
+        let printContent = '<div style="text-align:center;padding:20px;">';
+        printContent += '<h2>Daftar Barcode</h2>';
+        printContent += '<div style="display:flex;flex-wrap:wrap;justify-content:center;gap:20px;">';
+        
+        selectedBarcodes.forEach(barcode => {
+            printContent += `
+            <div style="margin:10px;text-align:center;">
+                <svg id="print-barcode-${barcode}" width="200" height="100"></svg>
+                <div style="margin-top:5px;">${barcode}</div>
+            </div>`;
+        });
+        
+        printContent += '</div></div>';
+        
+        // Ganti konten body sementara
+        document.body.innerHTML = printContent;
+        
+        // Generate barcode setelah DOM diupdate
+        setTimeout(() => {
+            selectedBarcodes.forEach(barcode => {
+                JsBarcode(`#print-barcode-${barcode}`, barcode, {
+                    format: "CODE128",
+                    displayValue: false,
+                    lineColor: "#000",
+                    width: 2,
+                    height: 50,
+                    fontSize: 14
+                });
+            });
+            
+            // Cetak dan kembalikan konten asli
+            window.print();
+            document.body.innerHTML = originalContent;
+        }, 100);
+    }
 
-      const input = document.getElementById('kodeBarang');
-      const barcode = document.getElementById('barcode');
+    // Fungsi untuk select all
+    document.getElementById('selectAll').addEventListener('change', function() {
+        document.querySelectorAll('.barcode-check').forEach(checkbox => {
+            checkbox.checked = this.checked;
+        });
+    });
 
-      input.addEventListener('input', function () {
+
+    const input = document.getElementById('kodeBarang');
+    const barcode = document.getElementById('barcode');
+
+    input.addEventListener('input', function () {
         const value = this.value;
         if (value.length > 0) {
-          JsBarcode("#barcode", value, {
+            JsBarcode("#barcode", value, {
             format: "CODE128",
             displayValue: true,
             lineColor: "#000",
             width: 2,
             height: 50,
             fontSize: 14
-          });
+            });
         } else {
-          barcode.innerHTML = ""; // hapus barcode jika kosong
+            barcode.innerHTML = ""; // hapus barcode jika kosong
         }
-      });
+    });
+
+    document.getElementById("kodeBarang").addEventListener("input", function () {
+        const kode = this.value;
+        JsBarcode("#barcode", kode);
+        document.getElementById("barcodeInput").value = kode;
+    });
   </script> 
+
 
 </body>
 </html>

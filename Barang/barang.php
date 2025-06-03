@@ -9,6 +9,7 @@
   }
 
   $data = getAllBarang();
+  $allBarangDetail = getAllBarangDanDetail();
   $dataKategori = getAllKategori();
   $username = $_SESSION['username'];
 ?>
@@ -152,45 +153,36 @@
           <table class="table table-striped table-borderless table-hover">
               <thead class="table-primary">
                   <tr class="text-center">
-                      <th>#</th>
-                      <th>Kode Barang</th>
+                      <th>ID</th>
                       <th>Gambar</th>
                       <th>Nama Barang</th>
-                      <th>Harga Jual</th>
-                      <th>Ukuran</th>
+                      <th>Bahan</th>
+                      <th>Harga</th>
                       <th>Kategori</th>
-                      <th>Stock</th>
                       <th>Aksi</th>
                   </tr>
               </thead>
               <tbody id="myTable">
                   <?php $no = 1; foreach ($data as $barang): ?>
                   <tr class="text-center">
-                      <td><?= $no++; ?></td>
-                      <td><?= $barang['Kode_Brg']; ?></td>
+                      <td><?= $barang['id']; ?></td>
                       <td>
                         <img src="data:image/jpeg;base64,<?= base64_encode($barang['Gambar']); ?>"  alt="Image Product">
                       </td>
                       <td><?= $barang['Nama_Brg']; ?></td>
-                      <td>Rp <?= number_format($barang['HargaJual'], 0, ',', '.'); ?></td>
-                      <td><?= $barang['Ukuran']; ?></td>
-                      <td><?= $barang['Kategori']; ?></td>
+                      <td><?= $barang['Bahan']; ?></td>
+                      <td>Rp <?= number_format($barang['harga_jual'], 0, ',', '.') ?></td>
+                      <td><?= $barang['nama_kategori']; ?></td>
                       <td class="text-center">
-                          <?php if ($barang['Stock'] < 5): ?>
-                          <span class="badge bg-danger"><?= $barang['Stock']; ?></span>
-                          <?php elseif ($barang['Stock'] < 10): ?>
-                          <span class="badge bg-warning"><?= $barang['Stock']; ?></span>
-                          <?php else: ?>
-                          <span class="badge bg-success"><?= $barang['Stock']; ?></span>
-                          <?php endif; ?>
-                      </td>
-                      <td class="text-center">
-                          <a href="editBarang.php?Kode_Brg=<?= $barang['Kode_Brg']; ?>" class="btn btn-warning btn-sm">
-                              <i class="material-symbols-rounded" style="color: #fff; margin-top: 2px;">edit</i>
-                          </a>
-                          <a href="hapusBarang.php?Kode_Brg=<?= $barang['Kode_Brg']; ?>" class="btn btn-danger btn-sm">
-                              <i class="material-symbols-rounded" style="margin-top: 2px;">delete</i>
-                          </a>
+                        <a href="editBarang.php?id=<?= $barang['id']; ?>" class="btn btn-warning btn-sm">
+                          <i class="material-symbols-rounded" style="color: #fff; margin-top: 2px;">edit</i>
+                        </a>
+                        <a href="hapusBarang.php?id=<?= $barang['id']; ?>" class="btn btn-danger btn-sm">
+                          <i class="material-symbols-rounded" style="margin-top: 2px;">delete</i>
+                        </a>
+                        <a href="detailBarang.php?id=<?= $barang['id']; ?>" class="btn btn-info btn-sm">
+                            <i class="material-symbols-rounded" style="color: #fff; margin-top: 2px;">info</i>
+                        </a>
                       </td>
                   </tr>
                   <?php endforeach; ?>
@@ -238,61 +230,67 @@
 
       <div class="catalog-container">
 
-        <!-- Catalog Header -->
-        <div class="catalog-header">
-          <h2 class="catalog-title">Katalog Produk</h2>
-          <div class="catalog-filter">
-            <button class="filter-btn active">Semua</button>
-            <button class="filter-btn">Terbaru</button>
-            <button class="filter-btn">Populer</button>
+          <!-- Catalog Header -->
+          <div class="catalog-header">
+            <h2 class="catalog-title">Katalog Produk</h2>
+            <div class="catalog-filter">
+              <button class="filter-btn active">Semua</button>
+              <button class="filter-btn">Terbaru</button>
+              <button class="filter-btn">Populer</button>
+            </div>
+          </div>
+
+          <!-- Catalog Wrapper -->
+          <div class="catalog-wrapper">
+            <button class="arrow-btn arrow-left" onclick="scrollCatalog(-1)">
+              <i class="fas fa-chevron-left"></i>
+            </button>
+
+            <div class="catalog-scroll" id="productCatalog">
+              <!-- Produk -->
+            <?php foreach ($data as $barang) : ?>
+              <div class="product-card">
+                <div class="product-badge">New</div>
+                <div class="product-image">
+                  <img src="data:image/jpeg;base64,<?= base64_encode($barang['Gambar']); ?>" alt="Produk Busana">
+                </div>
+                <div class="product-info">
+                  <h3 class="product-name"><?= $barang['Nama_Brg']; ?></h3>
+                  <div class="product-meta">
+                    <div class="product-price">Rp <?= number_format($barang['harga_jual'], 0, ',', '.'); ?></div>
+                  </div>
+                  <div class="product-details">
+                    <span>Kategori: <?= $barang['nama_kategori']; ?></span><br>
+                  </div>
+                  <!-- <div class="product-details">
+                    <span>Stok: <?= $barang['stock']; ?></span>
+                  </div> -->
+                  <div class="product-actions">
+                    <a class="action-btn primary" href="editBarang.php?id=<?= $barang['id']; ?>">
+                      <span class="material-symbols-rounded">info</span>
+                    </a>
+                    <a class="action-btn delete" href="editBarang.php?id=<?= $barang['id']; ?>">
+                      <span class="material-symbols-rounded">delete</span>
+                    </a>
+                  </div>
+                </div>
+              </div>
+            <?php endforeach; ?>
+            <button class="arrow-btn arrow-right" onclick="scrollCatalog(1)">
+              <i class="fas fa-chevron-right"></i>
+            </button>
+          </div>
+
+          <!-- Pagination Dots -->
+          <div class="pagination-dots">
+            <div class="dot active" onclick="scrollToPage(0)"></div>
+            <div class="dot" onclick="scrollToPage(1)"></div>
+            <div class="dot" onclick="scrollToPage(2)"></div>
           </div>
         </div>
-
-        <!-- Catalog Wrapper -->
-        <div class="catalog-wrapper">
-          <button class="arrow-btn arrow-left" onclick="scrollCatalog(-1)">
-            <i class="fas fa-chevron-left"></i>
-          </button>
-
-          <div class="catalog-scroll" id="productCatalog">
-            <!-- Produk -->
-          <?php foreach ($data as $barang) : ?>
-            <div class="product-card">
-              <div class="product-badge">New</div>
-              <div class="product-image">
-                <img src="data:image/jpeg;base64,<?= base64_encode($barang['Gambar']); ?>" alt="Produk Busana">
-              </div>
-              <div class="product-info">
-                <h3 class="product-name"><?= $barang['Nama_Brg']; ?></h3>
-                <div class="product-meta">
-                  <div class="product-price">Rp <?= number_format($barang['HargaJual'], 0, ',', '.'); ?></div>
-                </div>
-                <div class="product-details">
-                  <span>Kategori: <?= $barang['Kategori']; ?></span><br>
-                </div>
-                <div class="product-details">
-                  <span>Stok: <?= $barang['Stock']; ?></span>
-                </div>
-                <div class="product-actions">
-                  <a class="action-btn primary" href="editBarang.php?Kode_Brg=<?= $barang['Kode_Brg']; ?>">
-                    <span class="material-symbols-rounded">edit</span>
-                  </a>
-                </div>
-              </div>
-            </div>
-          <?php endforeach; ?>
-          <button class="arrow-btn arrow-right" onclick="scrollCatalog(1)">
-            <i class="fas fa-chevron-right"></i>
-          </button>
-        </div>
-
-        <!-- Pagination Dots -->
-        <div class="pagination-dots">
-          <div class="dot active" onclick="scrollToPage(0)"></div>
-          <div class="dot" onclick="scrollToPage(1)"></div>
-          <div class="dot" onclick="scrollToPage(2)"></div>
-        </div>
       </div>
+    </div>
+  </main>
 
   <!-- Scripts -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

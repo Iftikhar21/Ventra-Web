@@ -14,41 +14,35 @@
 ?>
 
 <?php 
-    if (isset($_GET['Kode_Brg'])) {
-        $kodeBarang = $_GET['Kode_Brg'];
+    if (isset($_GET['id'])) {
+        $id = $_GET['id'];
     } else {
-        echo "Masukkan Kode Barang";
+        echo "Masukkan ID Produk";
         exit();
     }
-    $data = getBarang($kodeBarang);
+    $data = getBarang($id);
     if (empty($data)) {
-        echo "Kode Barang Tidak Ditemukan !";
+        echo "ID Produk Tidak Ditemukan !";
         exit();
     } else {
-        $barang = $data[0]; // Ambil data pertama
+        $barang = $data; // Ambil data pertama
 
-        $kodeBarang = $barang['Kode_Brg'];
+        $id = $barang['id'];
         $namaBarang = $barang['Nama_Brg'];
-        $modal = $barang['Modal']; // ini akan undefined karena tidak dikembalikan
-        $hargaJual = $barang['HargaJual'];
-        $ukuran = $barang['Ukuran'];
         $bahan = $barang['Bahan'];
-        $gambar = base64_encode($barang['Gambar']); // BLOB dari DB → base64
+        $hargaJual = $barang['harga_jual'];
         $kategori = $barang['Kategori'];
-        $stock = $barang['Stock'];
+        $gambar = base64_encode($barang['Gambar']); // BLOB dari DB → base64
     }
 ?>
 
 <?php
     if (isset($_POST['btnEdit'])) {
-        $kodeBarang = $_POST['Kode_Brg'];
+        $id = $_POST['id'];
         $namaBarang = $_POST['Nama_Brg'];
-        $modal = $_POST['Modal'];
-        $hargaJual = $_POST['HargaJual'];
-        $ukuran = $_POST['Ukuran'];
         $bahan = $_POST['Bahan'];
+        $harga = $_POST['harga_jual'];
         $kategori = $_POST['Kategori'];
-        $stock = $_POST['Stock'];
 
         // Jika ada gambar baru, simpan gambar tersebut
         $photoTmp = isset($_FILES['Gambar']['tmp_name']) && $_FILES['Gambar']['error'] === 0
@@ -61,7 +55,7 @@
             $photoTmp = $barang['Gambar']; // Gambar lama dari DB
         }
 
-        $result = editBarang($kodeBarang, $namaBarang, $hargaJual, $modal, $ukuran, $bahan, $photoTmp, $kategori, $stock);
+        $result = editBarang($id, $namaBarang, $bahan, $harga, $photoTmp, $kategori);
         if ($result) {
             header("Location: barang.php");
             exit();
@@ -189,85 +183,61 @@
 
       </div>
       <div class="container">
-          <form action="" method="POST" enctype="multipart/form-data">
-                <div class="row mb-3">
-                    <div class="col">
-                        <label for="Kode_Brg" class="form-label">Kode Barang</label>
-                        <input type="number" class="form-control" name="Kode_Brg" required value="<?php echo $kodeBarang?>" readonly>
-                    </div>
-                    <div class="col">
-                        <label for="Nama_Brg" class="form-label">Nama Barang</label>
-                        <input type="text" class="form-control" name="Nama_Brg" required value="<?php echo $namaBarang?>">
-                    </div>
-                </div>
-    
-                <div class="row mb-3">
-                    <div class="col">
-                        <label for="Modal" class="form-label">Harga Modal</label>
-                        <input type="number" class="form-control" name="Modal" required value="<?php echo $modal?>">
-                    </div>
-                    <div class="col">
-                        <label for="HargaJual" class="form-label">Harga Jual</label>
-                        <input type="number" class="form-control" name="HargaJual" required value="<?php echo $hargaJual?>">
-                    </div>
-                </div>
-    
-                <div class="row mb-3">
-                    <div class="col">
-                        <label for="Ukuran" class="form-label">Ukuran</label>
-                        <input type="text" class="form-control" name="Ukuran" required value="<?php echo $ukuran?>">
-                    </div>
-                    <div class="col">
-                        <label for="Bahan" class="form-label">Bahan</label>
-                        <input type="text" class="form-control" name="Bahan" required value="<?php echo $bahan?>">
-                    </div>
-                </div>
-    
-                <div class="row mb-3">
-                  <div class="col">
-                    <label for="Kategori" class="form-label">Kategori</label>
-                    <!-- <select name="Kategori" class="form-control" required>
-                      <option value="" selected disabled>-- Pilih Kategori --</option>
-                      <?php foreach ($dataKategori as $kategori): ?>
-                        <option value="<?= $kategori['nama_kategori'] ?>" <?php echo ($kategori['nama_kategori'] == $kategori ? 'selected' : ''); ?>>
-                          <?= $kategori['nama_kategori'] ?>
-                        </option>
-                      <?php endforeach; ?>
-                    </select> -->
-                    <select name="Kategori" class="form-control" required>
-                      <option value="" selected disabled>-- Pilih Kategori --</option>
-                      <?php foreach ($dataKategori as $kategoriItem): ?>
-                        <option value="<?= $kategoriItem['nama_kategori'] ?>" 
-                          <?php echo ($kategoriItem['nama_kategori'] == $barang['Kategori'] ? 'selected' : ''); ?>>
-                          <?= $kategoriItem['nama_kategori'] ?>
-                        </option>
-                      <?php endforeach; ?>
-                    </select>
-                  </div>
-                    
-                  <div class="col">
-                    <label for="Stock" class="form-label">Stok</label>
-                    <input type="number" class="form-control" name="Stock" required value="<?php echo $stock?>">
-                  </div>
-                </div>
-                  
-                <div class="row mb-3 align-items-center">
-                    <div class="col-md-6">
-                        <label for="Gambar" class="form-label">Gambar (Upload)</label>
-                        <input type="file" class="form-control" id="input-photo" name="Gambar" accept="image/*">
-                    </div>
-                    <div class="col-md-6 text-center">
-                        <label class="form-label d-block">Preview Gambar</label>
-                        <img id="preview-gambar" alt="Gambar Barang" class="img-thumbnail" style="max-height: 200px;">
-                    </div>
-                </div>
+        <form action="" method="POST" enctype="multipart/form-data">
+          <div class="row mb-3">
+              <div class="col">
+                  <label for="id" class="form-label">ID Produk</label>
+                  <input type="number" class="form-control" name="id" id="id" required readonly value="<?= $barang['id'] ?>">
+              </div>
+              <div class="col">
+                  <label for="Nama_Brg" class="form-label">Nama Barang</label>
+                  <input type="text" class="form-control" name="Nama_Brg" required value="<?= $barang['Nama_Brg'] ?>">
+              </div>
+          </div>
+            
+          <div class="row mb-3">
+              <div class="col">
+                  <label for="Bahan" class="form-label">Bahan</label>
+                  <input type="text" class="form-control" name="Bahan" required value="<?= $barang['Bahan'] ?>">
+              </div>
+              <div class="col">
+                  <label for="harga_jual" class="form-label">Harga</label>
+                  <input type="number" class="form-control" name="harga_jual" required value="<?= $barang['harga_jual'] ?>">
+              </div>
+          </div>
+            
+          <div class="row mb-3">
+            <div class="col">
+              <label for="Kategori" class="form-label">Kategori</label>
+              <select name="Kategori" class="form-control" required>
+                <option value="" disabled>-- Pilih Kategori --</option>
+                <?php foreach ($dataKategori as $kategori): ?>
+                  <option value="<?= $kategori['id_kategori'] ?>"
+                    <?= ($kategori['id_kategori'] == $barang['Kategori']) ? 'selected' : '' ?>>
+                    <?= $kategori['nama_kategori'] ?>
+                  </option>
+                <?php endforeach; ?>
+              </select>
+            </div>
+          </div>
 
-                
-                <button class="btn btn-success d-flex align-items-center" type="submit" name="btnEdit">
-                    <span class="material-symbols-rounded me-2">check</span>
-                    Simpan
-                </button>
-            </form>
+
+          <div class="row mb-3 align-items-center">
+            <div class="col-md-6">
+              <label for="Gambar" class="form-label">Gambar (Upload)</label>
+              <input type="file" class="form-control" id="input-photo" name="Gambar" accept="image/*">
+            </div>
+            <div class="col-md-6 text-center">
+              <label class="form-label d-block">Preview Gambar</label>
+              <img id="preview-gambar" alt="Gambar Barang" class="img-thumbnail" style="max-height: 200px;">
+            </div>
+          </div>
+
+          <button class="btn btn-success d-flex align-items-center" type="submit" name="btnEdit">
+              <span class="material-symbols-rounded me-2">check</span>
+              Simpan
+          </button>
+        </form>
       </div>
     </div>
   </div>
