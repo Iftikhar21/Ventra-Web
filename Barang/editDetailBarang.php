@@ -117,12 +117,6 @@
     </ul>
     <div class="sidebar-bottom">
       <ul class="nav flex-column">
-        <li class="nav-item-settings">
-          <a class="nav-link" href="../Settings/settings.php">
-            <i class="material-symbols-rounded">settings</i>
-            <span class="nav-text">Settings</span>
-          </a>
-        </li>
         <li class="nav-item">
           <a class="nav-link" href="../Login/logout.php">
             <i class="material-symbols-rounded">logout</i>
@@ -150,19 +144,6 @@
                 <a class="user-avatar dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                     <i class="material-symbols-rounded">account_circle</i>
                 </a>
-                <ul class="dropdown-menu dropdown-menu-end">
-                    <li>
-                        <a class="dropdown-item" href="../Profile/profile.php">
-                            <i class="fas fa-user-circle me-2"></i> Profile
-                        </a>
-                    </li>
-                    <li><hr class="dropdown-divider"></li>
-                    <li>
-                        <a class="dropdown-item" href="../Login/logout.php">
-                            <i class="fas fa-sign-out-alt me-2"></i> Logout
-                        </a>
-                    </li>
-                </ul>
             </div>
           </div>
         </nav>
@@ -189,7 +170,7 @@
               </div>
               <div class="col">
                   <label for="stock" class="form-label">Stok</label>
-                  <input type="text" class="form-control" name="stock" required value="<?= $data['stock'] ?>">
+                  <input type="number" class="form-control" name="stock" required value="<?= $data['stock'] ?>">
               </div>
           </div>
 

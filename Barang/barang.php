@@ -74,12 +74,6 @@
     </ul>
     <div class="sidebar-bottom">
       <ul class="nav flex-column">
-        <li class="nav-item-settings">
-          <a class="nav-link" href="../Settings/settings.php">
-            <i class="material-symbols-rounded">settings</i>
-            <span class="nav-text">Settings</span>
-          </a>
-        </li>
         <li class="nav-item">
           <a class="nav-link" href="../Login/logout.php">
             <i class="material-symbols-rounded">logout</i>
@@ -107,19 +101,6 @@
                 <a class="user-avatar dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                     <i class="material-symbols-rounded">account_circle</i>
                 </a>
-                <ul class="dropdown-menu dropdown-menu-end">
-                    <li>
-                        <a class="dropdown-item" href="../Profile/profile.php">
-                            <i class="fas fa-user-circle me-2"></i> Profile
-                        </a>
-                    </li>
-                    <li><hr class="dropdown-divider"></li>
-                    <li>
-                        <a class="dropdown-item" href="../Login/logout.php">
-                            <i class="fas fa-sign-out-alt me-2"></i> Logout
-                        </a>
-                    </li>
-                </ul>
             </div>
           </div>
         </nav>
@@ -135,13 +116,13 @@
         <!-- Filter Input di Luar Tabel -->
         <div class="row mb-3">
           <div class="col-md-3">
-            <input type="text" id="filterKode" class="form-control" placeholder="Cari Kode Barang" onkeyup="filterTable(1, this.value)">
+            <input type="text" id="filterKode" class="form-control" placeholder="Cari Kode Barang" onkeyup="filterTable(0, this.value)">
           </div>
           <div class="col-md-3">
             <input type="text" id="filterNama" class="form-control" placeholder="Cari Nama Barang" onkeyup="filterTable(2, this.value)">
           </div>
           <div class="col-md-3">
-            <select id="filterKategori" class="form-select" onchange="filterTable(6, this.value)">
+            <select id="filterKategori" class="form-select" onchange="filterTable(5, this.value)">
               <option value="">Semua Kategori</option>
               <?php foreach ($dataKategori as $kategori): ?>
                   <option value="<?= $kategori['nama_kategori']; ?>"><?= $kategori['nama_kategori']; ?></option>
@@ -177,7 +158,8 @@
                         <a href="editBarang.php?id=<?= $barang['id']; ?>" class="btn btn-warning btn-sm">
                           <i class="material-symbols-rounded" style="color: #fff; margin-top: 2px;">edit</i>
                         </a>
-                        <a href="hapusBarang.php?id=<?= $barang['id']; ?>" class="btn btn-danger btn-sm">
+                        <a href="#" class="btn btn-danger btn-sm" 
+                          onclick="confirmDeleteBarang(<?= $barang['id']; ?>, '<?= addslashes($barang['Nama_Brg']); ?>')">
                           <i class="material-symbols-rounded" style="margin-top: 2px;">delete</i>
                         </a>
                         <a href="detailBarang.php?id=<?= $barang['id']; ?>" class="btn btn-info btn-sm">
@@ -217,8 +199,9 @@
                           <a href="editKategori.php?id_kategori=<?= $kategori['id_kategori']; ?>" class="btn btn-warning btn-sm">
                               <i class="material-symbols-rounded" style="color: #fff; margin-top: 2px;">edit</i>
                           </a>
-                          <a href="hapusKategori.php?id_kategori=<?= $kategori['id_kategori']; ?>" class="btn btn-danger btn-sm">
-                              <i class="material-symbols-rounded" style="margin-top: 2px;">delete</i>
+                          <a href="#" class="btn btn-danger btn-sm" 
+                            onclick="confirmDeleteKategori(<?= $kategori['id_kategori']; ?>, '<?= addslashes($kategori['nama_kategori']); ?>')">
+                            <i class="material-symbols-rounded" style="margin-top: 2px;">delete</i>
                           </a>
                       </td>
                   </tr>
@@ -227,192 +210,181 @@
           </table>
         </div>
       </div>
+    </div>
+  </main>
 
-      <div class="catalog-container">
-
-          <!-- Catalog Header -->
-          <div class="catalog-header">
-            <h2 class="catalog-title">Katalog Produk</h2>
-            <div class="catalog-filter">
-              <button class="filter-btn active">Semua</button>
-              <button class="filter-btn">Terbaru</button>
-              <button class="filter-btn">Populer</button>
-            </div>
+  <!-- Delete Confirmation Modal for Barang -->
+  <div class="modal fade" id="deleteBarangModal" tabindex="-1" aria-labelledby="deleteBarangModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="deleteBarangModalLabel">
+           <i class="fa-solid fa-triangle-exclamation me-2 text-danger"></i>
+            Konfirmasi Hapus Barang
+          </h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="text-center">
+            <i class="material-symbols-rounded text-danger mb-3" style="font-size: 4rem;">delete_forever</i>
+            <p class="fw-bold">Yakin ingin menghapus barang ini?</p>
+            <p id="barangName" class="text-muted"></p>
+            <p class="text-warning small">
+              <i class="fa-solid fa-circle-info me-2"></i>
+              Data yang dihapus tidak dapat dikembalikan
+            </p>
           </div>
-
-          <!-- Catalog Wrapper -->
-          <div class="catalog-wrapper">
-            <button class="arrow-btn arrow-left" onclick="scrollCatalog(-1)">
-              <i class="fas fa-chevron-left"></i>
-            </button>
-
-            <div class="catalog-scroll" id="productCatalog">
-              <!-- Produk -->
-            <?php foreach ($data as $barang) : ?>
-              <div class="product-card">
-                <div class="product-badge">New</div>
-                <div class="product-image">
-                  <img src="data:image/jpeg;base64,<?= base64_encode($barang['Gambar']); ?>" alt="Produk Busana">
-                </div>
-                <div class="product-info">
-                  <h3 class="product-name"><?= $barang['Nama_Brg']; ?></h3>
-                  <div class="product-meta">
-                    <div class="product-price">Rp <?= number_format($barang['harga_jual'], 0, ',', '.'); ?></div>
-                  </div>
-                  <div class="product-details">
-                    <span>Kategori: <?= $barang['nama_kategori']; ?></span><br>
-                  </div>
-                  <!-- <div class="product-details">
-                    <span>Stok: <?= $barang['stock']; ?></span>
-                  </div> -->
-                  <div class="product-actions">
-                    <a class="action-btn primary" href="editBarang.php?id=<?= $barang['id']; ?>">
-                      <span class="material-symbols-rounded">info</span>
-                    </a>
-                    <a class="action-btn delete" href="editBarang.php?id=<?= $barang['id']; ?>">
-                      <span class="material-symbols-rounded">delete</span>
-                    </a>
-                  </div>
-                </div>
-              </div>
-            <?php endforeach; ?>
-            <button class="arrow-btn arrow-right" onclick="scrollCatalog(1)">
-              <i class="fas fa-chevron-right"></i>
-            </button>
-          </div>
-
-          <!-- Pagination Dots -->
-          <div class="pagination-dots">
-            <div class="dot active" onclick="scrollToPage(0)"></div>
-            <div class="dot" onclick="scrollToPage(1)"></div>
-            <div class="dot" onclick="scrollToPage(2)"></div>
-          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+            <i class="fa-solid fa-xmark me-2"></i>
+            Batal
+          </button>
+          <a id="confirmDeleteBarangBtn" href="#" class="btn btn-danger">
+            <i class="fa-solid fa-trash me-2"></i>
+            Ya, Hapus
+          </a>
         </div>
       </div>
     </div>
-  </main>
+  </div>
+
+  <!-- Delete Confirmation Modal for Kategori -->
+  <div class="modal fade" id="deleteKategoriModal" tabindex="-1" aria-labelledby="deleteKategoriModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="deleteKategoriModalLabel">
+            <i class="fa-solid fa-triangle-exclamation me-2 text-danger"></i>
+            Konfirmasi Hapus Kategori
+          </h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="text-center">
+            <i class="material-symbols-rounded text-danger mb-3" style="font-size: 4rem;">delete_forever</i>
+            <p class="fw-bold">Yakin ingin menghapus kategori ini?</p>
+            <p id="kategoriName" class="text-muted"></p>
+            <p class="text-warning small">
+              <i class="fa-solid fa-circle-info me-2"></i>
+              Data yang dihapus tidak dapat dikembalikan
+            </p>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+            <i class="fa-solid fa-xmark me-2"></i>
+            Batal
+          </button>
+          <a id="confirmDeleteKategoriBtn" href="#" class="btn btn-danger">
+            <i class="fa-solid fa-trash me-2"></i>
+            Ya, Hapus
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <!-- Scripts -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script src="index.js"></script>
   <script src="../js/sidebar.js"></script>
 
- <script>
-    // Scroll the catalog horizontally
-    function scrollCatalog(direction) {
-      const catalog = document.getElementById('productCatalog');
-      const scrollAmount = 240; // Adjust based on card width + gap
-      catalog.scrollBy({
-        left: direction * scrollAmount,
-        behavior: 'smooth'
-      });
-      
-      // Update dots after scrolling
-      setTimeout(updateActiveDot, 300);
+  <script>
+    // Variabel global untuk paginasi
+    let currentPage = 1;
+    const rowsPerPage = 10;
+
+    // Fungsi untuk konfirmasi hapus barang
+    function confirmDeleteBarang(id, namaBarang) {
+      document.getElementById('barangName').textContent = namaBarang;
+      document.getElementById('confirmDeleteBarangBtn').href = 'hapusBarang.php?id=' + id;
+      new bootstrap.Modal(document.getElementById('deleteBarangModal')).show();
     }
-    
-    // Scroll to specific page
-    function scrollToPage(pageIndex) {
-      const catalog = document.getElementById('productCatalog');
-      const cardWidth = 220; // Width of product card
-      const gap = 24; // Gap between cards
-      const visibleCards = Math.floor(catalog.clientWidth / (cardWidth + gap));
-      const scrollAmount = pageIndex * (visibleCards * (cardWidth + gap));
-      
-      catalog.scrollTo({
-        left: scrollAmount,
-        behavior: 'smooth'
-      });
-      
-      // Update active dot
-      const dots = document.querySelectorAll('.dot');
-      dots.forEach((dot, index) => {
-        if (index === pageIndex) {
-          dot.classList.add('active');
-        } else {
-          dot.classList.remove('active');
-        }
-      });
+
+    // Fungsi untuk konfirmasi hapus kategori
+    function confirmDeleteKategori(idKategori, namaKategori) {
+      document.getElementById('kategoriName').textContent = namaKategori;
+      document.getElementById('confirmDeleteKategoriBtn').href = 'hapusKategori.php?id_kategori=' + idKategori;
+      new bootstrap.Modal(document.getElementById('deleteKategoriModal')).show();
     }
-    
-    // Update active dot based on scroll position
-    function updateActiveDot() {
-      const catalog = document.getElementById('productCatalog');
-      const dots = document.querySelectorAll('.dot');
-      const cardWidth = 220; // Width of product card
-      const gap = 24; // Gap between cards
-      const visibleCards = Math.floor(catalog.clientWidth / (cardWidth + gap));
-      const scrollPosition = catalog.scrollLeft;
-      const maxScroll = catalog.scrollWidth - catalog.clientWidth;
+
+    // Fungsi untuk memfilter tabel
+    function filterTable(columnIndex, value) {
+      const table = document.querySelector('.table-responsive table');
+      const rows = table.querySelectorAll('tbody tr');
       
-      // Calculate which page we're on
-      const pageCount = dots.length;
-      const pageSize = maxScroll / (pageCount - 1);
-      let currentPage = Math.round(scrollPosition / pageSize);
-      
-      // Edge case for last page
-      if (scrollPosition + 5 >= maxScroll) currentPage = pageCount - 1;
-      
-      // Update dots
-      dots.forEach((dot, index) => {
-        if (index === currentPage) {
-          dot.classList.add('active');
-        } else {
-          dot.classList.remove('active');
-        }
-      });
-    }
-    
-    // Handle category filter clicks
-    document.querySelectorAll('.filter-btn').forEach(btn => {
-      btn.addEventListener('click', function() {
-        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-        this.classList.add('active');
+      rows.forEach(row => {
+        const cell = row.cells[columnIndex - 1];
+        const cellText = cell.textContent.toLowerCase();
+        const searchText = value.toLowerCase();
         
-        // Here you would add filter functionality
-        // For demonstration, we'll just scroll back to the start
-        scrollToPage(0);
-      });
-    });
-    
-    // Add hover effects for product cards
-    document.querySelectorAll('.product-card').forEach(card => {
-      card.addEventListener('mouseenter', function() {
-        this.style.transform = 'translateY(-10px)';
-        this.style.boxShadow = 'var(--shadow-lg)';
-      });
-      
-      card.addEventListener('mouseleave', function() {
-        this.style.transform = 'translateY(0)';
-        this.style.boxShadow = 'var(--shadow-sm)';
-      });
-    });
-    
-    // Add favorite toggle functionality
-    document.querySelectorAll('.action-btn:not(.primary)').forEach(btn => {
-      btn.addEventListener('click', function(e) {
-        e.stopPropagation();
-        const icon = this.querySelector('i');
-        if (icon.classList.contains('far')) {
-          icon.classList.remove('far');
-          icon.classList.add('fas');
-          icon.style.color = '#ff4757';
+        if (cellText.includes(searchText)) {
+          row.style.display = '';
         } else {
-          icon.classList.remove('fas');
-          icon.classList.add('far');
-          icon.style.color = '';
+          row.style.display = 'none';
         }
       });
-    });
-    
-    // Listen for scroll events on the catalog
-    document.getElementById('productCatalog').addEventListener('scroll', function() {
-      updateActiveDot();
-    });
-    
-    // Initialize scroll position
-    window.addEventListener('load', function() {
-      scrollToPage(0);
+      
+      currentPage = 1; // Reset ke halaman pertama setelah filter
+      updatePagination();
+    }
+
+    // Fungsi untuk paginasi
+    function updatePagination() {
+      const table = document.querySelector('.table-responsive table');
+      const rows = Array.from(table.querySelectorAll('tbody tr:not([style*="display: none"])'));
+      const totalPages = Math.ceil(rows.length / rowsPerPage);
+      
+      document.getElementById('pageInfo').textContent = `Halaman ${currentPage} dari ${totalPages}`;
+      
+      // Sembunyikan semua baris
+      rows.forEach(row => row.style.display = 'none');
+      
+      // Tampilkan baris untuk halaman saat ini
+      const start = (currentPage - 1) * rowsPerPage;
+      const end = start + rowsPerPage;
+      
+      rows.slice(start, end).forEach(row => row.style.display = '');
+      
+      // Nonaktifkan tombol jika diperlukan
+      document.querySelector('.btn-primary.btn-sm').disabled = currentPage === 1;
+      document.querySelector('.btn-success.btn-sm').disabled = currentPage === totalPages || totalPages === 0;
+    }
+
+    function prevPage() {
+      if (currentPage > 1) {
+        currentPage--;
+        updatePagination();
+      }
+    }
+
+    function nextPage() {
+      const table = document.querySelector('.table-responsive table');
+      const visibleRows = Array.from(table.querySelectorAll('tbody tr:not([style*="display: none"])')).length;
+      
+      if (currentPage * rowsPerPage < visibleRows) {
+        currentPage++;
+        updatePagination();
+      }
+    }
+
+    // Inisialisasi saat halaman dimuat
+    document.addEventListener('DOMContentLoaded', function() {
+      updatePagination();
+      
+      // Event listener untuk filter
+      document.getElementById('filterKode').addEventListener('input', function() {
+        filterTable(0, this.value);
+      });
+      
+      document.getElementById('filterNama').addEventListener('input', function() {
+        filterTable(2, this.value);
+      });
+      
+      document.getElementById('filterKategori').addEventListener('change', function() {
+        filterTable(5, this.value);
+      });
     });
   </script>
 

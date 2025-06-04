@@ -19,3 +19,55 @@
     font-size: 1.1rem;
     vertical-align: middle;
 } */
+
+.stats-card {
+    /* border: 1px solid #e0e0e0; */
+    border-radius: 8px;
+    background: white;
+    box-shadow:  0 10px 20px rgba(0,0,0,0.1);
+}
+
+.stat-item {
+    padding: 1.5rem;
+    text-align: center;
+    border: 2px solid #f0f0f0;
+}
+
+.stat-item:last-child {
+    border-right: none;
+}
+
+.stat-number {
+    font-size: 2rem;
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 0.5rem;
+}
+
+.stat-label {
+    color: #6c757d;
+    font-size: 0.9rem;
+    margin: 0;
+}
+
+.card-title {
+    color: #495057;
+    font-weight: 500;
+    margin-bottom: 0;
+}
+
+@media (max-width: 768px) {
+    .stat-item {
+        border-right: none;
+        border-bottom: 1px solid #f0f0f0;
+        padding: 1rem;
+    }
+    
+    .stat-item:last-child {
+        border-bottom: none;
+    }
+    
+    .stat-number {
+        font-size: 1.5rem;
+    }
+}

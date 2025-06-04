@@ -11,7 +11,8 @@
         $user = mysqli_fetch_assoc($result_user);
 
         if ($user) {
-            if ($password === $user['password']) {
+            // Gunakan password_verify untuk mencocokkan password input dengan hash di database
+            if (password_verify($password, $user['password'])) {
                 return [
                     "status" => true,
                     "user" => $user
@@ -24,4 +25,5 @@
             "message" => "Username atau Password salah!"
         ];
     }
+
 ?>
