@@ -116,7 +116,7 @@
 
     function getBarangMenipis() {
         $data = array();
-        $sql = "SELECT p.id, p.Nama_Brg, p.Bahan, p.Gambar, p.Kategori, p.harga_jual,
+        $sql = "SELECT p.id, p.Nama_Brg, p.Bahan, p.Gambar, p.Kategori, p.harga_jual, d.Kode_Brg,
                     d.ukuran, d.pattern, d.barcode, d.stock
                 FROM ventra_produk p
                 JOIN ventra_produk_detail d ON p.id = d.produk_id

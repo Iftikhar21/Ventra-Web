@@ -149,7 +149,8 @@
                 <p class="card-text" style="color: red;"><?=$jumlahBarangMenipis;?></p>
                 <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#modalBarangHabis">Lihat Barang</button>
               </div>
-              <i class="material-symbols-rounded" style="font-size: 48px; color: #ff0000; background-color:rgb(255, 186, 186); padding: 5px; border-radius: 10px;">inventory_2</i>
+              <i class="fa-solid fa-box" style="font-size: 36px; color: #ff0000; background-color:rgb(255, 186, 186); padding: 15px; border-radius: 10px;"></i>
+              <!-- <i class="material-symbols-rounded">inventory_2</i> -->
             </div>
           </div>
         </div>
@@ -160,7 +161,8 @@
                 <h5 class="card-title">Jumlah Total Barang</h5>
                 <p class="card-text"><?=$jumlahProduk;?></p>
               </div>
-              <i class="material-symbols-rounded" style="font-size: 48px; color: #003366; background-color:rgb(133, 194, 255); padding: 5px; border-radius: 10px;">inventory_2</i>
+              <i class="fa-solid fa-box" style="font-size: 36px; color: #003366; background-color:rgb(133, 194, 255); padding: 15px; border-radius: 10px;"></i>
+              <!-- <i class="material-symbols-rounded" style="font-size: 48px; color: #003366; background-color:rgb(133, 194, 255); padding: 5px; border-radius: 10px;">inventory_2</i> -->
             </div>
           </div>
         </div>
@@ -173,7 +175,8 @@
                 <h5 class="card-title">Jumlah Karyawan</h5>
                 <p class="card-text"><?=$jumlahKasir;?></p>
               </div>
-              <i class="material-symbols-rounded" style="font-size: 48px; color:rgb(248, 234, 43); background-color:rgb(255, 250, 187); padding: 5px; border-radius: 10px;">assignment_ind</i>
+              <i class="fa-solid fa-user-tie" style="font-size: 36px; color: rgb(181, 169, 3); background-color:rgb(255, 250, 187); padding: 15px; border-radius: 10px;"></i>
+              <!-- <i class="material-symbols-rounded" style="font-size: 48px; color:rgb(248, 234, 43); background-color:rgb(255, 250, 187); padding: 5px; border-radius: 10px;">assignment_ind</i> -->
             </div>
           </div>
         </div>
@@ -184,7 +187,8 @@
                 <h5 class="card-title">Jumlah Transaksi Bulan Ini</h5>
                 <p class="card-text"><?=$jumlahTransaksi;?></p>
               </div>
-              <i class="material-symbols-rounded" style="font-size: 48px; color: #A0C878; background-color:rgb(230, 255, 204); padding: 5px; border-radius: 10px;">equalizer</i>
+              <i class="fa-solid fa-chart-simple" style="font-size: 36px; color: #A0C878; background-color:rgb(230, 255, 204); padding: 15px; border-radius: 10px;"></i>
+              <!-- <i class="material-symbols-rounded" style="font-size: 48px; color: #A0C878; background-color:rgb(230, 255, 204); padding: 5px; border-radius: 10px;">equalizer</i> -->
             </div>
           </div>
         </div>
@@ -296,7 +300,7 @@
               foreach ($dataBarangMenipis as $barang) {
                   $kodeBarang = $barang['Kode_Brg'];
                   $namaBarang = $barang['Nama_Brg'];
-                  $stokBarang = $barang['Stock']; 
+                  $stokBarang = $barang['stock']; 
                   ?>
 
                   <tr>

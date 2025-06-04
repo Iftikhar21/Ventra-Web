@@ -348,6 +348,7 @@
   
   <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/docx/7.8.2/docx.min.js"></script>
 
   <script>
 
@@ -409,90 +410,173 @@
   </script>
 
   <script>
-   function printBarcode() {
-        // Dapatkan barcode yang dipilih
-        const selectedBarcodes = [];
-        document.querySelectorAll('.barcode-check:checked').forEach(checkbox => {
-            selectedBarcodes.push(checkbox.dataset.barcode);
-        });
-        
-        if (selectedBarcodes.length === 0) {
-            alert('Pilih minimal satu barcode untuk dicetak!');
-            return;
-        }
-        
-        // Simpan konten asli
-        const originalContent = document.body.innerHTML;
-        
-        // Buat konten untuk dicetak
-        let printContent = '<div style="text-align:center;padding:20px;">';
-        printContent += '<h2>Daftar Barcode</h2>';
-        printContent += '<div style="display:flex;flex-wrap:wrap;justify-content:center;gap:20px;">';
-        
-        selectedBarcodes.forEach(barcode => {
-            printContent += `
-            <div style="margin:10px;text-align:center;">
-                <svg id="print-barcode-${barcode}" width="200" height="100"></svg>
-                <div style="margin-top:5px;">${barcode}</div>
-            </div>`;
-        });
-        
-        printContent += '</div></div>';
-        
-        // Ganti konten body sementara
-        document.body.innerHTML = printContent;
-        
-        // Generate barcode setelah DOM diupdate
-        setTimeout(() => {
-            selectedBarcodes.forEach(barcode => {
-                JsBarcode(`#print-barcode-${barcode}`, barcode, {
-                    format: "CODE128",
-                    displayValue: false,
-                    lineColor: "#000",
-                    width: 2,
-                    height: 50,
-                    fontSize: 14
-                });
-            });
-            
-            // Cetak dan kembalikan konten asli
-            window.print();
-            document.body.innerHTML = originalContent;
-        }, 100);
-    }
+      function printBarcode(exportToWord = false) {
+          // Dapatkan barcode yang dipilih
+          const selectedBarcodes = [];
+          document.querySelectorAll('.barcode-check:checked').forEach(checkbox => {
+              selectedBarcodes.push(checkbox.dataset.barcode);
+          });
+          
+          if (selectedBarcodes.length === 0) {
+              alert('Pilih minimal satu barcode untuk diproses!');
+              return;
+          }
+          
+          // Simpan konten asli
+          const originalContent = document.body.innerHTML;
+          
+          // Buat konten untuk dicetak
+          let printContent = '<div style="text-align:center;padding:20px;">';
+          printContent += '<h2>Daftar Barcode</h2>';
+          printContent += '<div style="display:flex;flex-wrap:wrap;justify-content:center;gap:20px;">';
+          
+          selectedBarcodes.forEach(barcode => {
+              printContent += `
+              <div style="margin:10px;text-align:center;">
+                  <svg id="print-barcode-${barcode}" width="200" height="100"></svg>
+                  <div style="margin-top:5px;">${barcode}</div>
+              </div>`;
+          });
+          
+          printContent += '</div></div>';
+          
+          // Ganti konten body sementara
+          document.body.innerHTML = printContent;
+          
+          // Generate barcode setelah DOM diupdate
+          setTimeout(() => {
+              selectedBarcodes.forEach(barcode => {
+                  JsBarcode(`#print-barcode-${barcode}`, barcode, {
+                      format: "CODE128",
+                      displayValue: false,
+                      lineColor: "#000",
+                      width: 2,
+                      height: 50,
+                      fontSize: 14
+                  });
+              });
+              
+              if (exportToWord) {
+                  // Export ke Word
+                  exportBarcodesToWord(selectedBarcodes).then(() => {
+                      document.body.innerHTML = originalContent;
+                  });
+              } else {
+                  // Cetak seperti biasa
+                  window.print();
+                  document.body.innerHTML = originalContent;
+              }
+          }, 100);
+      }
 
-    // Fungsi untuk select all
-    document.getElementById('selectAll').addEventListener('change', function() {
-        document.querySelectorAll('.barcode-check').forEach(checkbox => {
-            checkbox.checked = this.checked;
-        });
-    });
+      // Fungsi baru untuk export ke Word
+      async function exportBarcodesToWord(barcodes) {
+          // Buat canvas sementara
+          const tempCanvas = document.createElement('canvas');
+          tempCanvas.width = 200;
+          tempCanvas.height = 100;
+          document.body.appendChild(tempCanvas);
+          
+          const { Document, Paragraph, Packer, ImageRun, TextRun, HeadingLevel } = docx;
+          
+          const children = [
+              new Paragraph({
+                  text: "Daftar Barcode",
+                  heading: HeadingLevel.HEADING_1,
+                  alignment: docx.AlignmentType.CENTER
+              })
+          ];
+          
+          for (const barcode of barcodes) {
+              // Render barcode ke canvas
+              JsBarcode(tempCanvas, barcode, {
+                  format: "CODE128",
+                  displayValue: false,
+                  lineColor: "#000",
+                  width: 2,
+                  height: 50
+              });
+              
+              // Konversi ke base64
+              const dataUrl = tempCanvas.toDataURL('image/png');
+              const base64Data = dataUrl.split(',')[1];
+              
+              children.push(
+                  new Paragraph({
+                      children: [
+                          new ImageRun({
+                              data: base64Data,
+                              transformation: {
+                                  width: 200,
+                                  height: 100
+                              }
+                          })
+                      ],
+                      alignment: docx.AlignmentType.CENTER
+                  }),
+                  new Paragraph({
+                      children: [
+                          new TextRun({
+                              text: barcode,
+                              bold: true
+                          })
+                      ],
+                      alignment: docx.AlignmentType.CENTER
+                  }),
+                  new Paragraph({ text: "" })
+              );
+          }
+          
+          // Hapus canvas sementara
+          document.body.removeChild(tempCanvas);
+          
+          // Buat dan download dokumen Word
+          const doc = new Document({
+              sections: [{
+                  properties: {},
+                  children: children
+              }]
+          });
+          
+          const blob = await Packer.toBlob(doc);
+          const link = document.createElement('a');
+          link.href = URL.createObjectURL(blob);
+          link.download = 'barcodes.docx';
+          link.click();
+      }
 
+      // Fungsi untuk select all (tetap sama)
+      document.getElementById('selectAll').addEventListener('change', function() {
+          document.querySelectorAll('.barcode-check').forEach(checkbox => {
+              checkbox.checked = this.checked;
+          });
+      });
 
-    const input = document.getElementById('kodeBarang');
-    const barcode = document.getElementById('barcode');
+      // Fungsi untuk generate barcode preview (tetap sama)
+      const input = document.getElementById('kodeBarang');
+      const barcode = document.getElementById('barcode');
 
-    input.addEventListener('input', function () {
-        const value = this.value;
-        if (value.length > 0) {
-            JsBarcode("#barcode", value, {
-            format: "CODE128",
-            displayValue: true,
-            lineColor: "#000",
-            width: 2,
-            height: 50,
-            fontSize: 14
-            });
-        } else {
-            barcode.innerHTML = ""; // hapus barcode jika kosong
-        }
-    });
+      input.addEventListener('input', function () {
+          const value = this.value;
+          if (value.length > 0) {
+              JsBarcode("#barcode", value, {
+              format: "CODE128",
+              displayValue: true,
+              lineColor: "#000",
+              width: 2,
+              height: 50,
+              fontSize: 14
+              });
+          } else {
+              barcode.innerHTML = ""; // hapus barcode jika kosong
+          }
+      });
 
-    document.getElementById("kodeBarang").addEventListener("input", function () {
-        const kode = this.value;
-        JsBarcode("#barcode", kode);
-        document.getElementById("barcodeInput").value = kode;
-    });
+      document.getElementById("kodeBarang").addEventListener("input", function () {
+          const kode = this.value;
+          JsBarcode("#barcode", kode);
+          document.getElementById("barcodeInput").value = kode;
+      });
   </script> 
 
 

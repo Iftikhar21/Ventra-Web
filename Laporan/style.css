@@ -1,0 +1,21 @@
+.container {
+    border-radius: 20px;
+    padding: 20px;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    background-color: #fff;
+}
+
+.btn-outline-secondary {
+    color: #000;
+    border-color: #dee2e6;
+    transition: all 0.2s ease;
+}
+.btn-outline-secondary:hover {
+    background-color: #959596;
+    border-color: #adb5bd;
+    color: #fff;
+}
+/* .material-symbols-rounded {
+    font-size: 1.1rem;
+    vertical-align: middle;
+} */
