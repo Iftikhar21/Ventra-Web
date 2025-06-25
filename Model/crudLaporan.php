@@ -78,13 +78,14 @@
 
         $koneksi = Connection();
         $tanggal = mysqli_real_escape_string($koneksi, $tanggal);
-
+        
         $sql = "SELECT 
                     vt.*,
                     vdt.*,
                     vdb.*,
                     vp.Nama_Brg AS nama_produk,
-                    vp.harga_jual AS harga_satuan
+                    vp.harga_jual AS harga_satuan,
+                    SUM(vdt.JMLH) AS total_barang_terjual
                 FROM 
                     ventra_transaksi vt
                 JOIN 
@@ -94,7 +95,10 @@
                 JOIN 
                     ventra_produk vp ON vdb.produk_id = vp.id
                 WHERE 
-                    DATE(vt.tanggal_transaksi) = '$tanggal'";
+                    DATE(vt.tanggal_transaksi) = '$tanggal'
+                GROUP BY 
+                    vdb.Kode_Brg";
+
 
         $hasil = mysqli_query($koneksi, $sql);
         $i = 0;
@@ -107,12 +111,13 @@
             $data[$i]['no_rek'] = $baris['no_rek'];
             $data[$i]['tanggal_transaksi'] = $baris['tanggal_transaksi'];
             $data[$i]['kode_barang'] = $baris['kode_barang'];
-            $data[$i]['JMLH'] = $baris['JMLH'];
+            $data[$i]['JMLH'] = $baris['total_barang_terjual'];
             $data[$i]['harga'] = $baris['harga'];
             $data[$i]['total_harga'] = $baris['total_harga'];
             $data[$i]['nama_produk'] = $baris['nama_produk'];
             $data[$i]['harga_satuan'] = $baris['harga_satuan'];
             $data[$i]['stock'] = $baris['stock'];
+            $data[$i]['ukuran'] = $baris['ukuran'];
             $i++;
         }
 
@@ -122,32 +127,28 @@
 
     function getRekapPembayaranByTanggal($tanggal) {
         $data = array();
-
         $koneksi = Connection();
         $tanggal = mysqli_real_escape_string($koneksi, $tanggal);
-
-        $sql = "SELECT Payment AS metode, 
-                        SUM(uang_dibayar) AS total,
-                        COUNT(*) AS jumlah_transaksi
-                FROM ventra_transaksi
-                WHERE DATE(tanggal_transaksi) = '$tanggal'
-                GROUP BY Payment
+    
+        $sql = "SELECT 
+                    vt.Payment AS metode,
+                    SUM(vt.uang_dibayar) AS total,
+                    COUNT(DISTINCT vt.ID_Transaksi) AS jumlah_transaksi
+                FROM ventra_transaksi vt
+                WHERE DATE(vt.tanggal_transaksi) = '$tanggal'
+                GROUP BY vt.Payment
                 ORDER BY total DESC";
-
-        $koneksi = Connection();
+    
         $hasil = mysqli_query($koneksi, $sql);
-
-        $i = 0;
         while ($baris = mysqli_fetch_assoc($hasil)) {
-            $data[$i]['metode'] = $baris['metode'];
-            $data[$i]['total'] = $baris['total'];
-            $data[$i]['jumlah_transaksi'] = $baris['jumlah_transaksi'];
-            $i++;
+            $data[] = [
+                'metode' => $baris['metode'],
+                'total' => $baris['total'],
+                'jumlah_transaksi' => $baris['jumlah_transaksi']
+            ];
         }
-
         mysqli_close($koneksi);
         return $data;
     }
-
 
 ?>

@@ -6,8 +6,6 @@ let filteredRows = [];
 function getFilteredRows() {
   const kodeFilter = document.getElementById("filterKode").value.toLowerCase();
   const namaFilter = document.getElementById("filterNama").value.toLowerCase();
-  const waktuAktifFilter = document.getElementById("filterWaktuAktif").value;
-  const waktuNonAktifFilter = document.getElementById("filterWaktuNonAktif").value;
 
   return allRows.filter(row => {
     const cols = row.getElementsByTagName("td");
@@ -18,10 +16,8 @@ function getFilteredRows() {
 
     const matchKode = kode.includes(kodeFilter);
     const matchNama = nama.includes(namaFilter);
-    const matchWaktuAktif = !waktuAktifFilter || waktuAktif === waktuAktifFilter;
-    const matchWaktuNonAktif = !waktuNonAktifFilter || waktuNonAktif === waktuNonAktifFilter;
 
-    return matchKode && matchNama && matchWaktuAktif && matchWaktuNonAktif;
+    return matchKode && matchNama;
   });
 }
 

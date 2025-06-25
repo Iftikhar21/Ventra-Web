@@ -169,5 +169,20 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script src="index.js"></script>
   <script src="../js/sidebar.js"></script>
+
+  <script>
+    function confirmDeleteKaryawan(id, namaKaryawan) {
+      document.getElementById('barangName').textContent = namaBarang;
+      document.getElementById('confirmDeleteBarangBtn').href = 'hapusBarang.php?id=' + id;
+      new bootstrap.Modal(document.getElementById('deleteBarangModal')).show();
+    }
+
+    // Fungsi untuk konfirmasi hapus kategori
+    function confirmDeleteKategori(idKategori, namaKategori) {
+      document.getElementById('kategoriName').textContent = namaKategori;
+      document.getElementById('confirmDeleteKategoriBtn').href = 'hapusKategori.php?id_kategori=' + idKategori;
+      new bootstrap.Modal(document.getElementById('deleteKategoriModal')).show();
+    }
+  </script>
 </body>
 </html>

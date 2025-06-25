@@ -46,6 +46,9 @@
                     </div>
                 </div>
                 <button type="submit" name="submit" class="btn btn-black w-100 mb-3">Sign In</button>
+                <div class="text-center">
+                    <a href="../Register/formRegister.php" class="text-center text-decoration-none">Belum Punya Akun? Silahkan Register disini...</a>
+                </div>
             </form>
         </div>
         <div class="image-section">

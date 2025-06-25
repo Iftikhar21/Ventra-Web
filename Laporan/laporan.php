@@ -1,3 +1,4 @@
+
 <?php
   date_default_timezone_set('Asia/Jakarta');
   session_start();
@@ -5,6 +6,7 @@
   include '../Model/crudKaryawan.php';
   include '../Model/crudTransaksi.php';
   include '../Model/crudLaporan.php';
+  Include '../Model/crudEvent.php';
 
   if (!isset($_SESSION['username'])) {
     header("Location: ../Login/FormLogin.php"); // Redirect kalau belum login
@@ -197,13 +199,14 @@
               <table class="table table-striped table-hover text-center" id="mainTable">
                 <thead class="table-light">
                   <tr>
-                    <th width="5%">ID</th>
+                    <!--<th width="5%">ID</th>-->
                     <th width="15%">Tanggal</th>
                     <th width="20%">Produk</th>
-                    <th width="10%">Harga Jual</th>
+                    <th width="10%">Ukuran</th>
+                    <th width="15%">Harga Jual</th>
                     <th width="5%">Terjual</th>
                     <th width="5%">Sisa</th>
-                    <th width="20%">Metode Pembayaran</th>
+                    <!--<th width="20%">Metode Pembayaran</th>-->
                     <th width="20%">Uang</th>
                   </tr>
                 </thead>
@@ -214,16 +217,40 @@
                     </tr>
                   <?php endif; ?>
                   <?php $no = 1; foreach ($dataPerTanggal as $laporan): ?>
+                    <?php 
+                        $event = getAllEvent();
+                        $diskon = 0;
+                        $tanggalTransaksi = strtotime($laporan['tanggal_transaksi']);
+                        
+                        foreach ($event as $ev) {
+                            $waktuAktif = strtotime($ev['waktu_aktif']);
+                            $waktuNonAktif = strtotime($ev['waktu_non_aktif']);
+                            
+                            if ($tanggalTransaksi >= $waktuAktif && $tanggalTransaksi <= $waktuNonAktif) {
+                                $diskon = $ev['total_diskon'];
+                                break;
+                            }
+                        }
+                        
+                        $total = $laporan['harga_satuan'] * $laporan['JMLH'];
+                        $totalSetelahDiskon = $total - ($total * ($diskon / 100));
+                    ?>
                   <tr data-id="<?= $laporan['ID_Transaksi']; ?>" data-tanggal="<?= $laporan['tanggal_transaksi']; ?>" data-produk="<?= strtolower($laporan['nama_produk']); ?>" data-metode="<?= $laporan['Payment']; ?>">
                     <!-- <td><?= $no++; ?></td> -->
-                    <td><?= $laporan['ID_Transaksi']; ?></td>
+                    <!--<td><?= $laporan['ID_Transaksi']; ?></td>-->
                     <td><?= date('d/m/Y', strtotime($laporan['tanggal_transaksi'])); ?></td>
                     <td><?= $laporan['nama_produk']; ?></td>
+                    <td><?= $laporan['ukuran']; ?></td>
                     <td><?= "Rp ".number_format($laporan['harga_satuan'], 0,',', '.'); ?></td>
                     <td><?= $laporan['JMLH']; ?></td>
                     <td><?= $laporan['stock']; ?></td>
-                    <td><?= $laporan['Payment']; ?></td>
-                    <td class="fw-bold"><?= "Rp ".number_format($laporan['Total'], 0,',', '.'); ?></td>
+                    <!--<td><?= $laporan['Payment']; ?></td>-->
+                    <td class="fw-bold">
+                        <?= "Rp. ".number_format($totalSetelahDiskon, 0, ',', '.')?>
+                        <?php if ($diskon > 0): ?>
+                            <span class="badge bg-success">Diskon <?=$diskon?></span>
+                        <?php endif; ?>
+                    </td>
                   </tr>
                   <?php endforeach; ?>
                 </tbody>
@@ -245,7 +272,7 @@
                   <table class="table table-bordered text-center" id="paymentMethodTable">
                     <thead class="table-light">
                       <tr>
-                        <th width="10%">No</th>
+                        <!--<th width="10%">No</th>-->
                         <th class="text-start">Metode Pembayaran</th>
                         <th>Jumlah</th>
                         <th width="30%">Total</th>
@@ -257,10 +284,50 @@
                           <td colspan="4" class="text-center">Data tidak ada.</td>
                         </tr>
                       <?php endif; ?>
-                      <?php $no = 1; $grandTotal = 0; foreach($dataMetodePembayaranPerTanggal as $metode): ?>
-                        <?php $grandTotal += $metode['total']; ?>
+                      
+                      <?php 
+                        $no = 1; 
+                        $grandTotal = 0;
+                        
+                        $metodePembayaranDenganDiskon = [];
+                        
+                        foreach ($dataPerTanggal as $laporan) {
+                            $event = getAllEvent();
+                            $diskonTransaksi = 0;
+                            $tanggalTransaksi = strtotime($laporan['tanggal_transaksi']);
+                            
+                            foreach ($event as $ev) {
+                                $waktuAktif = strtotime($ev['waktu_aktif']);
+                                $waktuNonAktif = strtotime($ev['waktu_non_aktif']);
+                                
+                                if ($tanggalTransaksi >= $waktuAktif && $tanggalTransaksi <= $waktuNonAktif) {
+                                    $diskonTransaksi = $ev['total_diskon'];
+                                    break;
+                                }
+                            }
+                            
+                            $totalSebelumDiskon = $laporan['harga_satuan'] * $laporan['JMLH'];
+                            $totalSetelahDiskon = $totalSebelumDiskon - ($totalSebelumDiskon * ($diskonTransaksi / 100));
+                            
+                            $metodePembayaran = $laporan['Payment'];
+                            
+                            if (!isset($metodePembayaranDenganDiskon[$metodePembayaran])) {
+                                $metodePembayaranDenganDiskon[$metodePembayaran] = [
+                                    'metode' => $metodePembayaran,
+                                    'jumlah_transaksi' => 0,
+                                    'total' => 0
+                                ];
+                            }
+                            
+                            $metodePembayaranDenganDiskon[$metodePembayaran]['jumlah_transaksi']++;
+                            $metodePembayaranDenganDiskon[$metodePembayaran]['total'] += $totalSetelahDiskon;
+                            
+                            $grandTotal += $totalSetelahDiskon;
+                        }
+                        
+                        foreach($metodePembayaranDenganDiskon as $metode): ?>
                         <tr>
-                          <td><?= $no++; ?></td>
+                          <!--<td><?= $no++; ?></td>-->
                           <td class="text-start"><?= $metode['metode']; ?></td>
                           <td><?= $metode['jumlah_transaksi']; ?></td>
                           <td><?= "Rp ".number_format($metode['total'], 0,',', '.'); ?></td>
@@ -269,7 +336,7 @@
                     </tbody>
                     <tfoot class="table-secondary text-center">
                       <tr>
-                        <td colspan="3">TOTAL PENDAPATAN</td>
+                        <td colspan="2">TOTAL PENDAPATAN</td>
                         <td><?= "Rp ".number_format($grandTotal, 0,',', '.'); ?></td>
                       </tr>
                     </tfoot>
@@ -539,14 +606,19 @@
         const pendapatanText = row.cells[7].textContent;
         const pendapatan = parseFloat(pendapatanText.replace(/[Rp\s,.]/g, '')) || 0;
         
+        // PERBAIKAN: Ambil jumlah item terjual dari kolom yang benar (kolom ke-4, index 4)
+        const itemTerjual = parseInt(row.cells[4].textContent) || 0;
+        
         if (!paymentMethods[metode]) {
           paymentMethods[metode] = {
-            jumlah: 0,
+            jumlahTransaksi: 0,  // Jumlah transaksi
+            jumlahItem: 0,       // Total item terjual
             total: 0
           };
         }
         
-        paymentMethods[metode].jumlah++;
+        paymentMethods[metode].jumlahTransaksi++;  // Increment jumlah transaksi
+        paymentMethods[metode].jumlahItem += itemTerjual;  // Tambahkan item terjual
         paymentMethods[metode].total += pendapatan;
         grandTotal += pendapatan;
       });
@@ -564,7 +636,7 @@
           row.innerHTML = `
             <td>${no++}</td>
             <td class="text-start">${metode}</td>
-            <td>${data.jumlah}</td>
+            <td>${data.jumlahItem}</td>
             <td>Rp ${data.total.toLocaleString('id-ID')}</td>
           `;
           paymentTableBody.appendChild(row);
@@ -575,13 +647,12 @@
       if (paymentTableFooter) {
         paymentTableFooter.innerHTML = `
           <tr>
-            <th colspan="3">TOTAL PENDAPATAN</th>
-            <th class="text-end">Rp ${grandTotal.toLocaleString('id-ID')}</th>
+            <td colspan="3">TOTAL PENDAPATAN</td>
+            <td>Rp ${grandTotal.toLocaleString('id-ID')}</td>
           </tr>
         `;
       }
     }
-
     // Fungsi export Excel yang diperbaiki - semua data dalam 1 sheet
     function exportToExcel() {
       const wb = XLSX.utils.book_new();
@@ -598,7 +669,7 @@
       
       // ===== SECTION 2: DETAIL TRANSAKSI =====
       allData.push(['=== DETAIL TRANSAKSI ===']);
-      allData.push(['ID', 'Tanggal', 'Produk', 'Harga Jual', 'Terjual', 'Sisa', 'Metode Pembayaran', 'Total']);
+      allData.push(['Tanggal', 'Produk', 'Harga Jual', 'Terjual','Sisa', 'Metode Pembayaran', 'Total']);
       
       // Ambil data transaksi (gunakan data yang sudah difilter)
       const rowsToExport = filteredRows.length > 0 ? filteredRows : document.querySelectorAll('#myTable tr');
@@ -614,7 +685,7 @@
       allData.push([]); // Baris kosong
 
        // ===== SECTION 3: METODE PEMBAYARAN =====
-      allData.push(['No', 'Metode Pembayaran', 'Jumlah Transaksi', 'Total']);
+      allData.push(['Metode Pembayaran', 'Jumlah Transaksi', 'Total']);
       
       // Ambil data dari tabel metode pembayaran
       const paymentRows = document.querySelectorAll('#paymentMethodTable tbody tr');
@@ -639,8 +710,7 @@
       const ws = XLSX.utils.aoa_to_sheet(allData);
       
       // Set column widths untuk readability
-      ws['!cols'] = [
-        { wch: 3 },   // Column A
+      ws['!cols'] = [ 
         { wch: 11 },  // Column B
         { wch: 13 },  // Column C
         { wch: 10 },  // Column D

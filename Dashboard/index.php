@@ -1,32 +1,33 @@
 <?php
-  session_start();
-  include '../Model/crudBarang.php';
-  include '../Model/crudKaryawan.php';
-  include '../Model/crudTransaksi.php';
+session_start();
+include '../Model/crudBarang.php';
+include '../Model/crudKaryawan.php';
+include '../Model/crudTransaksi.php';
 
-  if (!isset($_SESSION['username'])) {
-    header("Location: ../Login/FormLogin.php"); // Redirect kalau belum login
-    exit();
-  }
-
-
-  $data = getAllBarang();
-
-  $jumlahProduk = getTotalBarang();
-  $jumlahKasir = getTotalKasir(); 
-  $jumlahTransaksi = getTotalTransaksi();
-  $jumlahBarangMenipis = getTotalBarangMenipis();
-  $dataBarangMenipis = getBarangMenipis();
+if (!isset($_SESSION['username'])) {
+  header("Location: ../Login/FormLogin.php"); // Redirect kalau belum login
+  exit();
+}
 
 
-  $username = $_SESSION['username'];
+$data = getAllBarang();
+
+$jumlahProduk = getTotalBarang();
+$jumlahKasir = getTotalKasir();
+$jumlahTransaksi = getTotalTransaksi();
+$jumlahBarangMenipis = getTotalBarangMenipis();
+$dataBarangMenipis = getBarangMenipis();
+
+
+$username = $_SESSION['username'];
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Ventra POS Dashboard</title>
 
   <!-- Bootstrap & Icon Fonts -->
@@ -35,10 +36,11 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded" rel="stylesheet" />
-  
+
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="../Style/sidebar.css">
 </head>
+
 <body>
 
   <!-- Sidebar -->
@@ -109,11 +111,11 @@
           <div class="d-flex align-items-center gap-4">
             <div id="clock" class="text-nowrap fw-semibold text-dark"></div> |
             <div id="date" class="text-nowrap fw-semibold text-dark"></div> |
-            <div class="text-nowrap fw-semibold">Hi, <?=$username;?> !</div>
+            <div class="text-nowrap fw-semibold">Hi, <?= $username; ?> !</div>
             <div class="dropdown">
-                <a class="user-avatar dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                    <i class="material-symbols-rounded">account_circle</i>
-                </a>
+              <a class="user-avatar dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="material-symbols-rounded">account_circle</i>
+              </a>
             </div>
           </div>
         </nav>
@@ -127,7 +129,7 @@
             <div class="card-body" style="display: flex; justify-content: space-between; align-items: center;">
               <div>
                 <h5 class="card-title">Jumlah Barang yang Hampir Habis</h5>
-                <p class="card-text" style="color: red;"><?=$jumlahBarangMenipis;?></p>
+                <p class="card-text" style="color: red;"><?= $jumlahBarangMenipis; ?></p>
                 <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#modalBarangHabis">Lihat Barang</button>
               </div>
               <i class="fa-solid fa-box" style="font-size: 36px; color: #ff0000; background-color:rgb(255, 186, 186); padding: 15px; border-radius: 10px;"></i>
@@ -140,7 +142,7 @@
             <div class="card-body" style="display: flex; justify-content: space-between; align-items: center;">
               <div>
                 <h5 class="card-title">Jumlah Total Barang</h5>
-                <p class="card-text"><?=$jumlahProduk;?></p>
+                <p class="card-text"><?= $jumlahProduk; ?></p>
               </div>
               <i class="fa-solid fa-box" style="font-size: 36px; color: #003366; background-color:rgb(133, 194, 255); padding: 15px; border-radius: 10px;"></i>
               <!-- <i class="material-symbols-rounded" style="font-size: 48px; color: #003366; background-color:rgb(133, 194, 255); padding: 5px; border-radius: 10px;">inventory_2</i> -->
@@ -154,7 +156,7 @@
             <div class="card-body" style="display: flex; justify-content: space-between; align-items: center;">
               <div>
                 <h5 class="card-title">Jumlah Karyawan</h5>
-                <p class="card-text"><?=$jumlahKasir;?></p>
+                <p class="card-text"><?= $jumlahKasir; ?></p>
               </div>
               <i class="fa-solid fa-user-tie" style="font-size: 36px; color: rgb(181, 169, 3); background-color:rgb(255, 250, 187); padding: 15px; border-radius: 10px;"></i>
               <!-- <i class="material-symbols-rounded" style="font-size: 48px; color:rgb(248, 234, 43); background-color:rgb(255, 250, 187); padding: 5px; border-radius: 10px;">assignment_ind</i> -->
@@ -166,7 +168,7 @@
             <div class="card-body" style="display: flex; justify-content: space-between; align-items: center;">
               <div>
                 <h5 class="card-title">Jumlah Transaksi Bulan Ini</h5>
-                <p class="card-text"><?=$jumlahTransaksi;?></p>
+                <p class="card-text"><?= $jumlahTransaksi; ?></p>
               </div>
               <i class="fa-solid fa-chart-simple" style="font-size: 36px; color: #A0C878; background-color:rgb(230, 255, 204); padding: 15px; border-radius: 10px;"></i>
               <!-- <i class="material-symbols-rounded" style="font-size: 48px; color: #A0C878; background-color:rgb(230, 255, 204); padding: 5px; border-radius: 10px;">equalizer</i> -->
@@ -179,24 +181,24 @@
 
     <div class="catalog-container">
 
-        <!-- Catalog Header -->
-        <div class="catalog-header">
-          <h2 class="catalog-title">Katalog Produk</h2>
-          <!-- <div class="catalog-filter">
+      <!-- Catalog Header -->
+      <div class="catalog-header">
+        <h2 class="catalog-title">Katalog Produk</h2>
+        <!-- <div class="catalog-filter">
             <button class="filter-btn active">Semua</button>
             <button class="filter-btn">Terbaru</button>
             <button class="filter-btn">Populer</button>
           </div> -->
-        </div>
+      </div>
 
-        <!-- Catalog Wrapper -->
-        <div class="catalog-wrapper">
-          <button class="arrow-btn arrow-left" onclick="scrollCatalog(-1)">
-            <i class="fas fa-chevron-left"></i>
-          </button>
+      <!-- Catalog Wrapper -->
+      <div class="catalog-wrapper">
+        <button class="arrow-btn arrow-left" onclick="scrollCatalog(-1)">
+          <i class="fas fa-chevron-left"></i>
+        </button>
 
-          <div class="catalog-scroll" id="productCatalog">
-            <!-- Produk -->
+        <div class="catalog-scroll" id="productCatalog">
+          <!-- Produk -->
           <?php foreach ($data as $barang) : ?>
             <div class="product-card">
               <div class="product-badge">New</div>
@@ -245,9 +247,9 @@
           <h4>Jumlah Transaksi per Bulan</h4>
         </div>
         <div class="col-12 mt-4">
-            <div class="chart-container">
-                <canvas id="chartBar"></canvas>
-            </div>
+          <div class="chart-container">
+            <canvas id="chartBar"></canvas>
+          </div>
         </div>
       </div>
     </div>
@@ -266,33 +268,33 @@
           <table class="table table-bordered table-light">
             <thead class="table-dark">
               <tr>
-                  <th>Kode Barang</th>
-                  <th>Nama Barang</th>
-                  <th>Stok Barang</th>
+                <th>Kode Barang</th>
+                <th>Nama Barang</th>
+                <th>Stok Barang</th>
               </tr>
             </thead>
             <tbody>
-            <?php
+              <?php
               if ($dataBarangMenipis == null) {
                 echo "<tr><td colspan='3' class='text-center'>Tidak ada barang yang hampir habis</td></tr>";
               }
-            ?>
-            <?php
+              ?>
+              <?php
               foreach ($dataBarangMenipis as $barang) {
-                  $kodeBarang = $barang['Kode_Brg'];
-                  $namaBarang = $barang['Nama_Brg'];
-                  $stokBarang = $barang['stock']; 
-                  ?>
+                $kodeBarang = $barang['Kode_Brg'];
+                $namaBarang = $barang['Nama_Brg'];
+                $stokBarang = $barang['stock'];
+              ?>
 
-                  <tr>
-                      <td><?=$kodeBarang?></td>
-                      <td><?=$namaBarang?></td>
-                      <td style="color: red;"><?=$stokBarang?></td>
-                  </tr>
+                <tr>
+                  <td><?= $kodeBarang ?></td>
+                  <td><?= $namaBarang ?></td>
+                  <td style="color: red;"><?= $stokBarang ?></td>
+                </tr>
 
-                <?php
-              } 
-            ?>
+              <?php
+              }
+              ?>
             </tbody>
           </table>
         </div>
@@ -311,4 +313,5 @@
   <script src="index.js"></script>
   <script src="../js/sidebar.js"></script>
 </body>
+
 </html>
