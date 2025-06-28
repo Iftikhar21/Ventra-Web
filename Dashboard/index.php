@@ -176,18 +176,18 @@ $username = $_SESSION['username'];
 
       <div class="row mt-2">
         <div class="catalog-container">
-    
+
           <!-- Catalog Header -->
           <div class="catalog-header">
             <h2 class="catalog-title">Katalog Produk</h2>
           </div>
-    
+
           <!-- Catalog Wrapper -->
           <div class="catalog-wrapper">
             <button class="arrow-btn arrow-left" onclick="scrollCatalog(-1)">
               <i class="fas fa-chevron-left"></i>
             </button>
-    
+
             <div class="catalog-scroll" id="productCatalog">
               <!-- Produk -->
               <?php foreach ($data as $barang) : ?>
@@ -222,7 +222,7 @@ $username = $_SESSION['username'];
                 <i class="fas fa-chevron-right"></i>
               </button>
             </div>
-    
+
             <!-- Pagination Dots -->
             <div class="pagination-dots">
               <div class="dot active" onclick="scrollToPage(0)"></div>
@@ -235,14 +235,42 @@ $username = $_SESSION['username'];
 
       <div class="row mt-2">
         <div class="container mt-4">
-          <div class="container-analytics">
+          <div class="container-analytics" id="transaction-section">
             <div class="title">
               <h4>Jumlah Transaksi per Bulan</h4>
+              <div class="export-buttons">
+                <button class="export-btn" onclick="exportToPDF('transaction-section')">Export to PDF</button>
+              </div>
             </div>
+
+            <div class="summary-card">
+              <div class="summary-item">
+                <div class="summary-value" id="total-transactions">-</div>
+                <div class="summary-label">Total Transaksi</div>
+              </div>
+              <div class="summary-item">
+                <div class="summary-value" id="avg-transactions">-</div>
+                <div class="summary-label">Rata-rata per Bulan</div>
+              </div>
+              <div class="summary-item">
+                <div class="summary-value" id="max-transactions">-</div>
+                <div class="summary-label">Transaksi Tertinggi</div>
+              </div>
+              <div class="summary-item">
+                <div class="summary-value" id="min-transactions">-</div>
+                <div class="summary-label">Transaksi Terendah</div>
+              </div>
+            </div>
+
             <div class="col-12 mt-4">
               <div class="chart-container">
                 <canvas id="chartBarTransaction"></canvas>
               </div>
+            </div>
+
+            <div class="chart-details">
+              <h5>Detail Transaksi</h5>
+              <div id="transaction-details" class="loading">Memuat data transaksi...</div>
             </div>
           </div>
         </div>
@@ -250,14 +278,42 @@ $username = $_SESSION['username'];
 
       <div class="row mt-2">
         <div class="container mt-4">
-          <div class="container-analytics">
+          <div class="container-analytics" id="profit-section">
             <div class="title">
               <h4>Jumlah Pendapatan per Bulan</h4>
+              <div class="export-buttons">
+                <button class="export-btn" onclick="exportToPDF('profit-section')">Export to PDF</button>
+              </div>
             </div>
+
+            <div class="summary-card">
+              <div class="summary-item">
+                <div class="summary-value" id="total-profit">-</div>
+                <div class="summary-label">Total Pendapatan</div>
+              </div>
+              <div class="summary-item">
+                <div class="summary-value" id="avg-profit">-</div>
+                <div class="summary-label">Rata-rata per Bulan</div>
+              </div>
+              <div class="summary-item">
+                <div class="summary-value" id="max-profit">-</div>
+                <div class="summary-label">Pendapatan Tertinggi</div>
+              </div>
+              <div class="summary-item">
+                <div class="summary-value" id="min-profit">-</div>
+                <div class="summary-label">Pendapatan Terendah</div>
+              </div>
+            </div>
+
             <div class="col-12 mt-4">
               <div class="chart-container">
                 <canvas id="chartBarProfit"></canvas>
               </div>
+            </div>
+
+            <div class="chart-details">
+              <h5>Detail Pendapatan</h5>
+              <div id="profit-details" class="loading">Memuat data pendapatan...</div>
             </div>
           </div>
         </div>
@@ -320,8 +376,270 @@ $username = $_SESSION['username'];
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+
+  <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/docx/7.8.2/docx.js"></script> -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/docx/8.5.0/docx.min.js"></script>
+
   <script src="index.js"></script>
   <script src="../js/sidebar.js"></script>
+
+  <script>
+    // Format number with commas
+    function formatNumber(num) {
+      return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    }
+
+    // Format currency
+    function formatCurrency(num) {
+      return 'Rp' + formatNumber(num);
+    }
+
+    // Calculate statistics
+    function calculateStats(data, isCurrency = false) {
+      const values = data.map(item => isCurrency ? parseFloat(item.total_pendapatan) : parseInt(item.jumlah));
+      const sum = values.reduce((a, b) => a + b, 0);
+      const avg = sum / values.length;
+      const max = Math.max(...values);
+      const min = Math.min(...values);
+
+      return {
+        sum: isCurrency ? formatCurrency(sum) : formatNumber(sum),
+        avg: isCurrency ? formatCurrency(avg) : formatNumber(Math.round(avg)),
+        max: isCurrency ? formatCurrency(max) : formatNumber(max),
+        min: isCurrency ? formatCurrency(min) : formatNumber(min),
+        rawValues: values
+      };
+    }
+
+    // Generate details HTML
+    function generateDetailsHTML(data, isCurrency = false) {
+      let html = '<table style="width:100%; border-collapse: collapse;">';
+      html += '<tr style="background-color: #6c5ce7; color: white;">';
+      html += '<th style="padding: 8px; text-align: left;">Bulan</th>';
+      html += '<th style="padding: 8px; text-align: right;">' + (isCurrency ? 'Pendapatan' : 'Jumlah Transaksi') + '</th>';
+      html += '</tr>';
+
+      data.forEach((item, index) => {
+        const value = isCurrency ? formatCurrency(parseFloat(item.total_pendapatan)) : formatNumber(parseInt(item.jumlah));
+        html += `<tr style="border-bottom: 1px solid #ddd; background-color: ${index % 2 === 0 ? '#ffffff' : '#f8f9fa'}">`;
+        html += `<td style="padding: 8px;">${item.bulan}</td>`;
+        html += `<td style="padding: 8px; text-align: right;">${value}</td>`;
+        html += '</tr>';
+      });
+
+      html += '</table>';
+      return html;
+    }
+
+    // Export to PDF
+    function exportToPDF(sectionId) {
+      const {
+        jsPDF
+      } = window.jspdf;
+      const element = document.getElementById(sectionId);
+      const title = element.querySelector('h4').textContent;
+
+      // Show loading state
+      const exportBtn = document.querySelector(`#${sectionId} .export-btn`);
+      const originalText = exportBtn.textContent;
+      exportBtn.textContent = "Membuat PDF...";
+      exportBtn.disabled = true;
+
+      html2canvas(element).then(canvas => {
+        const imgData = canvas.toDataURL('image/png');
+        const pdf = new jsPDF('p', 'mm', 'a4');
+        const imgWidth = 210; // A4 width in mm
+        const pageHeight = 295; // A4 height in mm
+        const imgHeight = canvas.height * imgWidth / canvas.width;
+        let heightLeft = imgHeight;
+        let position = 0;
+
+        pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+        heightLeft -= pageHeight;
+
+        while (heightLeft >= 0) {
+          position = heightLeft - imgHeight;
+          pdf.addPage();
+          pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+          heightLeft -= pageHeight;
+        }
+
+        pdf.save(`${title}.pdf`);
+      }).finally(() => {
+        // Restore button state
+        exportBtn.textContent = originalText;
+        exportBtn.disabled = false;
+      });
+    }
+
+    // Load data from server
+    document.addEventListener("DOMContentLoaded", function() {
+      // Load transaction data
+      fetch('chart_data_transaksi.php')
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+          return response.json();
+        })
+        .then(data => {
+          processChartData(
+            data,
+            'chartBarTransaction',
+            'Jumlah Transaksi per Bulan',
+            'Jumlah Transaksi',
+            false
+          );
+        })
+        .catch(error => {
+          console.error('Error loading transaction data:', error);
+          document.getElementById('transaction-details').innerHTML =
+            '<div style="color: red;">Gagal memuat data transaksi: ' + error.message + '</div>';
+        });
+
+      // Load profit data
+      fetch('chart_data_pendapatan.php')
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+          return response.json();
+        })
+        .then(data => {
+          processChartData(
+            data,
+            'chartBarProfit',
+            'Jumlah Pendapatan per Bulan',
+            'Jumlah Pendapatan (Rp)',
+            true
+          );
+        })
+        .catch(error => {
+          console.error('Error loading profit data:', error);
+          document.getElementById('profit-details').innerHTML =
+            '<div style="color: red;">Gagal memuat data pendapatan: ' + error.message + '</div>';
+        });
+    });
+
+    // Variabel global untuk menyimpan instance chart
+    let transactionChart = null;
+    let profitChart = null;
+
+    // Fungsi untuk memproses data chart
+    function processChartData(data, chartId, chartLabel, yAxisLabel, isCurrency) {
+      if (!data || data.length === 0) {
+        document.getElementById(chartId.replace('chartBar', '').toLowerCase() + '-details').innerHTML =
+          '<div style="color: red;">Tidak ada data yang tersedia</div>';
+        return;
+      }
+
+      const labels = data.map(item => item.bulan);
+      const values = data.map(item => isCurrency ? parseFloat(item.total_pendapatan) : parseInt(item.jumlah));
+
+      // Calculate statistics
+      const stats = calculateStats(data, isCurrency);
+
+      // Update summary cards
+      if (chartId === 'chartBarTransaction') {
+        document.getElementById('total-transactions').textContent = stats.sum;
+        document.getElementById('avg-transactions').textContent = stats.avg;
+        document.getElementById('max-transactions').textContent = stats.max;
+        document.getElementById('min-transactions').textContent = stats.min;
+        document.getElementById('transaction-details').innerHTML = generateDetailsHTML(data, false);
+      } else {
+        document.getElementById('total-profit').textContent = stats.sum;
+        document.getElementById('avg-profit').textContent = stats.avg;
+        document.getElementById('max-profit').textContent = stats.max;
+        document.getElementById('min-profit').textContent = stats.min;
+        document.getElementById('profit-details').innerHTML = generateDetailsHTML(data, true);
+      }
+
+      // Get canvas context
+      const ctx = document.getElementById(chartId).getContext('2d');
+
+      // Destroy previous chart if exists
+      if (chartId === 'chartBarTransaction' && transactionChart) {
+        transactionChart.destroy();
+      } else if (chartId === 'chartBarProfit' && profitChart) {
+        profitChart.destroy();
+      }
+
+      // Create new chart
+      const newChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: chartLabel,
+            data: values,
+            backgroundColor: 'rgba(108, 92, 231, 0.7)',
+            borderColor: 'rgba(108, 92, 231, 1)',
+            borderWidth: 1,
+            borderRadius: 5
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            tooltip: {
+              callbacks: {
+                label: function(context) {
+                  return isCurrency ?
+                    formatCurrency(context.raw) :
+                    formatNumber(context.raw);
+                }
+              }
+            },
+            legend: {
+              position: 'top',
+            }
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              title: {
+                display: true,
+                text: yAxisLabel
+              },
+              ticks: {
+                callback: function(value) {
+                  return isCurrency ?
+                    formatCurrency(value) :
+                    formatNumber(value);
+                }
+              }
+            },
+            x: {
+              title: {
+                display: true,
+                text: 'Bulan'
+              },
+              grid: {
+                display: false
+              }
+            }
+          },
+          animation: {
+            duration: 1000,
+            easing: 'easeInOutQuad'
+          }
+        }
+      });
+
+      // Save chart reference
+      if (chartId === 'chartBarTransaction') {
+        transactionChart = newChart;
+      } else {
+        profitChart = newChart;
+      }
+    }
+  </script>
+
 </body>
 
 </html>
