@@ -127,7 +127,7 @@ $username = $_SESSION['username'];
         </nav>
         <p class="text-muted">Lihat Data Penjualan Bulan Ini</p>
       </div>
-      
+
       <div class="row">
         <div class="container">
           <div class="row mb-3 justify-content-between align-items-center">
@@ -154,7 +154,7 @@ $username = $_SESSION['username'];
               </div>
             </div>
           </div>
-  
+
           <?php if (empty($dataPerTanggal)): ?>
             <div class="card">
               <div class="card-body text-center">
@@ -164,7 +164,7 @@ $username = $_SESSION['username'];
               </div>
             </div>
           <?php endif; ?>
-  
+
           <?php if (!empty($dataPerTanggal)): ?>
             <!-- Filter Input di Luar Tabel -->
             <div class="row mb-3">
@@ -194,8 +194,8 @@ $username = $_SESSION['username'];
                 </button>
               </div>
             </div>
-  
-  
+
+
             <div class="table-responsive">
               <!-- Tabel Utama Laporan Penjualan -->
               <div class="card mb-4">
@@ -210,8 +210,7 @@ $username = $_SESSION['username'];
                         <th width="15%">Harga Jual</th>
                         <th width="5%">Terjual</th>
                         <th width="5%">Sisa</th>
-                        <!--<th width="20%">Metode Pembayaran</th>-->
-                        <th width="20%">Uang</th>
+                        <th width="20%">Sub Total</th>
                       </tr>
                     </thead>
                     <tbody id="myTable">
@@ -226,17 +225,17 @@ $username = $_SESSION['username'];
                         $event = getAllEvent();
                         $diskon = 0;
                         $tanggalTransaksi = strtotime($laporan['tanggal_transaksi']);
-  
+
                         foreach ($event as $ev) {
                           $waktuAktif = strtotime($ev['waktu_aktif']);
                           $waktuNonAktif = strtotime($ev['waktu_non_aktif']);
-  
+
                           if ($tanggalTransaksi >= $waktuAktif && $tanggalTransaksi <= $waktuNonAktif) {
                             $diskon = $ev['total_diskon'];
                             break;
                           }
                         }
-  
+
                         $total = $laporan['harga_satuan'] * $laporan['JMLH'];
                         $totalSetelahDiskon = $total - ($total * ($diskon / 100));
                         ?>
@@ -260,7 +259,7 @@ $username = $_SESSION['username'];
                       <?php endforeach; ?>
                     </tbody>
                   </table>
-  
+
                   <!-- Pagination -->
                   <div class="d-flex justify-content-between align-items-center mt-3">
                     <button class="btn btn-outline-primary" onclick="prevPage()">
@@ -289,33 +288,33 @@ $username = $_SESSION['username'];
                               <td colspan="4" class="text-center">Data tidak ada.</td>
                             </tr>
                           <?php endif; ?>
-  
+
                           <?php
                           $no = 1;
                           $grandTotal = 0;
-  
+
                           $metodePembayaranDenganDiskon = [];
-  
+
                           foreach ($dataPerTanggal as $laporan) {
                             $event = getAllEvent();
                             $diskonTransaksi = 0;
                             $tanggalTransaksi = strtotime($laporan['tanggal_transaksi']);
-  
+
                             foreach ($event as $ev) {
                               $waktuAktif = strtotime($ev['waktu_aktif']);
                               $waktuNonAktif = strtotime($ev['waktu_non_aktif']);
-  
+
                               if ($tanggalTransaksi >= $waktuAktif && $tanggalTransaksi <= $waktuNonAktif) {
                                 $diskonTransaksi = $ev['total_diskon'];
                                 break;
                               }
                             }
-  
+
                             $totalSebelumDiskon = $laporan['harga_satuan'] * $laporan['JMLH'];
                             $totalSetelahDiskon = $totalSebelumDiskon - ($totalSebelumDiskon * ($diskonTransaksi / 100));
-  
+
                             $metodePembayaran = $laporan['Payment'];
-  
+
                             if (!isset($metodePembayaranDenganDiskon[$metodePembayaran])) {
                               $metodePembayaranDenganDiskon[$metodePembayaran] = [
                                 'metode' => $metodePembayaran,
@@ -323,13 +322,13 @@ $username = $_SESSION['username'];
                                 'total' => 0
                               ];
                             }
-  
+
                             $metodePembayaranDenganDiskon[$metodePembayaran]['jumlah_transaksi']++;
                             $metodePembayaranDenganDiskon[$metodePembayaran]['total'] += $totalSetelahDiskon;
-  
+
                             $grandTotal += $totalSetelahDiskon;
                           }
-  
+
                           foreach ($metodePembayaranDenganDiskon as $metode): ?>
                             <tr>
                               <!--<td><?= $no++; ?></td>-->
@@ -663,111 +662,449 @@ $username = $_SESSION['username'];
     function exportToExcel() {
       const wb = XLSX.utils.book_new();
 
-      // Satu sheet untuk semua data
+      // ===== SHEET 1: LAPORAN DETAIL =====
       const allData = [];
 
-      // ===== SECTION 1: HEADER LAPORAN =====
+      // Header Laporan dengan styling yang lebih baik
       allData.push(['LAPORAN PENJUALAN VENTRA POS']);
-      allData.push(['Tanggal Export: ' + new Date().toLocaleDateString('id-ID')]);
-      allData.push(['Waktu Export: ' + new Date().toLocaleTimeString('id-ID')]);
-      allData.push(['Filter Tanggal: ' + document.getElementById('tanggalFilter').value]);
-      allData.push([]); // Baris kosong
+      allData.push(['']);
+      allData.push(['Tanggal Export:', new Date().toLocaleDateString('id-ID')]);
+      allData.push(['Waktu Export:', new Date().toLocaleTimeString('id-ID')]);
+      allData.push(['Filter Tanggal:', document.getElementById('tanggalFilter').value]);
+      allData.push(['']);
 
-      // ===== SECTION 2: DETAIL TRANSAKSI =====
-      allData.push(['=== DETAIL TRANSAKSI ===']);
-      allData.push(['Tanggal', 'Produk', 'Harga Jual', 'Terjual', 'Sisa', 'Metode Pembayaran', 'Total']);
+      // ===== DETAIL TRANSAKSI =====
+      allData.push(['DETAIL TRANSAKSI']);
+      allData.push(['Tanggal', 'Produk', 'Ukuran', 'Harga Satuan', 'Qty Terjual', 'Sisa Stock', 'Sub Total']);
 
-      // Ambil data transaksi (gunakan data yang sudah difilter)
+      // Ambil data transaksi yang sudah difilter
       const rowsToExport = filteredRows.length > 0 ? filteredRows : document.querySelectorAll('#myTable tr');
+      let totalPendapatan = 0;
+      let totalItemTerjual = 0;
 
       rowsToExport.forEach(row => {
-        const rowData = [];
-        for (let i = 0; i < row.cells.length; i++) {
-          rowData.push(row.cells[i].textContent);
+        if (row.cells && row.cells.length > 0) {
+          const rowData = [];
+
+          // Tanggal
+          rowData.push(row.cells[0].textContent.trim());
+
+          // Produk
+          rowData.push(row.cells[1].textContent.trim());
+
+          // Ukuran
+          rowData.push(row.cells[2].textContent.trim());
+
+          // Harga Satuan (hilangkan format Rp dan ubah ke number)
+          const harga = parseFloat(row.cells[3].textContent.replace(/[Rp\s,.]/g, '')) || 0;
+          rowData.push(harga);
+
+          // Qty Terjual
+          const qty = parseInt(row.cells[4].textContent.trim()) || 0;
+          rowData.push(qty);
+
+          // Sisa Stock
+          rowData.push(parseInt(row.cells[5].textContent.trim()) || 0);
+
+          // Sub Total (hilangkan format Rp dan ubah ke number)
+          const subTotal = parseFloat(row.cells[6].textContent.replace(/[Rp\s,.]/g, '')) || 0;
+          rowData.push(subTotal);
+
+          allData.push(rowData);
+
+          totalPendapatan += subTotal;
+          totalItemTerjual += qty;
         }
-        allData.push(rowData);
       });
 
-      allData.push([]); // Baris kosong
+      // Tambahkan total
+      allData.push(['']);
+      allData.push(['', '', '', 'TOTAL ITEM:', totalItemTerjual, '', totalPendapatan]);
+      allData.push(['']);
 
-      // ===== SECTION 3: METODE PEMBAYARAN =====
-      allData.push(['Metode Pembayaran', 'Jumlah Transaksi', 'Total']);
+      // ===== REKAP METODE PEMBAYARAN =====
+      allData.push(['REKAP METODE PEMBAYARAN']);
+      allData.push(['Metode Pembayaran', 'Jumlah Transaksi', 'Total Pendapatan']);
 
-      // Ambil data dari tabel metode pembayaran
-      const paymentRows = document.querySelectorAll('#paymentMethodTable tbody tr');
-      paymentRows.forEach((row) => {
-        const rowData = [];
-        for (let i = 0; i < row.cells.length; i++) {
-          rowData.push(row.cells[i].textContent);
+      // Hitung ulang metode pembayaran dari data yang difilter
+      const paymentMethods = {};
+      let grandTotal = 0;
+
+      rowsToExport.forEach(row => {
+        if (row.getAttribute) {
+          const metode = row.getAttribute('data-metode');
+          const pendapatan = parseFloat(row.cells[6].textContent.replace(/[Rp\s,.]/g, '')) || 0;
+
+          if (!paymentMethods[metode]) {
+            paymentMethods[metode] = {
+              jumlahTransaksi: 0,
+              total: 0
+            };
+          }
+
+          paymentMethods[metode].jumlahTransaksi++;
+          paymentMethods[metode].total += pendapatan;
+          grandTotal += pendapatan;
         }
-        allData.push(rowData);
       });
 
-      // Tambahkan total pendapatan
-      const footerRow = document.querySelector('#paymentMethodTable tfoot tr');
-      if (footerRow) {
-        allData.push(['', 'TOTAL PENDAPATAN', '', footerRow.cells[1].textContent]);
-      }
+      const rekapStartRow = allData.length;
 
-      allData.push([]); // Baris kosong
-      allData.push([]); // Baris kosong
+      // Tambahkan data metode pembayaran
+      Object.entries(paymentMethods).forEach(([metode, data]) => {
+        allData.push([metode, data.jumlahTransaksi, data.total]);
+      });
+
+      allData.push(['']);
+      allData.push(['TOTAL PENDAPATAN', '', grandTotal]);
 
       // Buat worksheet
       const ws = XLSX.utils.aoa_to_sheet(allData);
 
-      // Set column widths untuk readability
+      // ===== STYLING DAN FORMATTING =====
+
+      const rekapEndRow = rekapStartRow + Object.keys(paymentMethods).length + 1; // +1 untuk baris total
+
+      for (let row = rekapStartRow; row <= rekapEndRow; row++) {
+        // Format kolom total (kolom C, index 2)
+        const totalCell = XLSX.utils.encode_cell({
+          r: row,
+          c: 2
+        });
+        if (ws[totalCell] && typeof ws[totalCell].v === 'number') {
+          ws[totalCell].t = 'n';
+          ws[totalCell].z = '_-"Rp"* #,##0_-;-"Rp"* #,##0_-;_-"Rp"* "-"_-;_-@_-';
+        }
+
+        // Format khusus untuk baris total
+        if (row === rekapEndRow) {
+          for (let col = 0; col < 3; col++) {
+            const cellAddr = XLSX.utils.encode_cell({
+              r: row,
+              c: col
+            });
+            if (ws[cellAddr]) {
+              if (!ws[cellAddr].s) ws[cellAddr].s = {};
+              ws[cellAddr].s.font = {
+                bold: true
+              };
+              ws[cellAddr].s.fill = {
+                fgColor: {
+                  rgb: "FFE699"
+                }
+              };
+            }
+          }
+        }
+      }
+
+      // Set column widths
       ws['!cols'] = [{
-          wch: 11
-        }, // Column B
-        {
-          wch: 13
-        }, // Column C
-        {
-          wch: 10
-        }, // Column D
-        {
-          wch: 6
-        }, // Column E
-        {
-          wch: 4
-        }, // Column F
+          wch: 26
+        }, // Tanggal
         {
           wch: 15
-        }, // Column G
+        }, // Produk
         {
-          wch: 10
-        } // Column H
+          wch: 15
+        }, // Ukuran
+        {
+          wch: 12
+        }, // Harga
+        {
+          wch: 12
+        }, // Qty
+        {
+          wch: 12
+        }, // Sisa
+        {
+          wch: 20
+        } // Sub Total
       ];
 
-      // Styling untuk header sections (opsional, jika mendukung)
-      const headerCells = ['A1', 'A6', 'A11', 'A' + (14 + paymentRows.length)];
-      headerCells.forEach(cell => {
-        if (ws[cell]) {
-          ws[cell].s = {
+      // Set row heights untuk header
+      if (!ws['!rows']) ws['!rows'] = [];
+      ws['!rows'][0] = {
+        hpt: 25
+      }; // Header utama
+      ws['!rows'][6] = {
+        hpt: 20
+      }; // Header section
+      ws['!rows'][7] = {
+        hpt: 18
+      }; // Header tabel
+
+      // Format currency untuk kolom harga dan total
+      const range = XLSX.utils.decode_range(ws['!ref']);
+
+      for (let row = 8; row <= range.e.r; row++) { // Mulai dari baris data transaksi (row 8, index 7)
+        const currentRow = allData[row];
+        if (!currentRow) continue;
+
+        // Format kolom harga (kolom D, index 3)
+        const hargaCell = XLSX.utils.encode_cell({
+          r: row,
+          c: 3
+        });
+        if (ws[hargaCell] && typeof ws[hargaCell].v === 'number') {
+          ws[hargaCell].t = 'n';
+          ws[hargaCell].z = '_-"Rp"* #,##0_-;-"Rp"* #,##0_-;_-"Rp"* "-"_-;_-@_-';
+        }
+
+        // Format kolom sub total (kolom G, index 6)
+        const totalCell = XLSX.utils.encode_cell({
+          r: row,
+          c: 6
+        });
+        if (ws[totalCell] && typeof ws[totalCell].v === 'number') {
+          ws[totalCell].t = 'n';
+          ws[totalCell].z = '_-"Rp"* #,##0_-;-"Rp"* #,##0_-;_-"Rp"* "-"_-;_-@_-';
+        }
+
+        // Format qty columns (center alignment)
+        const qtyCell = XLSX.utils.encode_cell({
+          r: row,
+          c: 4
+        });
+        const sisaCell = XLSX.utils.encode_cell({
+          r: row,
+          c: 5
+        });
+
+        if (ws[qtyCell]) {
+          ws[qtyCell].s = {
+            alignment: {
+              horizontal: "center"
+            }
+          };
+        }
+        if (ws[sisaCell]) {
+          ws[sisaCell].s = {
+            alignment: {
+              horizontal: "center"
+            }
+          };
+        }
+
+        // Add borders untuk data rows
+        for (let col = 0; col < 7; col++) {
+          const cellAddr = XLSX.utils.encode_cell({
+            r: row,
+            c: col
+          });
+          if (ws[cellAddr]) {
+            if (!ws[cellAddr].s) ws[cellAddr].s = {};
+            ws[cellAddr].s.border = {
+              top: {
+                style: "thin",
+                color: {
+                  rgb: "D3D3D3"
+                }
+              },
+              bottom: {
+                style: "thin",
+                color: {
+                  rgb: "D3D3D3"
+                }
+              },
+              left: {
+                style: "thin",
+                color: {
+                  rgb: "D3D3D3"
+                }
+              },
+              right: {
+                style: "thin",
+                color: {
+                  rgb: "D3D3D3"
+                }
+              }
+            };
+          }
+        }
+      }
+
+      // Styling untuk header utama
+      ws['A1'].s = {
+        font: {
+          bold: true,
+          size: 16,
+          color: {
+            rgb: "FFFFFF"
+          }
+        },
+        fill: {
+          fgColor: {
+            rgb: "2F5233"
+          }
+        },
+        alignment: {
+          horizontal: "center",
+          vertical: "center"
+        }
+      };
+
+      // Merge cells untuk header utama
+      ws['!merges'] = [
+        // Merge A1:G1 (header utama)
+        {
+          s: {
+            r: 0,
+            c: 0
+          }, // Start row 0, column 0 (A1)
+          e: {
+            r: 0,
+            c: 6
+          } // End row 0, column 6 (G1)
+        },
+        // Merge E13:F13
+        {
+          s: {
+            r: 12,
+            c: 4
+          }, // Start row 12, column 4 (E13)
+          e: {
+            r: 12,
+            c: 5
+          } // End row 12, column 5 (F13)
+        }
+      ];
+
+      // Styling untuk section headers
+      const sectionHeaders = [7]; // Row index untuk "DETAIL TRANSAKSI"
+      sectionHeaders.forEach(rowIndex => {
+        const cellAddr = XLSX.utils.encode_cell({
+          r: rowIndex - 1,
+          c: 0
+        }); // -1 karena 0-indexed
+        if (ws[cellAddr]) {
+          ws[cellAddr].s = {
             font: {
               bold: true,
-              size: 12
+              size: 12,
+              color: {
+                rgb: "FFFFFF"
+              }
             },
             fill: {
               fgColor: {
-                rgb: "E6E6FA"
+                rgb: "4472C4"
               }
+            },
+            alignment: {
+              horizontal: "left",
+              vertical: "center"
             }
           };
         }
       });
 
-      // Tambahkan worksheet ke workbook
-      XLSX.utils.book_append_sheet(wb, ws, "Laporan Lengkap");
+      // Styling untuk header tabel
+      const tableHeaderRow = 7; // Baris header tabel transaksi (0-indexed)
+      for (let col = 0; col < 7; col++) {
+        const cellAddr = XLSX.utils.encode_cell({
+          r: tableHeaderRow,
+          c: col
+        });
+        if (ws[cellAddr]) {
+          ws[cellAddr].s = {
+            font: {
+              bold: true,
+              color: {
+                rgb: "000000"
+              }
+            },
+            fill: {
+              fgColor: {
+                rgb: "B4C6E7"
+              }
+            },
+            alignment: {
+              horizontal: "center",
+              vertical: "center"
+            },
+            border: {
+              top: {
+                style: "medium",
+                color: {
+                  rgb: "4472C4"
+                }
+              },
+              bottom: {
+                style: "medium",
+                color: {
+                  rgb: "4472C4"
+                }
+              },
+              left: {
+                style: "thin",
+                color: {
+                  rgb: "4472C4"
+                }
+              },
+              right: {
+                style: "thin",
+                color: {
+                  rgb: "4472C4"
+                }
+              }
+            }
+          };
+        }
+      }
 
-      // Generate filename dengan tanggal dan waktu
-      const now = new Date();
-      const dateStr = now.toISOString().split('T')[0];
-      const timeStr = now.toTimeString().split(' ')[0].replace(/:/g, '-');
+      // Styling untuk baris total
+      const totalRowIndex = 8 + rowsToExport.length + 1; // Sesuaikan dengan posisi baris total
+      for (let col = 0; col < 7; col++) {
+        const cellAddr = XLSX.utils.encode_cell({
+          r: totalRowIndex,
+          c: col
+        });
+        if (ws[cellAddr]) {
+          ws[cellAddr].s = {
+            font: {
+              bold: true
+            },
+            fill: {
+              fgColor: {
+                rgb: "FFE699"
+              }
+            },
+            border: {
+              top: {
+                style: "medium"
+              },
+              bottom: {
+                style: "medium"
+              }
+            }
+          };
+        }
+      }
+
+
+      // Tambahkan kedua sheet ke workbook
+      XLSX.utils.book_append_sheet(wb, ws, "Detail Transaksi");
+
+      // Generate filename
       const tanggalFilter = document.getElementById('tanggalFilter').value;
+      const timestamp = new Date().toISOString().slice(0, 19).replace(/:/g, '-');
 
       // Export file
-      XLSX.writeFile(wb, `Laporan_Lengkap_${tanggalFilter}_${timeStr}.xlsx`);
+      XLSX.writeFile(wb, `Laporan_Ventra_POS${tanggalFilter}_${timestamp}.xlsx`);
+
+      // Tampilkan notifikasi berhasil
+      if (typeof Swal !== 'undefined') {
+        Swal.fire({
+          title: 'Export Berhasil!',
+          text: 'File Excel telah berhasil diunduh',
+          icon: 'success',
+          timer: 2000,
+          showConfirmButton: false
+        });
+      } else {
+        alert('Export Excel berhasil!');
+      }
     }
 
     function resetFilter() {
