@@ -174,78 +174,91 @@ $username = $_SESSION['username'];
         </div>
       </div>
 
-    </div>
-
-    <div class="catalog-container">
-
-      <!-- Catalog Header -->
-      <div class="catalog-header">
-        <h2 class="catalog-title">Katalog Produk</h2>
-        <!-- <div class="catalog-filter">
-            <button class="filter-btn active">Semua</button>
-            <button class="filter-btn">Terbaru</button>
-            <button class="filter-btn">Populer</button>
-          </div> -->
+      <div class="row mt-2">
+        <div class="catalog-container">
+    
+          <!-- Catalog Header -->
+          <div class="catalog-header">
+            <h2 class="catalog-title">Katalog Produk</h2>
+          </div>
+    
+          <!-- Catalog Wrapper -->
+          <div class="catalog-wrapper">
+            <button class="arrow-btn arrow-left" onclick="scrollCatalog(-1)">
+              <i class="fas fa-chevron-left"></i>
+            </button>
+    
+            <div class="catalog-scroll" id="productCatalog">
+              <!-- Produk -->
+              <?php foreach ($data as $barang) : ?>
+                <div class="product-card">
+                  <div class="product-badge">New</div>
+                  <div class="product-image">
+                    <img src="data:image/jpeg;base64,<?= base64_encode($barang['Gambar']); ?>" alt="Produk Busana">
+                  </div>
+                  <div class="product-info">
+                    <h3 class="product-name"><?= $barang['Nama_Brg']; ?></h3>
+                    <div class="product-meta">
+                      <div class="product-price">Rp <?= number_format($barang['harga_jual'], 0, ',', '.'); ?></div>
+                    </div>
+                    <div class="product-details">
+                      <span>Kategori: <?= $barang['nama_kategori']; ?></span><br>
+                    </div>
+                    <!-- <div class="product-details">
+                      <span>Stok: <?= $barang['stock']; ?></span>
+                    </div> -->
+                    <div class="product-actions">
+                      <a class="action-btn primary" href="../Barang/editBarang.php?id=<?= $barang['id']; ?>">
+                        <span class="material-symbols-rounded">info</span>
+                      </a>
+                      <!-- <a class="action-btn delete" href="../Barang/editBarang.php?id=<?= $barang['id']; ?>">
+                        <span class="material-symbols-rounded">delete</span>
+                      </a> -->
+                    </div>
+                  </div>
+                </div>
+              <?php endforeach; ?>
+              <button class="arrow-btn arrow-right" onclick="scrollCatalog(1)">
+                <i class="fas fa-chevron-right"></i>
+              </button>
+            </div>
+    
+            <!-- Pagination Dots -->
+            <div class="pagination-dots">
+              <div class="dot active" onclick="scrollToPage(0)"></div>
+              <div class="dot" onclick="scrollToPage(1)"></div>
+              <div class="dot" onclick="scrollToPage(2)"></div>
+            </div>
+          </div>
+        </div>
       </div>
 
-      <!-- Catalog Wrapper -->
-      <div class="catalog-wrapper">
-        <button class="arrow-btn arrow-left" onclick="scrollCatalog(-1)">
-          <i class="fas fa-chevron-left"></i>
-        </button>
-
-        <div class="catalog-scroll" id="productCatalog">
-          <!-- Produk -->
-          <?php foreach ($data as $barang) : ?>
-            <div class="product-card">
-              <div class="product-badge">New</div>
-              <div class="product-image">
-                <img src="data:image/jpeg;base64,<?= base64_encode($barang['Gambar']); ?>" alt="Produk Busana">
-              </div>
-              <div class="product-info">
-                <h3 class="product-name"><?= $barang['Nama_Brg']; ?></h3>
-                <div class="product-meta">
-                  <div class="product-price">Rp <?= number_format($barang['harga_jual'], 0, ',', '.'); ?></div>
-                </div>
-                <div class="product-details">
-                  <span>Kategori: <?= $barang['nama_kategori']; ?></span><br>
-                </div>
-                <!-- <div class="product-details">
-                  <span>Stok: <?= $barang['stock']; ?></span>
-                </div> -->
-                <div class="product-actions">
-                  <a class="action-btn primary" href="../Barang/editBarang.php?id=<?= $barang['id']; ?>">
-                    <span class="material-symbols-rounded">info</span>
-                  </a>
-                  <!-- <a class="action-btn delete" href="../Barang/editBarang.php?id=<?= $barang['id']; ?>">
-                    <span class="material-symbols-rounded">delete</span>
-                  </a> -->
-                </div>
+      <div class="row mt-2">
+        <div class="container mt-4">
+          <div class="container-analytics">
+            <div class="title">
+              <h4>Jumlah Transaksi per Bulan</h4>
+            </div>
+            <div class="col-12 mt-4">
+              <div class="chart-container">
+                <canvas id="chartBarTransaction"></canvas>
               </div>
             </div>
-          <?php endforeach; ?>
-          <button class="arrow-btn arrow-right" onclick="scrollCatalog(1)">
-            <i class="fas fa-chevron-right"></i>
-          </button>
-        </div>
-
-        <!-- Pagination Dots -->
-        <div class="pagination-dots">
-          <div class="dot active" onclick="scrollToPage(0)"></div>
-          <div class="dot" onclick="scrollToPage(1)"></div>
-          <div class="dot" onclick="scrollToPage(2)"></div>
+          </div>
         </div>
       </div>
-    </div>
 
-    <div class="container mt-4">
-      <div class="container-analytics">
-        <div class="title">
-          <h4>Jumlah Transaksi per Bulan</h4>
-        </div>
-        <div class="col-12 mt-4">
-          <div class="chart-container">
-            <canvas id="chartBar"></canvas>
+      <div class="row mt-2">
+        <div class="container mt-4">
+          <div class="container-analytics">
+            <div class="title">
+              <h4>Jumlah Pendapatan per Bulan</h4>
+            </div>
+            <div class="col-12 mt-4">
+              <div class="chart-container">
+                <canvas id="chartBarProfit"></canvas>
+              </div>
+            </div>
           </div>
         </div>
       </div>

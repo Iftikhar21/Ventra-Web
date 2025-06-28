@@ -78,4 +78,35 @@
         // Kembalikan array dengan urutan bulan 1–12
         return array_values($bulanLengkap);
     }    
+
+    function getPendapatanPerBulanTahunIni() {
+        $koneksi = Connection();
+        $sql = "SELECT MONTH(tanggal_transaksi) as bulan, SUM(Total) as total_pendapatan 
+                FROM ventra_transaksi 
+                WHERE YEAR(tanggal_transaksi) = YEAR(CURDATE())
+                GROUP BY MONTH(tanggal_transaksi)";
+        
+        $hasil = mysqli_query($koneksi, $sql);
+        
+        // Buat array bulan default (1-12) dengan total pendapatan 0
+        $pendapatanPerBulan = [];
+        for ($i = 1; $i <= 12; $i++) {
+            $namaBulan = date("F", mktime(0, 0, 0, $i, 1));
+            $pendapatanPerBulan[$i] = [
+                'bulan' => $namaBulan,
+                'total_pendapatan' => 0
+            ];
+        }
+
+        // Isi data yang ada dari database
+        while ($baris = mysqli_fetch_assoc($hasil)) {
+            $bulan = (int)$baris['bulan'];
+            $pendapatanPerBulan[$bulan]['total_pendapatan'] = (int)$baris['total_pendapatan'];
+        }
+
+        mysqli_close($koneksi);
+
+        // Kembalikan array dengan urutan bulan 1-12
+        return array_values($pendapatanPerBulan);
+    }
 ?>
