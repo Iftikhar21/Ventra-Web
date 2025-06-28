@@ -32,21 +32,23 @@ function calculateStats(data, isCurrency = false) {
 
 // Generate details HTML
 function generateDetailsHTML(data, isCurrency = false) {
-  let html = '<table style="width:100%; border-collapse: collapse;">';
-  html += '<tr style="background-color: #6c5ce7; color: white;">';
-  html += '<th style="padding: 8px; text-align: left;">Bulan</th>';
-  html += '<th style="padding: 8px; text-align: right;">' + (isCurrency ? 'Pendapatan' : 'Jumlah Transaksi') + '</th>';
-  html += '</tr>';
+  let html = '<div style="font-family: Arial, sans-serif;">';
 
   data.forEach((item, index) => {
     const value = isCurrency ? formatCurrency(parseFloat(item.total_pendapatan)) : formatNumber(parseInt(item.jumlah));
-    html += `<tr style="border-bottom: 1px solid #ddd; background-color: ${index % 2 === 0 ? '#ffffff' : '#f8f9fa'}">`;
-    html += `<td style="padding: 8px;">${item.bulan}</td>`;
-    html += `<td style="padding: 8px; text-align: right;">${value}</td>`;
-    html += '</tr>';
+    
+    html += '<div style="';
+    html += 'display: flex; justify-content: space-between; align-items: center; ';
+    html += 'padding: 8px 0; ';
+    html += 'border-bottom: 1px solid #e2e8f0; ';
+    html += '">';
+    
+    html += `<span style="color: #4a5568; font-size: 14px;">${item.bulan}</span>`;
+    html += `<span style="font-weight: 500; color: #2d3748; font-size: 14px;">${value}</span>`;
+    html += '</div>';
   });
 
-  html += '</table>';
+  html += '</div>';
   return html;
 }
 
@@ -185,7 +187,7 @@ function processChartData(data, chartId, chartLabel, yAxisLabel, isCurrency) {
 
   // Create new chart
   const newChart = new Chart(ctx, {
-    type: 'bar',
+    type: 'line',
     data: {
       labels: labels,
       datasets: [{
@@ -193,8 +195,10 @@ function processChartData(data, chartId, chartLabel, yAxisLabel, isCurrency) {
         data: values,
         backgroundColor: 'rgba(108, 92, 231, 0.7)',
         borderColor: 'rgba(108, 92, 231, 1)',
+        fill: true,
         borderWidth: 1,
-        borderRadius: 5
+        borderRadius: 5,
+        tension: 0.4 // Use tension for smooth lines
       }]
     },
     options: {

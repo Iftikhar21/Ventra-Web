@@ -237,7 +237,7 @@ $username = $_SESSION['username'];
         <div class="container mt-4">
           <div class="container-analytics" id="transaction-section">
             <div class="title">
-              <h4>Jumlah Transaksi per Bulan</h4>
+              <h4>Jumlah Transaksi per Tahun</h4>
               <div class="export-buttons">
                 <button class="export-btn" onclick="exportToPDF('transaction-section')">Export to PDF</button>
               </div>
@@ -280,7 +280,7 @@ $username = $_SESSION['username'];
         <div class="container mt-4">
           <div class="container-analytics" id="profit-section">
             <div class="title">
-              <h4>Jumlah Pendapatan per Bulan</h4>
+              <h4>Jumlah Pendapatan per Tahun</h4>
               <div class="export-buttons">
                 <button class="export-btn" onclick="exportToPDF('profit-section')">Export to PDF</button>
               </div>
