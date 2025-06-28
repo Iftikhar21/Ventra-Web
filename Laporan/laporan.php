@@ -8,7 +8,7 @@ include '../Model/crudLaporan.php';
 include '../Model/crudEvent.php';
 
 if (!isset($_SESSION['username'])) {
-  header("Location: ../Login/FormLogin.php"); // Redirect kalau belum login
+  header("Location: ../Login/formLogin.php"); // Redirect kalau belum login
   exit();
 }
 

@@ -4,7 +4,7 @@ include '../Model/crudBarang.php';
 include '../Model/crudKategori.php';
 
 if (!isset($_SESSION['username'])) {
-  header("Location: ../Login/FormLogin.php");
+  header("Location: ../Login/formLogin.php");
   exit();
 }
 
