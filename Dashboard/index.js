@@ -16,9 +16,14 @@ function calculateStats(data, isCurrency = false) {
   const max = Math.max(...values);
   const min = Math.min(...values);
 
+  // Format avg dengan 2 digit desimal untuk currency, bulatkan untuk non-currency
+  const formattedAvg = isCurrency 
+    ? parseFloat(avg.toFixed(2)) // Membatasi ke 2 desimal dan konversi kembali ke float
+    : Math.round(avg); // Bulatkan untuk nilai non-currency
+
   return {
     sum: isCurrency ? formatCurrency(sum) : formatNumber(sum),
-    avg: isCurrency ? formatCurrency(avg) : formatNumber(Math.round(avg)),
+    avg: isCurrency ? formatCurrency(formattedAvg) : formatNumber(formattedAvg),
     max: isCurrency ? formatCurrency(max) : formatNumber(max),
     min: isCurrency ? formatCurrency(min) : formatNumber(min),
     rawValues: values
