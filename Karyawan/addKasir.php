@@ -11,12 +11,12 @@ $username = $_SESSION['username'];
 
 <?php
 if (isset($_POST['btnTambah'])) {
-  $idKasir = $_POST['id_kasir'];
+  $nisn = $_POST['nisn'];
   $namaEvent = $_POST['nama_kasir']; // ini akan undefined karena tidak dikembalikan
   $waktuAktif = $_POST['waktu_aktif'];
   $waktuNonAktif = $_POST['waktu_non_aktif'];
 
-  addKasir($idEvent, $namaEvent, $waktuAktif, $waktuNonAktif);
+  addKasir($nisn, $namaEvent, $waktuAktif, $waktuNonAktif);
 
   header("Location: karyawan.php"); // sesuaikan lokasi redirect
   exit();
@@ -128,8 +128,8 @@ if (isset($_POST['btnTambah'])) {
           <form action="" method="POST" enctype="multipart/form-data">
             <div class="row mb-3">
               <div class="col">
-                <label for="id_kasir" class="form-label">ID Kasir</label>
-                <input type="number" class="form-control" name="id_kasir" required disabled>
+                <label for="nisn" class="form-label">NISN</label>
+                <input type="number" class="form-control" name="nisn" id="nisn" required maxlength="10">
               </div>
               <div class="col">
                 <label for="nama_kasir" class="form-label">Nama Kasir</label>
@@ -162,6 +162,15 @@ if (isset($_POST['btnTambah'])) {
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script src="index.js"></script>
   <script src="../js/sidebar.js"></script>
+
+  <script>
+    document.getElementById('nisn').addEventListener('input', function() {
+      if (this.value.length > 10) {
+        this.value = this.value.slice(0, 10); // Potong jadi maksimal 5 digit
+      }
+    });
+  </script>
+
 </body>
 
 </html>

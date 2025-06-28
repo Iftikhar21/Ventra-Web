@@ -8,7 +8,7 @@
         $hasil = mysqli_query($koneksi, $sql);
         $i = 0;
         while ($baris = mysqli_fetch_assoc($hasil)){
-            $data[$i]['ID'] = $baris['ID'];
+            $data[$i]['NISN'] = $baris['NISN'];
             $data[$i]['Nama'] = $baris['Nama'];
             $data[$i]['WaktuAktif'] = $baris['WaktuAktif'];
             $data[$i]['WaktuNonAktif'] = $baris['WaktuNonAktif'];
@@ -18,14 +18,14 @@
         return $data;
     }
 
-    function getKasir($Kode_Kasir) {
+    function getKasir($nisn) {
         $data = array();
-        $sql = "SELECT * FROM ventra_kasir WHERE ID = '$Kode_Kasir'";
+        $sql = "SELECT * FROM ventra_kasir WHERE NISN = '$nisn'";
         $koneksi = Connection();
         $hasil = mysqli_query($koneksi, $sql);
         $i = 0;
         while ($baris = mysqli_fetch_assoc($hasil)){
-            $data[$i]['ID'] = $baris['ID'];
+            $data[$i]['NISN'] = $baris['NISN'];
             $data[$i]['Nama'] = $baris['Nama'];
             $data[$i]['WaktuAktif'] = $baris['WaktuAktif'];
             $data[$i]['WaktuNonAktif'] = $baris['WaktuNonAktif'];
@@ -43,10 +43,10 @@
         return $jumlahKasir;
     }
 
-    function addKasir($idKasir, $namaKasir, $waktuAktif, $waktuNonAktif) {
+    function addKasir($nisn, $namaKasir, $waktuAktif, $waktuNonAktif) {
         $koneksi = Connection();
-        $sql = "INSERT INTO ventra_kasir (ID, Nama, WaktuAktif, WaktuNonAktif) 
-                    VALUES ('$idKasir', '$namaKasir', '$waktuAktif', '$waktuNonAktif')";
+        $sql = "INSERT INTO ventra_kasir (NISN, Nama, WaktuAktif, WaktuNonAktif) 
+                    VALUES ('$nisn', '$namaKasir', '$waktuAktif', '$waktuNonAktif')";
         $hasil = 0;
         if (mysqli_query($koneksi, $sql)) {
              $hasil = 1;
@@ -55,10 +55,10 @@
         }
     }
 
-    function editKasir ($idKasir, $namaKasir, $waktuAktif, $waktuNonAktif) {
+    function editKasir ($nisn, $namaKasir, $waktuAktif, $waktuNonAktif) {
         $koneksi = Connection();
         $sql = "UPDATE ventra_kasir SET Nama = '$namaKasir', WaktuAktif = '$waktuAktif', WaktuNonAktif = '$waktuNonAktif'
-                    WHERE ID = '$idKasir'";
+                    WHERE NISN = '$nisn'";
         if (mysqli_query($koneksi, $sql)) {
              $hasil = 1;
              mysqli_close($koneksi);
@@ -66,9 +66,9 @@
         } 
     }
 
-    function deleteKasir ($idKasir) {
+    function deleteKasir ($nisn) {
         $koneksi = Connection();
-        $sql = "DELETE FROM ventra_kasir WHERE ID = '$idKasir'";
+        $sql = "DELETE FROM ventra_kasir WHERE NISN = '$nisn'";
         $hasil = 0;
         if (mysqli_query($koneksi, $sql)) {
             $hasil = 1;

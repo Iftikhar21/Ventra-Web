@@ -117,24 +117,18 @@ $username = $_SESSION['username'];
           <!-- Filter Input di Luar Tabel -->
           <div class="row mb-3">
             <div class="col-md-3">
-              <input type="text" id="filterKode" class="form-control" placeholder="Cari ID Kasir" oninput="filterTable()">
+              <input type="text" id="filterKode" class="form-control" placeholder="Cari NISN Kasir" oninput="filterTable()">
             </div>
             <div class="col-md-3">
               <input type="text" id="filterNama" class="form-control" placeholder="Cari Nama Kasir" oninput="filterTable()">
             </div>
-            <!-- <div class="col-md-3">
-              <input type="date" id="filterWaktuAktif" class="form-control" onchange="filterTable()">
-            </div>
-            <div class="col-md-3">
-              <input type="date" id="filterWaktuNonAktif" class="form-control" onchange="filterTable()">
-            </div> -->
           </div>
 
           <div class="table-responsive">
             <table class="table table-striped table-bordered text-center">
               <thead class="table-primary">
                 <tr>
-                  <th>ID Kasir</th>
+                  <th>NISN</th>
                   <th>Nama Kasir</th>
                   <th>Waktu Aktif</th>
                   <th>Waktu Non Aktif</th>
@@ -145,15 +139,16 @@ $username = $_SESSION['username'];
                 <?php $no = 1;
                 foreach ($data as $karyawan): ?>
                   <tr>
-                    <td><?= $karyawan['ID']; ?></td>
+                    <td><?= $karyawan['NISN']; ?></td>
                     <td><?= $karyawan['Nama']; ?></td>
                     <td><?= $karyawan['WaktuAktif']; ?></td>
                     <td><?= $karyawan['WaktuNonAktif']; ?></td>
                     <td class="text-center">
-                      <a href="editKasir.php?ID=<?= $karyawan['ID']; ?>" class="btn btn-warning btn-sm">
+                      <a href="editKasir.php?NISN=<?= $karyawan['NISN']; ?>" class="btn btn-warning btn-sm">
                         <i class="material-symbols-rounded" style="color: #fff; margin-top: 2px;">edit</i>
                       </a>
-                      <a href="hapusEvent.php?ID=<?= $karyawan['ID']; ?>" class="btn btn-danger btn-sm">
+                      <a href="#" class="btn btn-danger btn-sm"
+                        onclick="confirmDeleteKaryawan(<?= $karyawan['NISN']; ?>, '<?= addslashes($karyawan['Nama']); ?>')">
                         <i class="material-symbols-rounded" style="margin-top: 2px;">delete</i>
                       </a>
                     </td>
@@ -172,23 +167,51 @@ $username = $_SESSION['username'];
     </div>
   </main>
 
+  <div class="modal fade" id="deleteKaryawanModal" tabindex="-1" aria-labelledby="deleteKaryawanModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="deleteKaryawanModalLabel">
+            <i class="fa-solid fa-triangle-exclamation me-2 text-danger"></i>
+            Konfirmasi Hapus Karyawan
+          </h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="text-center">
+            <i class="material-symbols-rounded text-danger mb-3" style="font-size: 4rem;">delete_forever</i>
+            <p class="fw-bold">Yakin ingin menghapus Karyawan ini?</p>
+            <p id="karyawanName" class="text-muted fw-bold"></p>
+            <p class="text-warning small">
+              <i class="fa-solid fa-circle-info me-2"></i>
+              Data yang dihapus tidak dapat dikembalikan
+            </p>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+            <i class="fa-solid fa-xmark me-2"></i>
+            Batal
+          </button>
+          <a id="confirmDeleteKaryawanBtn" href="#" class="btn btn-danger">
+            <i class="fa-solid fa-trash me-2"></i>
+            Ya, Hapus
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Scripts -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script src="index.js"></script>
   <script src="../js/sidebar.js"></script>
 
   <script>
-    function confirmDeleteKaryawan(id, namaKaryawan) {
-      document.getElementById('barangName').textContent = namaBarang;
-      document.getElementById('confirmDeleteBarangBtn').href = 'hapusBarang.php?id=' + id;
-      new bootstrap.Modal(document.getElementById('deleteBarangModal')).show();
-    }
-
-    // Fungsi untuk konfirmasi hapus kategori
-    function confirmDeleteKategori(idKategori, namaKategori) {
-      document.getElementById('kategoriName').textContent = namaKategori;
-      document.getElementById('confirmDeleteKategoriBtn').href = 'hapusKategori.php?id_kategori=' + idKategori;
-      new bootstrap.Modal(document.getElementById('deleteKategoriModal')).show();
+    function confirmDeleteKaryawan(nisn, namaKaryawan) {
+      document.getElementById('karyawanName').textContent = namaKaryawan;
+      document.getElementById('confirmDeleteKaryawanBtn').href = 'hapusKasir.php?NISN=' + nisn;
+      new bootstrap.Modal(document.getElementById('deleteKaryawanModal')).show();
     }
   </script>
 </body>
