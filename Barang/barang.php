@@ -84,14 +84,15 @@
     </div>
   </div>
 
+  <button class="toggle-btn">
+    <span class="material-symbols-rounded">menu</span>
+  </button>
+
   <!-- Main Content -->
-  <main class="main-content position-relative border-radius-lg ps-5 pt-3" style="margin-left: 250px;">
+  <main class="main-content position-relative border-radius-lg ps-5 pt-3">
     <div class="container-fluid">
       <div class="mb-4">
         <nav class="d-flex justify-content-between align-items-center mb-4">
-          <button class="toggle-btn" onclick="toggleSidebar()">
-            <span class="material-symbols-rounded">menu</span>
-          </button>
           <h2 class="text-dark fw-bold m-0">Barang</h2>
           <div class="d-flex align-items-center gap-4">
             <div id="clock" class="text-nowrap fw-semibold text-dark"></div> |
@@ -107,107 +108,109 @@
         <p class="text-muted">Lihat Data Barang</p>
       </div>
 
-      <div class="container">
-        <h3 class="fw-bold mb-3">> Data Barang</h3>
-        <a class="btn btn-success d-flex align-items-center mb-4" href="addBarang.php" style="width: 200px;">
-            <span class="material-symbols-rounded me-2">add</span>
-            Tambah Barang
-        </a>
-        <!-- Filter Input di Luar Tabel -->
-        <div class="row mb-3">
-          <div class="col-md-3">
-            <input type="text" id="filterKode" class="form-control" placeholder="Cari Kode Barang" onkeyup="filterTable(0, this.value)">
+      <div class="row">
+        <div class="container">
+          <h3 class="fw-bold mb-3">> Data Barang</h3>
+          <a class="btn btn-success d-flex align-items-center mb-4" href="addBarang.php" style="width: 200px;">
+              <span class="material-symbols-rounded me-2">add</span>
+              Tambah Barang
+          </a>
+          <!-- Filter Input di Luar Tabel -->
+          <div class="row mb-3">
+            <div class="col-md-3">
+              <input type="text" id="filterKode" class="form-control" placeholder="Cari Kode Barang" onkeyup="filterTable(0, this.value)">
+            </div>
+            <div class="col-md-3">
+              <input type="text" id="filterNama" class="form-control" placeholder="Cari Nama Barang" onkeyup="filterTable(2, this.value)">
+            </div>
+            <div class="col-md-3">
+              <select id="filterKategori" class="form-select" onchange="filterTable(5, this.value)">
+                <option value="">Semua Kategori</option>
+                <?php foreach ($dataKategori as $kategori): ?>
+                    <option value="<?= $kategori['nama_kategori']; ?>"><?= $kategori['nama_kategori']; ?></option>
+                <?php endforeach; ?>
+              </select>
+            </div>
           </div>
-          <div class="col-md-3">
-            <input type="text" id="filterNama" class="form-control" placeholder="Cari Nama Barang" onkeyup="filterTable(2, this.value)">
-          </div>
-          <div class="col-md-3">
-            <select id="filterKategori" class="form-select" onchange="filterTable(5, this.value)">
-              <option value="">Semua Kategori</option>
-              <?php foreach ($dataKategori as $kategori): ?>
-                  <option value="<?= $kategori['nama_kategori']; ?>"><?= $kategori['nama_kategori']; ?></option>
-              <?php endforeach; ?>
-            </select>
-          </div>
-        </div>
-        <div class="table-card table-responsive">
-          <table class="table table-striped table-borderless table-hover">
-              <thead class="table-primary">
-                  <tr class="text-center">
-                      <th>ID</th>
-                      <th>Gambar</th>
-                      <th>Nama Barang</th>
-                      <th>Bahan</th>
-                      <th>Harga</th>
-                      <th>Kategori</th>
-                      <th>Aksi</th>
-                  </tr>
-              </thead>
-              <tbody id="myTable">
-                  <?php $no = 1; foreach ($data as $barang): ?>
-                  <tr class="text-center">
-                      <td><?= $barang['id']; ?></td>
-                      <td>
-                        <img src="data:image/jpeg;base64,<?= base64_encode($barang['Gambar']); ?>"  alt="Image Product">
-                      </td>
-                      <td><?= $barang['Nama_Brg']; ?></td>
-                      <td><?= $barang['Bahan']; ?></td>
-                      <td>Rp <?= number_format($barang['harga_jual'], 0, ',', '.') ?></td>
-                      <td><?= $barang['nama_kategori']; ?></td>
-                      <td class="text-center">
-                        <a href="editBarang.php?id=<?= $barang['id']; ?>" class="btn btn-warning btn-sm">
-                          <i class="material-symbols-rounded" style="color: #fff; margin-top: 2px;">edit</i>
-                        </a>
-                        <a href="#" class="btn btn-danger btn-sm" 
-                          onclick="confirmDeleteBarang(<?= $barang['id']; ?>, '<?= addslashes($barang['Nama_Brg']); ?>')">
-                          <i class="material-symbols-rounded" style="margin-top: 2px;">delete</i>
-                        </a>
-                        <a href="detailBarang.php?id=<?= $barang['id']; ?>" class="btn btn-info btn-sm">
-                            <i class="material-symbols-rounded" style="color: #fff; margin-top: 2px;">info</i>
-                        </a>
-                      </td>
-                  </tr>
-                  <?php endforeach; ?>
-              </tbody>
-          </table>
-          <div class="d-flex justify-content-between align-items-center mt-3">
-            <button class="btn btn-primary btn-sm" onclick="prevPage()">Sebelumnya</button>
-            <span id="pageInfo" class="fw-bold"></span>
-            <button class="btn btn-success btn-sm" onclick="nextPage()">Berikutnya</button>
-          </div>
-        </div>
-        <h3 class="fw-bold mb-3 mt-3">> Kategori</h3>
-        <a class="btn btn-success d-flex align-items-center mb-4" href="addKategori.php" style="width: 200px;">
-            <span class="material-symbols-rounded me-2">add</span>
-            Tambah Kategori
-        </a>
-        <div class="table-responsive">
-          <table class="table table-striped table-bordered text-center">
-              <thead class="table-primary">
-                  <tr>
-                      <th>#</th>
-                      <th>Nama Kategori</th>
-                      <th class="text-center">Aksi</th>
-                  </tr>
-              </thead>
-              <tbody id="myTable">
-                  <?php $no = 1; foreach ($dataKategori as $kategori): ?>
-                  <tr>
-                      <td><?= $no++; ?></td>
-                      <td><?= $kategori['nama_kategori']; ?></td>
-                      <td class="text-center">
-                          <a href="editKategori.php?id_kategori=<?= $kategori['id_kategori']; ?>" class="btn btn-warning btn-sm">
-                              <i class="material-symbols-rounded" style="color: #fff; margin-top: 2px;">edit</i>
+          <div class="table-card table-responsive">
+            <table class="table table-striped table-borderless table-hover">
+                <thead class="table-primary">
+                    <tr class="text-center">
+                        <th>ID</th>
+                        <th>Gambar</th>
+                        <th>Nama Barang</th>
+                        <th>Bahan</th>
+                        <th>Harga</th>
+                        <th>Kategori</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody id="myTable">
+                    <?php $no = 1; foreach ($data as $barang): ?>
+                    <tr class="text-center">
+                        <td><?= $barang['id']; ?></td>
+                        <td>
+                          <img src="data:image/jpeg;base64,<?= base64_encode($barang['Gambar']); ?>"  alt="Image Product">
+                        </td>
+                        <td><?= $barang['Nama_Brg']; ?></td>
+                        <td><?= $barang['Bahan']; ?></td>
+                        <td>Rp <?= number_format($barang['harga_jual'], 0, ',', '.') ?></td>
+                        <td><?= $barang['nama_kategori']; ?></td>
+                        <td class="text-center">
+                          <a href="editBarang.php?id=<?= $barang['id']; ?>" class="btn btn-warning btn-sm">
+                            <i class="material-symbols-rounded" style="color: #fff; margin-top: 2px;">edit</i>
                           </a>
                           <a href="#" class="btn btn-danger btn-sm" 
-                            onclick="confirmDeleteKategori(<?= $kategori['id_kategori']; ?>, '<?= addslashes($kategori['nama_kategori']); ?>')">
+                            onclick="confirmDeleteBarang(<?= $barang['id']; ?>, '<?= addslashes($barang['Nama_Brg']); ?>')">
                             <i class="material-symbols-rounded" style="margin-top: 2px;">delete</i>
                           </a>
-                      </td>
-                  </tr>
-                  <?php endforeach; ?>
-              </tbody>
-          </table>
+                          <a href="detailBarang.php?id=<?= $barang['id']; ?>" class="btn btn-info btn-sm">
+                              <i class="material-symbols-rounded" style="color: #fff; margin-top: 2px;">info</i>
+                          </a>
+                        </td>
+                    </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+            <div class="d-flex justify-content-between align-items-center mt-3">
+              <button class="btn btn-primary btn-sm" onclick="prevPage()">Sebelumnya</button>
+              <span id="pageInfo" class="fw-bold"></span>
+              <button class="btn btn-success btn-sm" onclick="nextPage()">Berikutnya</button>
+            </div>
+          </div>
+          <h3 class="fw-bold mb-3 mt-3">> Kategori</h3>
+          <a class="btn btn-success d-flex align-items-center mb-4" href="addKategori.php" style="width: 200px;">
+              <span class="material-symbols-rounded me-2">add</span>
+              Tambah Kategori
+          </a>
+          <div class="table-responsive">
+            <table class="table table-striped table-bordered text-center">
+                <thead class="table-primary">
+                    <tr>
+                        <th>#</th>
+                        <th>Nama Kategori</th>
+                        <th class="text-center">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody id="myTable">
+                    <?php $no = 1; foreach ($dataKategori as $kategori): ?>
+                    <tr>
+                        <td><?= $no++; ?></td>
+                        <td><?= $kategori['nama_kategori']; ?></td>
+                        <td class="text-center">
+                            <a href="editKategori.php?id_kategori=<?= $kategori['id_kategori']; ?>" class="btn btn-warning btn-sm">
+                                <i class="material-symbols-rounded" style="color: #fff; margin-top: 2px;">edit</i>
+                            </a>
+                            <a href="#" class="btn btn-danger btn-sm" 
+                              onclick="confirmDeleteKategori(<?= $kategori['id_kategori']; ?>, '<?= addslashes($kategori['nama_kategori']); ?>')">
+                              <i class="material-symbols-rounded" style="margin-top: 2px;">delete</i>
+                            </a>
+                        </td>
+                    </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+          </div>
         </div>
       </div>
     </div>

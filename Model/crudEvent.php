@@ -20,22 +20,14 @@
     }
 
     function getEvent($idEvent) {
-        $data = array();
         $sql = "SELECT * FROM ventra_event WHERE id_event = '$idEvent'";
         $koneksi = Connection();
         $hasil = mysqli_query($koneksi, $sql);
-        $i = 0;
-        while ($baris = mysqli_fetch_assoc($hasil)){
-            $data[$i]['id_event'] = $baris['id_event'];
-            $data[$i]['nama_event'] = $baris['nama_event'];
-            $data[$i]['total_diskon'] = $baris['total_diskon'];
-            $data[$i]['waktu_aktif'] = $baris['waktu_aktif'];
-            $data[$i]['waktu_non_aktif'] = $baris['waktu_non_aktif'];
-            $i++;
-        }
+        $data = mysqli_fetch_assoc($hasil); // langsung ambil satu baris
         mysqli_close($koneksi);
         return $data;
     }
+
 
     function addEvent($idEvent, $namaEvent, $totalDiskon, $waktuAktif, $waktuNonAktif) {
         $koneksi = Connection();

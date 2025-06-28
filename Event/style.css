@@ -4,3 +4,61 @@
     box-shadow: 0 10px 20px rgba(0,0,0,0.1);
     background-color: #fff;
 }
+
+.detail {
+    background-color: #003366;
+}
+
+.product-card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    /* display: flex;
+    justify-content: center;
+    align-items: center; */
+    width: 250px;
+    border-radius: 12px;
+}
+
+.product-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.1) !important;
+}
+
+.product-card:hover .product-image {
+    transform: scale(1.05);
+}
+
+.delete-btn {
+    transition: all 0.2s ease;
+    border-radius: 8px;
+    font-weight: 500;
+}
+
+.delete-btn:hover {
+    background-color: #dc3545;
+    color: white;
+    transform: translateY(-1px);
+}
+
+.badge {
+    font-size: 0.75rem;
+    border-radius: 6px;
+    box-shadow: 0px 0px 5px 1px #ffffff;
+}
+
+.badge.badge-card {
+    font-size: 0.75rem;
+    border-radius: 6px;
+    box-shadow: 0px 0px 5px 1px #ff0000;
+}
+
+.modal-content {
+    border-radius: 12px;
+}
+
+.btn {
+    border-radius: 8px;
+}
+
+.card-img-top {
+    border-radius: 12px 12px 0 0;
+}

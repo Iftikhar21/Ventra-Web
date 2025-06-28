@@ -1,54 +1,55 @@
 <?php
-  session_start();
-  include '../Model/crudKategori.php';
+session_start();
+include '../Model/crudKategori.php';
 
-  if (!isset($_SESSION['username'])) {
-    header("Location: ../Login/FormLogin.php"); // Redirect kalau belum login
-    exit();
-  }
-  $username = $_SESSION['username'];
-?>
-
-<?php 
-    if (isset($_GET['id_kategori'])) {
-        $idKategori = $_GET['id_kategori'];
-    } else {
-        echo "Masukkan ID Kategori";
-        exit();
-    }
-    $data = getKategori($idKategori);
-    if (empty($data)) {
-        echo "ID Kategori Tidak Ditemukan !";
-        exit();
-    } else {
-        $kategori = $data[0]; // Ambil data pertama
-
-        $idKategori = $kategori['id_kategori'];
-        $namaKategori = $kategori['nama_kategori'];
-    }
+if (!isset($_SESSION['username'])) {
+  header("Location: ../Login/FormLogin.php"); // Redirect kalau belum login
+  exit();
+}
+$username = $_SESSION['username'];
 ?>
 
 <?php
-    if (isset($_POST['btnEdit'])) {
-        $idKategori = $_POST['id_kategori'];
-        $namaKategori = $_POST['nama_kategori'];
+if (isset($_GET['id_kategori'])) {
+  $idKategori = $_GET['id_kategori'];
+} else {
+  echo "Masukkan ID Kategori";
+  exit();
+}
+$data = getKategori($idKategori);
+if (empty($data)) {
+  echo "ID Kategori Tidak Ditemukan !";
+  exit();
+} else {
+  $kategori = $data[0]; // Ambil data pertama
 
-        $result = editKategori($idKategori, $namaKategori);
+  $idKategori = $kategori['id_kategori'];
+  $namaKategori = $kategori['nama_kategori'];
+}
+?>
 
-        if ($result) {
-            header("Location:barang.php");
-            exit();
-        } else {
-            echo "<div class='alert alert-danger mt-3'>Gagal memperbarui barang.</div>";
-        }
-    }
+<?php
+if (isset($_POST['btnEdit'])) {
+  $idKategori = $_POST['id_kategori'];
+  $namaKategori = $_POST['nama_kategori'];
+
+  $result = editKategori($idKategori, $namaKategori);
+
+  if ($result) {
+    header("Location:barang.php");
+    exit();
+  } else {
+    echo "<div class='alert alert-danger mt-3'>Gagal memperbarui barang.</div>";
+  }
+}
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Ventra POS Barang</title>
 
   <!-- Bootstrap & Icon Fonts -->
@@ -60,6 +61,7 @@
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="../Style/sidebar.css">
 </head>
+
 <body>
 
   <!-- Sidebar -->
@@ -114,58 +116,62 @@
     </div>
   </div>
 
+  <button class="toggle-btn">
+    <span class="material-symbols-rounded">menu</span>
+  </button>
+
   <!-- Main Content -->
-  <main class="main-content position-relative border-radius-lg ps-5 pt-3" style="margin-left: 250px;">
+  <main class="main-content position-relative border-radius-lg ps-5 pt-3">
     <div class="container-fluid">
       <div class="mb-4">
         <nav class="d-flex justify-content-between align-items-center mb-4">
-          <button class="toggle-btn" onclick="toggleSidebar()">
-            <span class="material-symbols-rounded">menu</span>
-          </button>
           <h2 class="text-dark fw-bold m-0">Barang</h2>
           <div class="d-flex align-items-center gap-4">
             <div id="clock" class="text-nowrap fw-semibold text-dark"></div> |
             <div id="date" class="text-nowrap fw-semibold text-dark"></div> |
-            <div class="text-nowrap fw-semibold">Hi, <?=$username;?> !</div>
+            <div class="text-nowrap fw-semibold">Hi, <?= $username; ?> !</div>
             <div class="dropdown">
-                <a class="user-avatar dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                    <i class="material-symbols-rounded">account_circle</i>
-                </a>
+              <a class="user-avatar dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="material-symbols-rounded">account_circle</i>
+              </a>
             </div>
           </div>
         </nav>
         <p class="text-muted">Lihat Data Barang</p>
         <a class="btn btn-info d-flex align-items-center" href="barang.php" style="width: 100px;">
-            <span class="material-symbols-rounded me-2">chevron_left</span>
-            Back
+          <span class="material-symbols-rounded me-2">chevron_left</span>
+          Back
         </a>
 
       </div>
-      <div class="container">
+      <div class="row">
+        <div class="container">
           <form action="" method="POST" enctype="multipart/form-data">
-                <div class="row mb-3">
-                    <div class="col">
-                        <label for="id_kategori" class="form-label">ID Kategori</label>
-                        <input type="number" class="form-control" name="id_kategori" required value="<?php echo $idKategori?>" readonly>
-                    </div>
-                    <div class="col">
-                        <label for="nama_kategori" class="form-label">Nama Kategori</label>
-                        <input type="text" class="form-control" name="nama_kategori" required value="<?php echo $namaKategori?>">
-                    </div>
-                </div>
-    
-                <button class="btn btn-success d-flex align-items-center" type="submit" name="btnEdit">
-                    <span class="material-symbols-rounded me-2">check</span>
-                    Simpan
-                </button>
-            </form>
+            <div class="row mb-3">
+              <div class="col">
+                <label for="id_kategori" class="form-label">ID Kategori</label>
+                <input type="number" class="form-control" name="id_kategori" required value="<?php echo $idKategori ?>" readonly>
+              </div>
+              <div class="col">
+                <label for="nama_kategori" class="form-label">Nama Kategori</label>
+                <input type="text" class="form-control" name="nama_kategori" required value="<?php echo $namaKategori ?>">
+              </div>
+            </div>
+  
+            <button class="btn btn-success d-flex align-items-center" type="submit" name="btnEdit">
+              <span class="material-symbols-rounded me-2">check</span>
+              Simpan
+            </button>
+          </form>
+        </div>
       </div>
     </div>
-  </div>
+  </main>
 
   <!-- Scripts -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script src="index.js"></script>
   <script src="../js/sidebar.js"></script>
 </body>
+
 </html>

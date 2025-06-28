@@ -95,12 +95,12 @@ body::-webkit-scrollbar {
 
 .toggle-btn {
   position: fixed;
-  margin-top: 7px;
+  margin-top: 23px;
   left: 260px;
   background: none;
   border: none;
   color: #333;
-  font-size: 1.8rem;
+  font-size: 1.2rem;
   z-index: 1100;
   transition: all 0.3s ease;
 }
@@ -122,7 +122,7 @@ body::-webkit-scrollbar {
 }
 
 .sidebar.collapsed ~ .main-content {
-  margin-left: 70px;
+  margin-left: 90px;
 }
 
 .sidebar-bottom {

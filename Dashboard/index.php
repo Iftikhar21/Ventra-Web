@@ -95,18 +95,15 @@ $username = $_SESSION['username'];
     </div>
   </div>
 
-  <button class="toggle-btn-two d-none" onclick="toggleSidebar()">
-    <i class="fas fa-bars"></i>
+  <button class="toggle-btn">
+    <span class="material-symbols-rounded">menu</span>
   </button>
 
   <!-- Main Content -->
-  <main class="main-content position-relative border-radius-lg ps-5 pt-3" style="margin-left: 250px;">
+  <main class="main-content position-relative border-radius-lg ps-5 pt-3">
     <div class="container-fluid">
       <div class="mb-4">
         <nav class="d-flex justify-content-between align-items-center mb-4">
-          <button class="toggle-btn" onclick="toggleSidebar()">
-            <span class="material-symbols-rounded">menu</span>
-          </button>
           <h2 class="text-dark fw-bold m-0">Dashboard</h2>
           <div class="d-flex align-items-center gap-4">
             <div id="clock" class="text-nowrap fw-semibold text-dark"></div> |

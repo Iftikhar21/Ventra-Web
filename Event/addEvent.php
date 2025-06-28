@@ -1,34 +1,35 @@
 <?php
-  session_start();
-  include '../Model/crudEvent.php';
+session_start();
+include '../Model/crudEvent.php';
 
-  if (!isset($_SESSION['username'])) {
-    header("Location: ../Login/FormLogin.php"); // Redirect kalau belum login
-    exit();
-  }
-  $username = $_SESSION['username'];
+if (!isset($_SESSION['username'])) {
+  header("Location: ../Login/FormLogin.php"); // Redirect kalau belum login
+  exit();
+}
+$username = $_SESSION['username'];
 ?>
 
 <?php
-    if (isset($_POST['btnTambah'])) {
-        $idEvent = $_POST['id_event'];
-        $namaEvent = $_POST['nama_event'];
-        $totalDiskon = $_POST['total_diskon']; // ini akan undefined karena tidak dikembalikan
-        $waktuAktif = $_POST['waktu_aktif'];
-        $waktuNonAktif = $_POST['waktu_non_aktif'];
+if (isset($_POST['btnTambah'])) {
+  $idEvent = $_POST['id_event'];
+  $namaEvent = $_POST['nama_event'];
+  $totalDiskon = $_POST['total_diskon']; // ini akan undefined karena tidak dikembalikan
+  $waktuAktif = $_POST['waktu_aktif'];
+  $waktuNonAktif = $_POST['waktu_non_aktif'];
 
-        addEvent($idEvent, $namaEvent, $totalDiskon, $waktuAktif, $waktuNonAktif);
+  addEvent($idEvent, $namaEvent, $totalDiskon, $waktuAktif, $waktuNonAktif);
 
-        header("Location: event.php"); // sesuaikan lokasi redirect
-        exit();
-    }
+  header("Location: event.php"); // sesuaikan lokasi redirect
+  exit();
+}
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Ventra POS Event</title>
 
   <!-- Bootstrap & Icon Fonts -->
@@ -40,6 +41,7 @@
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="../Style/sidebar.css">
 </head>
+
 <body>
 
   <!-- Sidebar -->
@@ -94,75 +96,80 @@
     </div>
   </div>
 
+  <button class="toggle-btn">
+    <span class="material-symbols-rounded">menu</span>
+  </button>
+
   <!-- Main Content -->
-  <main class="main-content position-relative border-radius-lg ps-5 pt-3" style="margin-left: 250px;">
+  <main class="main-content position-relative border-radius-lg ps-5 pt-3">
     <div class="container-fluid">
       <div class="mb-4">
         <nav class="d-flex justify-content-between align-items-center mb-4">
-          <button class="toggle-btn" onclick="toggleSidebar()">
-            <span class="material-symbols-rounded">menu</span>
-          </button>
           <h2 class="text-dark fw-bold m-0">Event</h2>
           <div class="d-flex align-items-center gap-4">
             <div id="clock" class="text-nowrap fw-semibold text-dark"></div> |
             <div id="date" class="text-nowrap fw-semibold text-dark"></div> |
-            <div class="text-nowrap fw-semibold">Hi, <?=$username;?> !</div>
+            <div class="text-nowrap fw-semibold">Hi, <?= $username; ?> !</div>
             <div class="dropdown">
-                <a class="user-avatar dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                    <i class="material-symbols-rounded">account_circle</i>
-                </a>
+              <a class="user-avatar dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="material-symbols-rounded">account_circle</i>
+              </a>
             </div>
           </div>
         </nav>
         <p class="text-muted">Lihat Data Event</p>
         <a class="btn btn-info d-flex align-items-center" href="event.php" style="width: 100px;">
-            <span class="material-symbols-rounded me-2">chevron_left</span>
-            Back
+          <span class="material-symbols-rounded me-2">chevron_left</span>
+          Back
         </a>
       </div>
-      <div class="container">
+
+      <div class="row">
+        <div class="container">
           <form action="" method="POST" enctype="multipart/form-data">
-                <div class="row mb-3">
-                    <div class="col">
-                        <label for="id_event" class="form-label">Id Event</label>
-                        <input type="number" class="form-control" name="id_event" required disabled>
-                    </div>
-                    <div class="col">
-                        <label for="nama_event" class="form-label">Nama Event</label>
-                        <input type="text" class="form-control" name="nama_event" required>
-                    </div>
-                </div>
-    
-                <div class="row mb-3">
-                    <div class="col">
-                    <label for="waktu_aktif" class="form-label">Waktu Aktif</label>
-                    <input type="date" class="form-control" name="waktu_aktif" required>
-                    </div>
-                    <div class="col">
-                    <label for="waktu_non_aktif" class="form-label">Waktu Non Aktif</label>
-                    <input type="date" class="form-control" name="waktu_non_aktif" required>
-                    </div>
-                </div>
-    
-                <div class="row mb-3">
-                    <div class="col">
-                    <label for="total_diskon" class="form-label">Total Diskon</label>
-                    <input type="number" class="form-control" name="total_diskon" required>
-                    </div>
-                </div>
-    
-                <button class="btn btn-success d-flex align-items-center" type="submit" name="btnTambah">
-                    <span class="material-symbols-rounded me-2">add</span>
-                    Simpan
-                </button>
-            </form>
+            <div class="row mb-3">
+              <div class="col">
+                <label for="id_event" class="form-label">Id Event</label>
+                <input type="number" class="form-control" name="id_event" required disabled>
+              </div>
+              <div class="col">
+                <label for="nama_event" class="form-label">Nama Event</label>
+                <input type="text" class="form-control" name="nama_event" required>
+              </div>
+            </div>
+
+            <div class="row mb-3">
+              <div class="col">
+                <label for="waktu_aktif" class="form-label">Waktu Aktif</label>
+                <input type="date" class="form-control" name="waktu_aktif" required>
+              </div>
+              <div class="col">
+                <label for="waktu_non_aktif" class="form-label">Waktu Non Aktif</label>
+                <input type="date" class="form-control" name="waktu_non_aktif" required>
+              </div>
+            </div>
+
+            <div class="row mb-3">
+              <div class="col">
+                <label for="total_diskon" class="form-label">Total Diskon</label>
+                <input type="number" class="form-control" name="total_diskon" required>
+              </div>
+            </div>
+
+            <button class="btn btn-success d-flex align-items-center" type="submit" name="btnTambah">
+              <span class="material-symbols-rounded me-2">add</span>
+              Simpan
+            </button>
+          </form>
+        </div>
       </div>
     </div>
-  </div>
+  </main>
 
   <!-- Scripts -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script src="index.js"></script>
   <script src="../js/sidebar.js"></script>
 </body>
+
 </html>
