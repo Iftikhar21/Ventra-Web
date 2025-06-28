@@ -20,12 +20,28 @@
     }
 
     function getEvent($idEvent) {
-        $sql = "SELECT * FROM ventra_event WHERE id_event = '$idEvent'";
         $koneksi = Connection();
-        $hasil = mysqli_query($koneksi, $sql);
-        $data = mysqli_fetch_assoc($hasil); // langsung ambil satu baris
+        
+        // 1. Ambil data event
+        $sqlEvent = "SELECT * FROM ventra_event WHERE id_event = '$idEvent'";
+        $hasilEvent = mysqli_query($koneksi, $sqlEvent);
+        $dataEvent = mysqli_fetch_assoc($hasilEvent);
+        
+        // 2. Ambil info barang terkait event
+        $sqlBarang = "SELECT 
+                        COUNT(*) as total_barang
+                    FROM ventra_detail_event 
+                    WHERE id_event = '$idEvent'";
+        
+        $hasilBarang = mysqli_query($koneksi, $sqlBarang);
+        $dataBarang = mysqli_fetch_assoc($hasilBarang);
+        
         mysqli_close($koneksi);
-        return $data;
+        
+        // Gabungkan kedua hasil
+        $result = array_merge($dataEvent, $dataBarang);
+        
+        return $result;
     }
 
 

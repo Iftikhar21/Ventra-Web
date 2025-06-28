@@ -154,23 +154,29 @@ if (isset($_POST['id_event']) && isset($_POST['product_ids'])) {
                                     </span>
                                 </div>
 
-                                <div class="d-flex justify-content-end gap-2 mt-4">
-                                    <a href="editEvent.php?id_event=<?= $dataEvent['id_event']; ?>" class="btn btn-warning btn-sm d-flex align-items-center text-light">
-                                        <i class="fa-solid fa-pen p-1"></i>
-                                    </a>
-                                    <a href="hapusEvent.php?id_event=<?= $dataEvent['id_event']; ?>" class="btn btn-danger btn-sm d-flex align-items-center">
-                                        <i class="fa-solid fa-trash p-1"></i>
-                                    </a>
+                                <div class="d-flex justify-content-between gap-2 mt-4">
+                                    <div class="col">
+                                        <span class="badge bg-secondary pt-3 pb-3 ps-5 pe-5 fs-6">
+                                            <?= $dataEvent['total_barang'] ?> Produk
+                                        </span>
+                                    </div>
+                                    <div class="col d-flex justify-content-end align-items-center">
+                                        <div class="d-flex justify-content-end gap-2 text-end">
+                                            <a href="editEvent.php?id_event=<?= $dataEvent['id_event']; ?>" class="btn btn-warning btn-sm d-flex align-items-center text-light">
+                                                <i class="fa-solid fa-pen p-1"></i>
+                                            </a>
+                                            <a href="hapusEvent.php?id_event=<?= $dataEvent['id_event']; ?>" class="btn btn-danger btn-sm d-flex align-items-center">
+                                                <i class="fa-solid fa-trash p-1"></i>
+                                            </a>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                     <!-- Filter Input di Luar Tabel -->
                     <div class="row mb-3 justify-content-between">
-                        <div class="col-md-3">
-                            <input type="text" id="filterNama" class="form-control" placeholder="Cari Nama Barang" onkeyup="filterTable(2, this.value)">
-                        </div>
-                        <div class="col-md-3 text-end">
+                        <div class="col text-end">
                             <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addProductModal">
                                 <i class="fas fa-plus me-2"></i>Tambah Produk
                             </button>
