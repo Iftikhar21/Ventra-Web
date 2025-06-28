@@ -1,24 +1,25 @@
 <?php
-  session_start();
-  include '../Model/crudBarang.php';
-  include '../Model/crudKategori.php';
+session_start();
+include '../Model/crudBarang.php';
+include '../Model/crudKategori.php';
 
-  if (!isset($_SESSION['username'])) {
-    header("Location: ../Login/formLogin.php"); // Redirect kalau belum login
-    exit();
-  }
+if (!isset($_SESSION['username'])) {
+  header("Location: ../Login/formLogin.php"); // Redirect kalau belum login
+  exit();
+}
 
-  $data = getAllBarang();
-  $allBarangDetail = getAllBarangDanDetail();
-  $dataKategori = getAllKategori();
-  $username = $_SESSION['username'];
+$data = getAllBarang();
+$allBarangDetail = getAllBarangDanDetail();
+$dataKategori = getAllKategori();
+$username = $_SESSION['username'];
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Ventra POS Barang</title>
 
   <!-- Bootstrap & Icon Fonts -->
@@ -30,6 +31,7 @@
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="../Style/sidebar.css">
 </head>
+
 <body>
 
   <!-- Sidebar -->
@@ -97,11 +99,11 @@
           <div class="d-flex align-items-center gap-4">
             <div id="clock" class="text-nowrap fw-semibold text-dark"></div> |
             <div id="date" class="text-nowrap fw-semibold text-dark"></div> |
-            <div class="text-nowrap fw-semibold">Hi, <?=$username;?> !</div>
+            <div class="text-nowrap fw-semibold">Hi, <?= $username; ?> !</div>
             <div class="dropdown">
-                <a class="user-avatar dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                    <i class="material-symbols-rounded">account_circle</i>
-                </a>
+              <a class="user-avatar dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="material-symbols-rounded">account_circle</i>
+              </a>
             </div>
           </div>
         </nav>
@@ -112,8 +114,8 @@
         <div class="container">
           <h3 class="fw-bold mb-3">> Data Barang</h3>
           <a class="btn btn-success d-flex align-items-center mb-4" href="addBarang.php" style="width: 200px;">
-              <span class="material-symbols-rounded me-2">add</span>
-              Tambah Barang
+            <span class="material-symbols-rounded me-2">add</span>
+            Tambah Barang
           </a>
           <!-- Filter Input di Luar Tabel -->
           <div class="row mb-3">
@@ -127,50 +129,51 @@
               <select id="filterKategori" class="form-select" onchange="filterTable(5, this.value)">
                 <option value="">Semua Kategori</option>
                 <?php foreach ($dataKategori as $kategori): ?>
-                    <option value="<?= $kategori['nama_kategori']; ?>"><?= $kategori['nama_kategori']; ?></option>
+                  <option value="<?= $kategori['nama_kategori']; ?>"><?= $kategori['nama_kategori']; ?></option>
                 <?php endforeach; ?>
               </select>
             </div>
           </div>
           <div class="table-card table-responsive">
             <table class="table table-striped table-borderless table-hover">
-                <thead class="table-primary">
-                    <tr class="text-center">
-                        <th>ID</th>
-                        <th>Gambar</th>
-                        <th>Nama Barang</th>
-                        <th>Bahan</th>
-                        <th>Harga</th>
-                        <th>Kategori</th>
-                        <th>Aksi</th>
-                    </tr>
-                </thead>
-                <tbody id="myTable">
-                    <?php $no = 1; foreach ($data as $barang): ?>
-                    <tr class="text-center">
-                        <td><?= $barang['id']; ?></td>
-                        <td>
-                          <img src="data:image/jpeg;base64,<?= base64_encode($barang['Gambar']); ?>"  alt="Image Product">
-                        </td>
-                        <td><?= $barang['Nama_Brg']; ?></td>
-                        <td><?= $barang['Bahan']; ?></td>
-                        <td>Rp <?= number_format($barang['harga_jual'], 0, ',', '.') ?></td>
-                        <td><?= $barang['nama_kategori']; ?></td>
-                        <td class="text-center">
-                          <a href="editBarang.php?id=<?= $barang['id']; ?>" class="btn btn-warning btn-sm">
-                            <i class="material-symbols-rounded" style="color: #fff; margin-top: 2px;">edit</i>
-                          </a>
-                          <a href="#" class="btn btn-danger btn-sm" 
-                            onclick="confirmDeleteBarang(<?= $barang['id']; ?>, '<?= addslashes($barang['Nama_Brg']); ?>')">
-                            <i class="material-symbols-rounded" style="margin-top: 2px;">delete</i>
-                          </a>
-                          <a href="detailBarang.php?id=<?= $barang['id']; ?>" class="btn btn-info btn-sm">
-                              <i class="material-symbols-rounded" style="color: #fff; margin-top: 2px;">info</i>
-                          </a>
-                        </td>
-                    </tr>
-                    <?php endforeach; ?>
-                </tbody>
+              <thead class="table-primary">
+                <tr class="text-center">
+                  <th>ID</th>
+                  <th>Gambar</th>
+                  <th>Nama Barang</th>
+                  <th>Bahan</th>
+                  <th>Harga</th>
+                  <th>Kategori</th>
+                  <th>Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="myTable">
+                <?php $no = 1;
+                foreach ($data as $barang): ?>
+                  <tr class="text-center">
+                    <td><?= $barang['id']; ?></td>
+                    <td>
+                      <img src="data:image/jpeg;base64,<?= base64_encode($barang['Gambar']); ?>" alt="Image Product">
+                    </td>
+                    <td><?= $barang['Nama_Brg']; ?></td>
+                    <td><?= $barang['Bahan']; ?></td>
+                    <td>Rp <?= number_format($barang['harga_jual'], 0, ',', '.') ?></td>
+                    <td><?= $barang['nama_kategori']; ?></td>
+                    <td class="text-center">
+                      <a href="editBarang.php?id=<?= $barang['id']; ?>" class="btn btn-warning btn-sm">
+                        <i class="material-symbols-rounded" style="color: #fff; margin-top: 2px;">edit</i>
+                      </a>
+                      <a href="#" class="btn btn-danger btn-sm"
+                        onclick="confirmDeleteBarang(<?= $barang['id']; ?>, '<?= addslashes($barang['Nama_Brg']); ?>')">
+                        <i class="material-symbols-rounded" style="margin-top: 2px;">delete</i>
+                      </a>
+                      <a href="detailBarang.php?id=<?= $barang['id']; ?>" class="btn btn-info btn-sm">
+                        <i class="material-symbols-rounded" style="color: #fff; margin-top: 2px;">info</i>
+                      </a>
+                    </td>
+                  </tr>
+                <?php endforeach; ?>
+              </tbody>
             </table>
             <div class="d-flex justify-content-between align-items-center mt-3">
               <button class="btn btn-primary btn-sm" onclick="prevPage()">Sebelumnya</button>
@@ -180,35 +183,36 @@
           </div>
           <h3 class="fw-bold mb-3 mt-3">> Kategori</h3>
           <a class="btn btn-success d-flex align-items-center mb-4" href="addKategori.php" style="width: 200px;">
-              <span class="material-symbols-rounded me-2">add</span>
-              Tambah Kategori
+            <span class="material-symbols-rounded me-2">add</span>
+            Tambah Kategori
           </a>
           <div class="table-responsive">
             <table class="table table-striped table-bordered text-center">
-                <thead class="table-primary">
-                    <tr>
-                        <th>#</th>
-                        <th>Nama Kategori</th>
-                        <th class="text-center">Aksi</th>
-                    </tr>
-                </thead>
-                <tbody id="myTable">
-                    <?php $no = 1; foreach ($dataKategori as $kategori): ?>
-                    <tr>
-                        <td><?= $no++; ?></td>
-                        <td><?= $kategori['nama_kategori']; ?></td>
-                        <td class="text-center">
-                            <a href="editKategori.php?id_kategori=<?= $kategori['id_kategori']; ?>" class="btn btn-warning btn-sm">
-                                <i class="material-symbols-rounded" style="color: #fff; margin-top: 2px;">edit</i>
-                            </a>
-                            <a href="#" class="btn btn-danger btn-sm" 
-                              onclick="confirmDeleteKategori(<?= $kategori['id_kategori']; ?>, '<?= addslashes($kategori['nama_kategori']); ?>')">
-                              <i class="material-symbols-rounded" style="margin-top: 2px;">delete</i>
-                            </a>
-                        </td>
-                    </tr>
-                    <?php endforeach; ?>
-                </tbody>
+              <thead class="table-primary">
+                <tr>
+                  <th>#</th>
+                  <th>Nama Kategori</th>
+                  <th class="text-center">Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="myTable">
+                <?php $no = 1;
+                foreach ($dataKategori as $kategori): ?>
+                  <tr>
+                    <td><?= $no++; ?></td>
+                    <td><?= $kategori['nama_kategori']; ?></td>
+                    <td class="text-center">
+                      <a href="editKategori.php?id_kategori=<?= $kategori['id_kategori']; ?>" class="btn btn-warning btn-sm">
+                        <i class="material-symbols-rounded" style="color: #fff; margin-top: 2px;">edit</i>
+                      </a>
+                      <a href="#" class="btn btn-danger btn-sm"
+                        onclick="confirmDeleteKategori(<?= $kategori['id_kategori']; ?>, '<?= addslashes($kategori['nama_kategori']); ?>')">
+                        <i class="material-symbols-rounded" style="margin-top: 2px;">delete</i>
+                      </a>
+                    </td>
+                  </tr>
+                <?php endforeach; ?>
+              </tbody>
             </table>
           </div>
         </div>
@@ -222,7 +226,7 @@
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title" id="deleteBarangModalLabel">
-           <i class="fa-solid fa-triangle-exclamation me-2 text-danger"></i>
+            <i class="fa-solid fa-triangle-exclamation me-2 text-danger"></i>
             Konfirmasi Hapus Barang
           </h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -316,19 +320,19 @@
     function filterTable(columnIndex, value) {
       const table = document.querySelector('.table-responsive table');
       const rows = table.querySelectorAll('tbody tr');
-      
+
       rows.forEach(row => {
-        const cell = row.cells[columnIndex - 1];
+        const cell = row.cells[columnIndex]; // Fixed: use columnIndex directly
         const cellText = cell.textContent.toLowerCase();
         const searchText = value.toLowerCase();
-        
+
         if (cellText.includes(searchText)) {
           row.style.display = '';
         } else {
           row.style.display = 'none';
         }
       });
-      
+
       currentPage = 1; // Reset ke halaman pertama setelah filter
       updatePagination();
     }
@@ -338,18 +342,18 @@
       const table = document.querySelector('.table-responsive table');
       const rows = Array.from(table.querySelectorAll('tbody tr:not([style*="display: none"])'));
       const totalPages = Math.ceil(rows.length / rowsPerPage);
-      
+
       document.getElementById('pageInfo').textContent = `Halaman ${currentPage} dari ${totalPages}`;
-      
+
       // Sembunyikan semua baris
       rows.forEach(row => row.style.display = 'none');
-      
+
       // Tampilkan baris untuk halaman saat ini
       const start = (currentPage - 1) * rowsPerPage;
       const end = start + rowsPerPage;
-      
+
       rows.slice(start, end).forEach(row => row.style.display = '');
-      
+
       // Nonaktifkan tombol jika diperlukan
       document.querySelector('.btn-primary.btn-sm').disabled = currentPage === 1;
       document.querySelector('.btn-success.btn-sm').disabled = currentPage === totalPages || totalPages === 0;
@@ -365,7 +369,7 @@
     function nextPage() {
       const table = document.querySelector('.table-responsive table');
       const visibleRows = Array.from(table.querySelectorAll('tbody tr:not([style*="display: none"])')).length;
-      
+
       if (currentPage * rowsPerPage < visibleRows) {
         currentPage++;
         updatePagination();
@@ -375,21 +379,22 @@
     // Inisialisasi saat halaman dimuat
     document.addEventListener('DOMContentLoaded', function() {
       updatePagination();
-      
+
       // Event listener untuk filter
       document.getElementById('filterKode').addEventListener('input', function() {
-        filterTable(0, this.value);
+        filterTable(0, this.value); // Kolom ID (index 0)
       });
-      
+
       document.getElementById('filterNama').addEventListener('input', function() {
-        filterTable(2, this.value);
+        filterTable(2, this.value); // Kolom Nama Barang (index 2)
       });
-      
+
       document.getElementById('filterKategori').addEventListener('change', function() {
-        filterTable(5, this.value);
+        filterTable(5, this.value); // Kolom Kategori (index 5)
       });
     });
   </script>
 
 </body>
+
 </html>
