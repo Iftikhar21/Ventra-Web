@@ -62,4 +62,51 @@
             return $hasil;
         }
     }
+
+    function getAvailableProductsForEvent($idEvent) {
+        $conn = Connection();
+        
+        $query = "SELECT vp.*, c.nama_kategori 
+                FROM ventra_produk vp 
+                JOIN categories c ON vp.Kategori = c.id_kategori
+                WHERE vp.id NOT IN (
+                    SELECT id_produk FROM ventra_detail_event WHERE id_event = ?
+                )";
+                
+        $stmt = $conn->prepare($query);
+        $stmt->bind_param("i", $idEvent);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        
+        return $result->fetch_all(MYSQLI_ASSOC);
+    }
+
+    function addProductsToEvent($idEvent, $productIds) {
+        $koneksi = Connection();
+        $success = true;
+        
+        foreach ($productIds as $idBarang) {
+            $sql = "INSERT INTO ventra_detail_event (id_event, id_produk) VALUES ('$idEvent', '$idBarang')";
+            if (!mysqli_query($koneksi, $sql)) {
+                $success = false;
+                break;
+            }
+        }
+        
+        mysqli_close($koneksi);
+        return $success;
+    }
+
+    function removeProductFromEvent($idEvent, $idBarang) {
+        $koneksi = Connection();
+        $sql = "DELETE FROM ventra_detail_event WHERE id_event = '$idEvent' AND id_produk = '$idBarang'";
+        $hasil = 0;
+        if (mysqli_query($koneksi, $sql)) {
+            $hasil = 1;
+        }
+        mysqli_close($koneksi);
+        return $hasil;
+    }
+
+
 ?>

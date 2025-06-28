@@ -217,29 +217,4 @@
         mysqli_close($koneksi);
         return $data;
     }
-
-    function getAvailableProductsForEvent($idEvent) {
-        $data = array();
-        $koneksi = Connection();
-        
-        // Query untuk mendapatkan produk yang belum terkait dengan event
-        $sql = "SELECT *
-                FROM ventra_produk vp
-                JOIN categories c ON vp.Kategori = c.id_kategori
-                JOIN ventra_detail_event vpd ON vp.id = vpd.id_produk
-                WHERE vpd.id_produk NOT IN (
-                    SELECT id_produk FROM ventra_detail_event WHERE id_event = '$idEvent'
-                )";
-        
-        $hasil = mysqli_query($koneksi, $sql);
-        
-        if ($hasil) {
-            while ($baris = mysqli_fetch_assoc($hasil)) {
-                $data[] = $baris;
-            }
-        }
-        
-        mysqli_close($koneksi);
-        return $data;
-    }
 ?>

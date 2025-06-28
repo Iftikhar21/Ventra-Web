@@ -2,6 +2,7 @@
 session_start();
 include '../Model/crudEvent.php';
 include '../Model/crudBarang.php';
+include '../Model/crudKategori.php';
 
 if (!isset($_SESSION['username'])) {
     header("Location: ../Login/formLogin.php"); // Redirect kalau belum login
@@ -12,9 +13,26 @@ $idEvent = isset($_GET['id_event']) ? $_GET['id_event'] : '';
 
 $dataEvent = getEvent($idEvent);
 $dataBarang = getBarangByEvent($idEvent);
-$availableProducts = getAllBarang();
+$availableProducts = getAvailableProductsForEvent($idEvent);
+$dataKategori = getAllKategori();
+
 
 $username = $_SESSION['username'];
+
+if (isset($_POST['id_event']) && isset($_POST['product_ids'])) {
+    $idEvent = $_POST['id_event'];
+    $productIds = $_POST['product_ids'];
+
+    if (addProductsToEvent($idEvent, $productIds)) {
+        $_SESSION['success_message'] = 'Produk berhasil ditambahkan ke event';
+    } else {
+        $_SESSION['error_message'] = 'Gagal menambahkan produk ke event';
+    }
+
+    header("Location: detailEvent.php?id_event=$idEvent");
+    exit();
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -127,7 +145,7 @@ $username = $_SESSION['username'];
                                     <h4 class="mb-1 fw-bold"><?= $dataEvent['nama_event'] ?></h4>
                                     <span class="badge bg-danger fs-6"><?= $dataEvent['total_diskon'] ?>% OFF</span>
                                 </div>
-    
+
                                 <div class="d-flex align-items-center text-light">
                                     <span class="material-symbols-rounded me-2">calendar_today</span>
                                     <span class="fw-semibold">
@@ -135,7 +153,7 @@ $username = $_SESSION['username'];
                                         <?= date('d M Y', strtotime($dataEvent['waktu_non_aktif'])) ?>
                                     </span>
                                 </div>
-    
+
                                 <div class="d-flex justify-content-end gap-2 mt-4">
                                     <a href="editEvent.php?id_event=<?= $dataEvent['id_event']; ?>" class="btn btn-warning btn-sm d-flex align-items-center text-light">
                                         <i class="fa-solid fa-pen p-1"></i>
@@ -161,14 +179,14 @@ $username = $_SESSION['username'];
                     <?php if (!empty($dataBarang)) : ?>
                         <div class="row g-4">
                             <?php foreach ($dataBarang as $barang) : ?>
-                                <div class="col-lg-4 col-md-6">
+                                <div class="col-lg-3">
                                     <div class="card shadow-sm border-0 h-100 product-card">
                                         <div class="position-relative overflow-hidden rounded-top d-flex justify-content-center align-items-center p-2">
                                             <img src="data:image/jpeg;base64,<?= base64_encode($barang['gambar']); ?>"
                                                 class="card-img-top product-image"
                                                 alt="<?= htmlspecialchars($barang['nama_barang']); ?>"
                                                 style="height: 200px; width: 200px; object-fit: cover; transition: transform 0.3s ease;">
-    
+
                                             <!-- Discount Badge -->
                                             <?php if ($dataEvent['total_diskon'] > 0) : ?>
                                                 <span class="badge badge-card bg-danger position-absolute top-0 end-0 m-2 px-2 py-1">
@@ -176,22 +194,22 @@ $username = $_SESSION['username'];
                                                 </span>
                                             <?php endif; ?>
                                         </div>
-    
+
                                         <div class="card-body d-flex flex-column p-4">
                                             <h6 class="card-title fw-bold mb-2 text-truncate" title="<?= htmlspecialchars($barang['nama_barang']); ?>">
                                                 <?= htmlspecialchars($barang['nama_barang']); ?>
                                             </h6>
-    
+
                                             <small class="text-muted mb-3">
                                                 <i class="fas fa-tag me-1"></i><?= htmlspecialchars($barang['kategori']); ?>
                                             </small>
-    
+
                                             <div class="price-section mt-auto">
                                                 <?php
                                                 $originalPrice = $barang['harga'];
                                                 $discountedPrice = $originalPrice * (1 - $dataEvent['total_diskon'] / 100);
                                                 ?>
-    
+
                                                 <?php if ($dataEvent['total_diskon'] > 0) : ?>
                                                     <div class="d-flex align-items-center gap-2 mb-3">
                                                         <span class="text-decoration-line-through text-muted small">
@@ -208,7 +226,7 @@ $username = $_SESSION['username'];
                                                 <?php endif; ?>
                                             </div>
                                         </div>
-    
+
                                         <div class="card-footer bg-transparent border-0 p-4 pt-0">
                                             <button type="button"
                                                 class="btn btn-outline-danger btn-sm w-100 delete-btn"
@@ -223,7 +241,7 @@ $username = $_SESSION['username'];
                                 </div>
                             <?php endforeach; ?>
                         </div>
-    
+
                         <!-- Delete Confirmation Modal -->
                         <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
                             <div class="modal-dialog modal-dialog-centered">
@@ -248,7 +266,7 @@ $username = $_SESSION['username'];
                                 </div>
                             </div>
                         </div>
-    
+
                     <?php else : ?>
                         <div class="text-center py-5">
                             <div class="mb-4">
@@ -264,44 +282,62 @@ $username = $_SESSION['username'];
     </main>
 
     <div class="modal fade" id="addProductModal" tabindex="-1" aria-labelledby="addProductModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="addProductModalLabel">Tambah Produk ke Event</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <div class="table-responsive">
-                        <table class="table table-hover" id="availableProductTable">
-                            <thead>
-                                <tr>
-                                    <th scope="col">Pilih</th>
-                                    <th scope="col">Kode Barang</th>
-                                    <th scope="col">Nama Barang</th>
-                                    <th scope="col">Harga</th>
-                                    <th scope="col">Stok</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <?php
-                                if (!empty($availableProducts)) : ?>
-                                    <?php foreach ($availableProducts as $product) : ?>
-                                        <tr>
-                                            <td>
-                                                <input type="checkbox" class="form-check-input product-checkbox" value="<?= $product['id']; ?>">
-                                            </td>
-                                            <td><?= $product['id']; ?></td>
-                                            <td><?= $product['Nama_Brg']; ?></td>
-                                            <td>Rp <?= number_format($product['harga_jual'], 0, ',', '.'); ?></td>
-                                        </tr>
-                                    <?php endforeach; ?>
-                                <?php else : ?>
-                                    <tr>
-                                        <td colspan="5" class="text-center">Tidak ada produk yang tersedia untuk ditambahkan</td>
-                                    </tr>
-                                <?php endif; ?>
-                            </tbody>
-                        </table>
+                    <!-- Filter Section -->
+                    <div class="row mb-3">
+                        <div class="col-md-8">
+                            <input type="text" class="form-control" id="searchProduct" placeholder="Cari nama barang...">
+                        </div>
+                        <div class="col-md-4">
+                            <select id="filterKategori" class="form-select" onchange="filterTable(5, this.value)">
+                                <option value="">Semua Kategori</option>
+                                <?php foreach ($dataKategori as $kategori): ?>
+                                    <option value="<?= $kategori['nama_kategori']; ?>"><?= $kategori['nama_kategori']; ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Product List -->
+                    <div class="product-list-container" style="max-height: 400px; overflow-y: auto;">
+                        <?php if (!empty($availableProducts)) : ?>
+                            <?php foreach ($availableProducts as $product) : ?>
+                                <div class="product-item border rounded p-3 mb-2 cursor-pointer"
+                                    data-category="<?= $product['nama_kategori']; ?>"
+                                    data-name="<?= strtolower($product['Nama_Brg']); ?>"
+                                    onclick="toggleCheckbox(this)">
+                                    <div class="row align-items-center">
+                                        <div class="col-1">
+                                            <input type="checkbox" class="form-check-input product-checkbox"
+                                                value="<?= $product['id']; ?>"
+                                                id="product_<?= $product['id']; ?>">
+                                        </div>
+                                        <div class="col-5">
+                                            <div class="fw-bold"><?= $product['Nama_Brg']; ?></div>
+                                            <small class="text-muted"><?= $product['nama_kategori']; ?></small>
+                                        </div>
+                                        <div class="col-4 text-end">
+                                            <div class="fw-bold text-primary">Rp <?= number_format($product['harga_jual'], 0, ',', '.'); ?></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            <?php endforeach; ?>
+                        <?php else : ?>
+                            <div class="text-center py-5">
+                                <div class="text-muted">Tidak ada produk yang tersedia untuk ditambahkan</div>
+                            </div>
+                        <?php endif; ?>
+                    </div>
+
+                    <!-- No Results Message -->
+                    <div id="noResultsMessage" class="text-center py-5 d-none">
+                        <div class="text-muted">Tidak ada produk yang sesuai dengan filter</div>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -317,26 +353,59 @@ $username = $_SESSION['username'];
     <script src="index.js"></script>
     <script src="../js/sidebar.js"></script>
 
+    <!-- Add this JavaScript code before the closing </body> tag -->
     <script>
-        // Filter table function
-        function filterTable(columnIndex, value) {
-            const table = document.getElementById("productTable");
-            const rows = table.getElementsByTagName("tr");
+        // Filter products in the modal
+        document.getElementById('searchProduct').addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+            const categoryFilter = document.getElementById('filterKategori').value.toLowerCase();
 
-            for (let i = 1; i < rows.length; i++) {
-                const cell = rows[i].getElementsByTagName("td")[columnIndex - 1];
-                if (cell) {
-                    const cellValue = cell.textContent || cell.innerText;
-                    if (cellValue.toUpperCase().indexOf(value.toUpperCase()) > -1) {
-                        rows[i].style.display = "";
-                    } else {
-                        rows[i].style.display = "none";
-                    }
+            const productItems = document.querySelectorAll('.product-item');
+            let visibleItems = 0;
+
+            productItems.forEach(item => {
+                const productName = item.getAttribute('data-name');
+                const productCategory = item.getAttribute('data-category').toLowerCase();
+
+                const nameMatch = productName.includes(searchTerm);
+                const categoryMatch = categoryFilter === '' || productCategory === categoryFilter;
+
+                if (nameMatch && categoryMatch) {
+                    item.style.display = 'block';
+                    visibleItems++;
+                } else {
+                    item.style.display = 'none';
                 }
+            });
+
+            // Show/hide no results message
+            const noResultsMessage = document.getElementById('noResultsMessage');
+            if (visibleItems === 0) {
+                noResultsMessage.classList.remove('d-none');
+            } else {
+                noResultsMessage.classList.add('d-none');
             }
+        });
+
+        // Handle category filter change
+        document.getElementById('filterKategori').addEventListener('change', function() {
+            document.getElementById('searchProduct').dispatchEvent(new Event('input'));
+        });
+
+        // Delete modal setup
+        const deleteModal = document.getElementById('deleteModal');
+        if (deleteModal) {
+            deleteModal.addEventListener('show.bs.modal', function(event) {
+                const button = event.relatedTarget;
+                const idBarang = button.getAttribute('data-id');
+                const productName = button.getAttribute('data-name');
+
+                document.getElementById('productNameToDelete').textContent = productName;
+                document.getElementById('confirmDeleteBtn').href = `hapusDetailEvent.php?id_event=<?= $idEvent ?>&id_produk=${idBarang}`;
+            });
         }
 
-        // Add products to event
+        // Add selected products to event
         document.getElementById('addProductsBtn').addEventListener('click', function() {
             const selectedProducts = [];
             document.querySelectorAll('.product-checkbox:checked').forEach(checkbox => {
@@ -344,32 +413,44 @@ $username = $_SESSION['username'];
             });
 
             if (selectedProducts.length === 0) {
-                alert('Pilih setidaknya satu produk untuk ditambahkan');
+                alert('Pilih minimal satu produk untuk ditambahkan');
                 return;
             }
 
-            // Send AJAX request to add products
-            fetch('../Model/addProductsToEvent.php', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                    },
-                    body: `id_event=<?= $idEvent ?>&products=${JSON.stringify(selectedProducts)}`
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        alert('Produk berhasil ditambahkan ke event');
-                        location.reload();
-                    } else {
-                        alert('Gagal menambahkan produk: ' + data.message);
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert('Terjadi kesalahan saat menambahkan produk');
-                });
+            // Submit form with selected products
+            const form = document.createElement('form');
+            form.method = 'post';
+            // form.action = 'tambahProdukEvent.php';
+
+            const idEventInput = document.createElement('input');
+            idEventInput.type = 'hidden';
+            idEventInput.name = 'id_event';
+            idEventInput.value = '<?= $idEvent ?>';
+            form.appendChild(idEventInput);
+
+            selectedProducts.forEach(productId => {
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = 'product_ids[]';
+                input.value = productId;
+                form.appendChild(input);
+            });
+
+            document.body.appendChild(form);
+            form.submit();
         });
+
+        function toggleCheckbox(element) {
+            const checkbox = element.querySelector('.product-checkbox');
+            checkbox.checked = !checkbox.checked;
+
+            // Tambahkan class untuk visual feedback
+            if (checkbox.checked) {
+                element.classList.add('bg-light');
+            } else {
+                element.classList.remove('bg-light');
+            }
+        }
     </script>
 
 </body>
