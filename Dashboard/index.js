@@ -47,7 +47,9 @@ function generateDetailsHTML(data, isCurrency = false) {
 
 // Export to PDF
 function exportToPDF(sectionId) {
-  const { jsPDF } = window.jspdf;
+  const {
+    jsPDF
+  } = window.jspdf;
   const element = document.getElementById(sectionId);
   const title = element.querySelector('h4').textContent;
 
@@ -77,50 +79,6 @@ function exportToPDF(sectionId) {
     }
 
     pdf.save(`${title}.pdf`);
-  }).finally(() => {
-    // Restore button state
-    exportBtn.textContent = originalText;
-    exportBtn.disabled = false;
-  });
-}
-
-// Export to Word
-function exportToWord(sectionId) {
-  const element = document.getElementById(sectionId);
-  const title = element.querySelector('h4').textContent;
-
-  // Show loading state
-  const exportBtn = document.querySelector(`#${sectionId} .export-btn`);
-  const originalText = exportBtn.textContent;
-  exportBtn.textContent = "Membuat Word...";
-  exportBtn.disabled = true;
-
-  html2canvas(element).then(canvas => {
-    const imageData = canvas.toDataURL('image/png');
-    const { Document, Paragraph, Packer, ImageRun } = docx;
-
-    const doc = new Document({
-      sections: [{
-        properties: {},
-        children: [
-          new Paragraph({
-            children: [
-              new ImageRun({
-                data: imageData,
-                transformation: {
-                  width: 500,
-                  height: canvas.height * (500 / canvas.width)
-                }
-              })
-            ]
-          })
-        ]
-      }]
-    });
-
-    Packer.toBlob(doc).then(blob => {
-      saveAs(blob, `${title}.docx`);
-    });
   }).finally(() => {
     // Restore button state
     exportBtn.textContent = originalText;
@@ -177,6 +135,11 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 });
 
+// Variabel global untuk menyimpan instance chart
+let transactionChart = null;
+let profitChart = null;
+
+// Fungsi untuk memproses data chart
 function processChartData(data, chartId, chartLabel, yAxisLabel, isCurrency) {
   if (!data || data.length === 0) {
     document.getElementById(chartId.replace('chartBar', '').toLowerCase() + '-details').innerHTML =
@@ -205,16 +168,18 @@ function processChartData(data, chartId, chartLabel, yAxisLabel, isCurrency) {
     document.getElementById('profit-details').innerHTML = generateDetailsHTML(data, true);
   }
 
-  // Create or update chart
+  // Get canvas context
   const ctx = document.getElementById(chartId).getContext('2d');
 
-  // Check if chart already exists and destroy it
-  if (window[chartId + 'Chart']) {
-    window[chartId + 'Chart'].destroy();
+  // Destroy previous chart if exists
+  if (chartId === 'chartBarTransaction' && transactionChart) {
+    transactionChart.destroy();
+  } else if (chartId === 'chartBarProfit' && profitChart) {
+    profitChart.destroy();
   }
 
   // Create new chart
-  window[chartId + 'Chart'] = new Chart(ctx, {
+  const newChart = new Chart(ctx, {
     type: 'bar',
     data: {
       labels: labels,
@@ -234,9 +199,9 @@ function processChartData(data, chartId, chartLabel, yAxisLabel, isCurrency) {
         tooltip: {
           callbacks: {
             label: function (context) {
-              return isCurrency
-                ? formatCurrency(context.raw)
-                : formatNumber(context.raw);
+              return isCurrency ?
+                formatCurrency(context.raw) :
+                formatNumber(context.raw);
             }
           }
         },
@@ -253,9 +218,9 @@ function processChartData(data, chartId, chartLabel, yAxisLabel, isCurrency) {
           },
           ticks: {
             callback: function (value) {
-              return isCurrency
-                ? formatCurrency(value)
-                : formatNumber(value);
+              return isCurrency ?
+                formatCurrency(value) :
+                formatNumber(value);
             }
           }
         },
@@ -275,6 +240,13 @@ function processChartData(data, chartId, chartLabel, yAxisLabel, isCurrency) {
       }
     }
   });
+
+  // Save chart reference
+  if (chartId === 'chartBarTransaction') {
+    transactionChart = newChart;
+  } else {
+    profitChart = newChart;
+  }
 }
 
 // Scroll the catalog horizontally
