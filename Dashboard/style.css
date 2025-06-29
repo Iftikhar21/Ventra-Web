@@ -528,3 +528,39 @@ body {
     font-size: 1rem;
   }
 }
+
+.product-item {
+    transition: background-color 0.2s ease;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.product-item:hover {
+    transition: all 0.3s ease;
+    transform: translateY(-5px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.product-list-container {
+    border: 1px solid #dee2e6;
+    border-radius: 0.375rem;
+    padding: 0.5rem;
+}
+
+.product-list-container::-webkit-scrollbar {
+    width: 8px;
+}
+
+.product-list-container::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+.product-list-container::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 4px;
+}
+
+.product-list-container::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+}

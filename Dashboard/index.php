@@ -322,7 +322,7 @@ $username = $_SESSION['username'];
   </main>
 
   <!-- Kumpulan Modal -->
-  <div class="modal fade" id="modalBarangHabis" tabindex="-1" aria-labelledby="modalBarangHabisLabel" aria-hidden="true">
+  <!-- <div class="modal fade" id="modalBarangHabis" tabindex="-1" aria-labelledby="modalBarangHabisLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-scrollable">
       <div class="modal-content">
         <div class="modal-header">
@@ -366,6 +366,70 @@ $username = $_SESSION['username'];
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div> -->
+
+  <div class="modal fade" id="modalBarangHabis" tabindex="-1" aria-labelledby="modalBarangHabisLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="modalBarangHabisLabel">List Barang</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <!-- Filter Section -->
+          <!-- <div class="row mb-3">
+            <div class="col-md-8">
+              <input type="text" class="form-control" id="searchProduct" placeholder="Cari nama barang...">
+            </div>
+            <div class="col-md-4">
+              <select id="filterKategori" class="form-select" onchange="filterTable(5, this.value)">
+                <option value="">Semua Kategori</option>
+                <?php foreach ($dataKategori as $kategori): ?>
+                  <option value="<?= $kategori['nama_kategori']; ?>"><?= $kategori['nama_kategori']; ?></option>
+                <?php endforeach; ?>
+              </select>
+            </div>
+          </div> -->
+
+          <!-- Product List -->
+          <div class="product-list-container" style="max-height: 400px; overflow-y: auto;">
+            <?php if (!empty($dataBarangMenipis)) : ?>
+              <?php foreach ($dataBarangMenipis as $product) : ?>
+                <a href="../Barang/editDetailBarang.php?id=<?= $product['id']; ?>&&Kode_Brg=<?= $product['Kode_Brg']; ?>" class="text-decoration-none">
+                  <div class="product-item border rounded p-3 mb-2 cursor-pointer"
+                    data-category="<?= $product['Kode_Brg']; ?>"
+                    onclick="toggleCheckbox(this)">
+                    <div class="row align-items-center">
+                      <div class="col-8">
+                        <div class="fw-bold"><?= $product['Nama_Brg']; ?></div>
+                        <small class="text-muted"><?= $product['Kode_Brg']; ?></small>
+                        <div class="fw-bold text-primary"><?= $product['ukuran']; ?></div>
+                      </div>
+                      <div class="col-4 text-end">
+                        <div class="fw-bold text-danger fs-4"><?= $product['stock']?></div>
+                      </div>
+                    </div>
+                  </div>
+                </a>
+              <?php endforeach; ?>
+            <?php else : ?>
+              <div class="text-center py-5">
+                <div class="text-muted">Tidak ada produk yang tersedia untuk ditambahkan</div>
+              </div>
+            <?php endif; ?>
+          </div>
+
+          <!-- No Results Message -->
+          <div id="noResultsMessage" class="text-center py-5 d-none">
+            <div class="text-muted">Tidak ada produk yang sesuai dengan filter</div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+          <button type="button" class="btn btn-primary" id="addProductsBtn">Tambahkan Produk Terpilih</button>
         </div>
       </div>
     </div>
