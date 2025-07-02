@@ -312,7 +312,7 @@ $username = $_SESSION['username'];
 
     // Global variables for pagination
     let currentPage = 1;
-    let rowsPerPage = 2;
+    let rowsPerPage = 10;
     let filteredRows = [];
 
     // Initialize when page loads
