@@ -28,7 +28,6 @@ if (isset($_POST['btnTambah'])) {
   $result = addDetailBarang($kodeBarang, $produk_id, $ukuran, $pattern,  $barcode, $stock);
 
   if ($result == 1) {
-    echo "<script>alert('Detail barang berhasil ditambahkan!');</script>";
     echo "<script>window.location='detailBarang.php?id=" . $id . "';</script>";
   } else {
     echo "<script>alert('Gagal menambahkan detail barang!');</script>";
@@ -282,7 +281,7 @@ $sqlDetail = getDetailBarangByProduk($id);
               </div>
               <div class="col">
                 <label for="stock" class="form-label">Stok</label>
-                <input type="text" class="form-control" name="stock" required>
+                <input type="number" class="form-control" name="stock" required>
               </div>
             </div>
 
