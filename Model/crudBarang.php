@@ -47,7 +47,7 @@
 
     function addBarang($id, $namaBarang, $bahan, $harga, $gambar, $kategoriId) {
         $koneksi = Connection();
-        $photoData = file_get_contents($gambar);
+        $photoData = file_get_contents($gambar) ?: '';
         $photoData = mysqli_real_escape_string($koneksi, $photoData);
 
         $cek = mysqli_query($koneksi, "SELECT * FROM ventra_produk WHERE id = '$id'");
