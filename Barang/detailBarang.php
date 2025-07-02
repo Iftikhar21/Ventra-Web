@@ -156,29 +156,32 @@ $sqlDetail = getDetailBarangByProduk($id);
           <h3 class="fw-bold mb-3">> Data Detail Barang</h3>
           <div class="row">
             <div class="col-md-12">
-              <div class="card shadow-sm p-4 mb-4 rounded">
-                <div class="row mb-2">
-                  <div class="col-md-3 fw-semibold text-secondary">Nama Barang</div>
-                  <div class="col-md-9"><?= $data['Nama_Brg'] ?></div>
+              <div class="card shadow-sm p-4 mb-4 rounded" style="background: #003366;">
+                <div class="d-flex justify-content-between align-items-start mb-3 text-light">
+                  <span class="badge bg-secondary pt-3 pb-3 ps-5 pe-5 fs-6">
+                    <h4 class="mb-1 fw-bold"><?= $data['Nama_Brg'] ?></h4>
+                  </span>
+                  <span class="badge bg-secondary fs-6"><?= $id ?></span>
                 </div>
-                <div class="row mb-2">
-                  <div class="col-md-3 fw-semibold text-secondary">Produk ID</div>
-                  <div class="col-md-9"><?= $id ?></div>
+
+                <div class="d-flex align-items-center text-light mb-2">
+                  <span class="material-symbols-rounded me-2">texture</span>
+                  <span class="fw-semibold">
+                    <?= $data['Bahan'] ?>
+                  </span>
                 </div>
-                <div class="row mb-2">
-                  <div class="col-md-3 fw-semibold text-secondary">Bahan</div>
-                  <div class="col-md-9"><?= $data['Bahan'] ?></div>
-                </div>
-                <div class="row">
-                  <div class="col-md-3 fw-semibold text-secondary">Kategori</div>
-                  <div class="col-md-9"><?= $data['nama_kategori'] ?></div>
+                <div class="d-flex align-items-center text-light">
+                  <span class="material-symbols-rounded me-2">tag</span>
+                  <span class="fw-semibold">
+                    <?= $data['nama_kategori'] ?>
+                  </span>
                 </div>
               </div>
             </div>
           </div>
           <!-- Filter Input di Luar Tabel -->
           <div class="row mb-3">
-            <div class="col-md-3">
+            <div class="col-md-2">
               <input type="text" id="filterKode" class="form-control" placeholder="Cari Kode Barang" onkeyup="filterTable(1, this.value)">
             </div>
             <div class="col-md-3">
@@ -192,13 +195,18 @@ $sqlDetail = getDetailBarangByProduk($id);
                 <?php endforeach; ?>
               </select>
             </div>
-            <div class="col-md-3">
+            <div class="col-md-2">
               <button onclick="printBarcode()" class="btn btn-primary d-flex align-items-center w-100 no-print">
                 <span class="material-symbols-rounded me-2">print</span>Print
               </button>
             </div>
+            <div class="col-md-2">
+              <button onclick="exportToPDF()" class="btn btn-danger d-flex align-items-center w-100 no-print">
+                <span class="material-symbols-rounded me-2">print</span>Export PDF
+              </button>
+            </div>
           </div>
-  
+
           <div class="table-card table-responsive">
             <table class="table table-striped table-borderless table-hover">
               <thead class="table-primary">
@@ -256,7 +264,7 @@ $sqlDetail = getDetailBarangByProduk($id);
             </div>
           </div>
         </div>
-  
+
         <div class="container mt-4">
           <h3 class="fw-bold mb-3">> Tambah Detail Barang</h3>
           <form action="" method="POST" enctype="multipart/form-data">
@@ -276,7 +284,7 @@ $sqlDetail = getDetailBarangByProduk($id);
                 <input type="text" class="form-control" name="stock" required>
               </div>
             </div>
-  
+
             <div class="row mb-3">
               <div class="col-12">
                 <label for="barcode" class="form-label">Preview Barcode</label>
@@ -285,8 +293,8 @@ $sqlDetail = getDetailBarangByProduk($id);
                 <svg id="barcode"></svg>
               </div>
             </div>
-  
-  
+
+
             <div class="row mb-3 align-items-center">
               <div class="col-md-6">
                 <label for="pattern" class="form-label">Pattern (Upload)</label>
@@ -297,7 +305,7 @@ $sqlDetail = getDetailBarangByProduk($id);
                 <img id="preview-pattern" alt="Gambar Barang" class="img-thumbnail" style="max-height: 200px;">
               </div>
             </div>
-  
+
             <button class="btn btn-success d-flex align-items-center" type="submit" name="btnTambah">
               <span class="material-symbols-rounded me-2">add</span>
               Simpan
@@ -336,6 +344,245 @@ $sqlDetail = getDetailBarangByProduk($id);
   <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/docx/7.8.2/docx.min.js"></script>
+
+
+  <!-- Add this script right after the other script tags -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+  <script>
+    // Function to export selected barcodes to PDF
+    function exportToPDF() {
+      const selectedBarcodes = [];
+      document.querySelectorAll('.barcode-check:checked').forEach(checkbox => {
+        selectedBarcodes.push(checkbox.dataset.barcode);
+      });
+
+      if (selectedBarcodes.length === 0) {
+        alert('Pilih minimal satu barcode untuk diproses!');
+        return;
+      }
+
+      // Ask for number of copies
+      const input = prompt('Masukkan jumlah copy per barcode:', '1');
+      if (input === null) return;
+      const copies = parseInt(input) || 1;
+
+      // PDF Configuration
+      const pdf = new jspdf.jsPDF({
+        orientation: 'landscape', // Gunakan landscape untuk space lebih luas
+        unit: 'mm'
+      });
+
+      // Barcode settings
+      const barcodeWidth = 50; // mm
+      const barcodeHeight = 25; // mm
+      const margin = 10; // mm
+      const maxPerRow = 4;
+
+      let x = margin;
+      let y = margin;
+      let currentRow = 0;
+
+      // Generate each barcode
+      selectedBarcodes.forEach(barcode => {
+        for (let i = 0; i < copies; i++) {
+          // Create temporary canvas for each barcode
+          const canvas = document.createElement('canvas');
+          canvas.width = barcodeWidth * 5; // Convert mm to pixels (approx)
+          canvas.height = barcodeHeight * 5;
+          document.body.appendChild(canvas);
+
+          // Generate barcode
+          JsBarcode(canvas, barcode, {
+            format: "CODE128",
+            displayValue: false,
+            lineColor: "#000",
+            width: 2,
+            height: 30,
+            fontSize: 12,
+            margin: 5
+          });
+
+          // Add to PDF
+          const imgData = canvas.toDataURL('image/png');
+          pdf.addImage(imgData, 'PNG', x, y, barcodeWidth, barcodeHeight);
+
+          // Add barcode text below
+          pdf.text(barcode, x + barcodeWidth / 2, y + barcodeHeight + 5, {
+            align: 'center'
+          });
+
+          // Position for next barcode
+          x += barcodeWidth + margin;
+          currentRow++;
+
+          // Move to next row if current row is full
+          if (currentRow >= maxPerRow) {
+            x = margin;
+            y += barcodeHeight + margin + 10; // Extra space for text
+            currentRow = 0;
+
+            // Add new page if needed
+            if (y > pdf.internal.pageSize.height - margin - barcodeHeight) {
+              pdf.addPage();
+              y = margin;
+            }
+          }
+
+          // Clean up
+          document.body.removeChild(canvas);
+        }
+      });
+
+      pdf.save('barcode_ventra.pdf');
+    }
+
+    // Modified printBarcode function to handle multiple copies
+    function printBarcode(exportToWord = false) {
+      const selectedBarcodes = [];
+      document.querySelectorAll('.barcode-check:checked').forEach(checkbox => {
+        selectedBarcodes.push(checkbox.dataset.barcode);
+      });
+
+      if (selectedBarcodes.length === 0) {
+        alert('Pilih minimal satu barcode untuk diproses!');
+        return;
+      }
+
+      // Ask for number of copies if only one barcode is selected
+      let copies = 1;
+      if (selectedBarcodes.length === 1) {
+        const input = prompt('Masukkan jumlah copy yang ingin dicetak:', '1');
+        if (input === null) return; // User canceled
+        copies = parseInt(input) || 1;
+      }
+
+      const originalContent = document.body.innerHTML;
+      let printContent = '<div style="text-align:center;padding:20px;">';
+      printContent += '<h2>Daftar Barcode</h2>';
+      printContent += '<div style="display:flex;flex-wrap:wrap;justify-content:center;gap:20px;">';
+
+      selectedBarcodes.forEach(barcode => {
+        for (let i = 0; i < copies; i++) {
+          printContent += `
+                    <div style="margin:10px;text-align:center;">
+                        <svg id="print-barcode-${barcode}-${i}" width="200" height="100"></svg>
+                        <div style="margin-top:5px;">${barcode}</div>
+                    </div>`;
+        }
+      });
+
+      printContent += '</div></div>';
+      document.body.innerHTML = printContent;
+
+      setTimeout(() => {
+        selectedBarcodes.forEach(barcode => {
+          for (let i = 0; i < copies; i++) {
+            JsBarcode(`#print-barcode-${barcode}-${i}`, barcode, {
+              format: "CODE128",
+              displayValue: false,
+              lineColor: "#000",
+              width: 2,
+              height: 50,
+              fontSize: 14
+            });
+          }
+        });
+
+        if (exportToWord) {
+          exportBarcodesToWord(selectedBarcodes, copies).then(() => {
+            document.body.innerHTML = originalContent;
+          });
+        } else {
+          window.print();
+          document.body.innerHTML = originalContent;
+        }
+      }, 100);
+    }
+
+    // Modified export to Word function to handle copies
+    async function exportBarcodesToWord(barcodes, copies = 1) {
+      const tempCanvas = document.createElement('canvas');
+      tempCanvas.width = 200;
+      tempCanvas.height = 100;
+      document.body.appendChild(tempCanvas);
+
+      const {
+        Document,
+        Paragraph,
+        Packer,
+        ImageRun,
+        TextRun,
+        HeadingLevel
+      } = docx;
+
+      const children = [
+        new Paragraph({
+          text: "Daftar Barcode",
+          heading: HeadingLevel.HEADING_1,
+          alignment: docx.AlignmentType.CENTER
+        })
+      ];
+
+      for (const barcode of barcodes) {
+        for (let i = 0; i < copies; i++) {
+          JsBarcode(tempCanvas, barcode, {
+            format: "CODE128",
+            displayValue: false,
+            lineColor: "#000",
+            width: 2,
+            height: 50
+          });
+
+          const dataUrl = tempCanvas.toDataURL('image/png');
+          const base64Data = dataUrl.split(',')[1];
+
+          children.push(
+            new Paragraph({
+              children: [
+                new ImageRun({
+                  data: base64Data,
+                  transformation: {
+                    width: 200,
+                    height: 100
+                  }
+                })
+              ],
+              alignment: docx.AlignmentType.CENTER
+            }),
+            new Paragraph({
+              children: [
+                new TextRun({
+                  text: barcode,
+                  bold: true
+                })
+              ],
+              alignment: docx.AlignmentType.CENTER
+            }),
+            new Paragraph({
+              text: ""
+            })
+          );
+        }
+      }
+
+      document.body.removeChild(tempCanvas);
+
+      const doc = new Document({
+        sections: [{
+          properties: {},
+          children: children
+        }]
+      });
+
+      const blob = await Packer.toBlob(doc);
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = 'barcodes.docx';
+      link.click();
+    }
+  </script>
 
   <script>
     let cropper;
