@@ -47,14 +47,22 @@
 
     function addBarang($id, $namaBarang, $bahan, $harga, $gambar, $kategoriId) {
         $koneksi = Connection();
-        $photoData = file_get_contents($gambar) ?: null;
-        $photoData = mysqli_real_escape_string($koneksi, $photoData);
+
+        // Cek apakah gambar diberikan atau tidak
+        $photoData = null;
+        if (!empty($gambar) && file_exists($gambar)) {
+            $content = file_get_contents($gambar);
+            $photoData = mysqli_real_escape_string($koneksi, $content);
+            $photoData = "'$photoData'"; // Bungkus dalam tanda kutip jika ada isinya
+        } else {
+            $photoData = "NULL"; // Biarkan sebagai NULL SQL
+        }
 
         $cek = mysqli_query($koneksi, "SELECT * FROM ventra_produk WHERE id = '$id'");
 
         if (mysqli_num_rows($cek) == 0) {
             $sql = "INSERT INTO ventra_produk (Nama_Brg, Bahan, harga_jual, Gambar, Kategori)
-                    VALUES ('$namaBarang', '$bahan', '$harga', '$photoData', '$kategoriId')";
+                    VALUES ('$namaBarang', '$bahan', '$harga', $photoData, '$kategoriId')";
             $hasil = mysqli_query($koneksi, $sql);
             mysqli_close($koneksi);
             return $hasil ? 1 : 0;
@@ -63,7 +71,6 @@
         mysqli_close($koneksi);
         return 1; // Produk sudah ada, dianggap sukses
     }
-
 
     function editBarang($id, $namaBarang, $bahan, $harga, $gambar, $kategoriId) {
         $koneksi = Connection();
