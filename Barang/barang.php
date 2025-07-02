@@ -148,6 +148,11 @@ $username = $_SESSION['username'];
                 </tr>
               </thead>
               <tbody id="myTable">
+                <?php if (empty($data)) : ?>
+                    <tr class="text-center">
+                      <td colspan="7">Data Tidak Ada</td>
+                    </tr>
+                <?php endif; ?>
                 <?php $no = 1;
                 foreach ($data as $barang): ?>
                   <tr class="text-center">
