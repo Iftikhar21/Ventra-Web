@@ -201,6 +201,11 @@ $username = $_SESSION['username'];
                 </tr>
               </thead>
               <tbody id="myTable">
+                <?php if (empty($dataKategori)) : ?>
+                    <tr class="text-center">
+                      <td colspan="4">Data Tidak Ada</td>
+                    </tr>
+                <?php endif; ?>
                 <?php $no = 1;
                 foreach ($dataKategori as $kategori): ?>
                   <tr>
