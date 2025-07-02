@@ -168,7 +168,7 @@ if (isset($_POST['btnTambah'])) {
             <div class="row mb-3 align-items-center">
               <div class="col-md-6">
                 <label for="Gambar" class="form-label">Gambar (Upload)</label>
-                <input type="file" class="form-control" id="input-photo" name="Gambar" accept="image/*" required>
+                <input type="file" class="form-control" id="input-photo" name="Gambar" accept="image/*">
               </div>
               <div class="col-md-6 text-center">
                 <label class="form-label d-block">Preview Gambar</label>
