@@ -299,7 +299,7 @@ $sqlDetail = getDetailBarangByProduk($id);
             <div class="row mb-3 align-items-center">
               <div class="col-md-6">
                 <label for="pattern" class="form-label">Pattern (Upload)</label>
-                <input type="file" class="form-control" id="input-photo" name="pattern" accept="image/*" required>
+                <input type="file" class="form-control" id="input-photo" name="pattern" accept="image/*">
               </div>
               <div class="col-md-6 text-center">
                 <label class="form-label d-block">Preview Pattern</label>
