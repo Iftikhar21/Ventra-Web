@@ -148,28 +148,39 @@
     function addDetailBarang($kodeBarang, $produk_id, $ukuran, $pattern, $barcode, $stock) {
         $koneksi = Connection();
 
-        // Handle pattern yang bisa NULL
-        if ($pattern !== null) {
-            $photoData = file_get_contents($pattern);
-            $photoData = mysqli_real_escape_string($koneksi, $photoData);
-            $patternValue = "'$photoData'";
+        // Penanganan gambar/pattern
+        $photoData = null;
+        if (!empty($pattern) && file_exists($pattern)) {
+            $content = file_get_contents($pattern);
+            $photoData = mysqli_real_escape_string($koneksi, $content);
+            $photoData = "'$photoData'"; // Bungkus dalam tanda kutip jika ada isinya
         } else {
-            $patternValue = "NULL"; // Tanpa tanda kutip untuk NULL
+            $photoData = "NULL"; // Biarkan sebagai NULL SQL
         }
 
-        // Handle parameter lain yang bisa NULL
-        $kodeBarang = $kodeBarang !== null ? "'" . mysqli_real_escape_string($koneksi, $kodeBarang) . "'" : "NULL";
-        $ukuran = $ukuran !== null ? "'" . mysqli_real_escape_string($koneksi, $ukuran) . "'" : "NULL";
-        $barcode = $barcode !== null ? "'" . mysqli_real_escape_string($koneksi, $barcode) . "'" : "NULL";
+        // Escape dan handle nilai NULL untuk parameter lainnya
+        $kodeBarang = !empty($kodeBarang) ? "'" . mysqli_real_escape_string($koneksi, $kodeBarang) . "'" : "NULL";
+        $ukuran = !empty($ukuran) ? "'" . mysqli_real_escape_string($koneksi, $ukuran) . "'" : "NULL";
+        $barcode = !empty($barcode) ? "'" . mysqli_real_escape_string($koneksi, $barcode) . "'" : "NULL";
         $stock = $stock !== null ? "'" . mysqli_real_escape_string($koneksi, $stock) . "'" : "NULL";
-        $produk_id = $produk_id !== null ? $produk_id : "NULL"; // Untuk integer tidak perlu tanda kutip
+        $produk_id = $produk_id !== null ? $produk_id : "NULL";
 
-        $sql = "INSERT INTO ventra_produk_detail (Kode_Brg, produk_id, ukuran, pattern, barcode, stock)
-                VALUES ($kodeBarang, $produk_id, $ukuran, $patternValue, $barcode, $stock)";
-        
-        $hasil = mysqli_query($koneksi, $sql);
+        // Cek apakah data sudah ada
+        $cek = mysqli_query($koneksi, "SELECT * FROM ventra_produk_detail 
+                                    WHERE Kode_Brg = $kodeBarang 
+                                    AND produk_id = $produk_id 
+                                    AND ukuran = $ukuran");
+
+        if (mysqli_num_rows($cek) == 0) {
+            $sql = "INSERT INTO ventra_produk_detail (Kode_Brg, produk_id, ukuran, pattern, barcode, stock)
+                    VALUES ($kodeBarang, $produk_id, $ukuran, $photoData, $barcode, $stock)";
+            $hasil = mysqli_query($koneksi, $sql);
+            mysqli_close($koneksi);
+            return $hasil ? 1 : 0;
+        }
+
         mysqli_close($koneksi);
-        return $hasil ? 1 : 0;
+        return 1; // Data sudah ada, dianggap sukses
     }
 
     function updateDetailBarang($kodeBarangLama, $kodeBarangBaru, $produk_id, $ukuran, $pattern, $barcode, $stock) {
