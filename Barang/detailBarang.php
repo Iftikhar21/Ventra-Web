@@ -166,13 +166,13 @@ $sqlDetail = getDetailBarangByProduk($id);
 
                 <div class="d-flex align-items-center text-light mb-2">
                   <span class="material-symbols-rounded me-2">texture</span>
-                  <span class="fw-semibold">
+                  <span class="fw-semibold"> Bahan :
                     <?= $data['Bahan'] ?>
                   </span>
                 </div>
                 <div class="d-flex align-items-center text-light">
                   <span class="material-symbols-rounded me-2">tag</span>
-                  <span class="fw-semibold">
+                  <span class="fw-semibold">Kategori :
                     <?= $data['nama_kategori'] ?>
                   </span>
                 </div>
@@ -333,6 +333,28 @@ $sqlDetail = getDetailBarangByProduk($id);
     </div>
   </div>
 
+  <!-- Tambahkan modal ini di bagian sebelum penutup </body> -->
+  <div class="modal fade" id="copyModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Jumlah Copy</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label for="copyInput" class="form-label">Masukkan jumlah copy per barcode:</label>
+            <input type="number" class="form-control" id="copyInput" value="1" min="1">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+          <button type="button" class="btn btn-primary" id="confirmCopy">Konfirmasi</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
 
   <!-- Scripts -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
@@ -351,8 +373,40 @@ $sqlDetail = getDetailBarangByProduk($id);
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
   <script>
+    async function showCopyModal() {
+      return new Promise((resolve) => {
+        const modal = new bootstrap.Modal(document.getElementById('copyModal'));
+        const confirmBtn = document.getElementById('confirmCopy');
+
+        // Tampilkan modal
+        modal.show();
+
+        // Handler untuk tombol konfirmasi
+        const handleConfirm = () => {
+          const inputValue = document.getElementById('copyInput').value;
+          const copies = parseInt(inputValue) || 1;
+          modal.hide();
+          resolve(copies);
+          confirmBtn.removeEventListener('click', handleConfirm);
+        };
+
+        confirmBtn.addEventListener('click', handleConfirm);
+
+        // Handler untuk ketika modal ditutup
+        const handleHide = () => {
+          if (modal._element.classList.contains('show')) {
+            resolve(0); // Return 0 jika dibatalkan
+            confirmBtn.removeEventListener('click', handleConfirm);
+            modal._element.removeEventListener('hidden.bs.modal', handleHide);
+          }
+        };
+
+        modal._element.addEventListener('hidden.bs.modal', handleHide);
+      });
+    }
+
     // Function to export selected barcodes to PDF
-    function exportToPDF() {
+    async function exportToPDF() {
       const selectedBarcodes = [];
       document.querySelectorAll('.barcode-check:checked').forEach(checkbox => {
         selectedBarcodes.push(checkbox.dataset.barcode);
@@ -363,14 +417,14 @@ $sqlDetail = getDetailBarangByProduk($id);
         return;
       }
 
-      // Ask for number of copies
-      const input = prompt('Masukkan jumlah copy per barcode:', '1');
-      if (input === null) return;
-      const copies = parseInt(input) || 1;
+      // Gunakan modal baru untuk input jumlah copy
+      const copies = await showCopyModal();
+
+      if (copies <= 0) return; // Jika user membatalkan
 
       // PDF Configuration
       const pdf = new jspdf.jsPDF({
-        orientation: 'landscape', // Gunakan landscape untuk space lebih luas
+        orientation: 'landscape',
         unit: 'mm'
       });
 
