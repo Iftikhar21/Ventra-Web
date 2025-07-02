@@ -149,9 +149,9 @@ $username = $_SESSION['username'];
               </thead>
               <tbody id="myTable">
                 <?php if (empty($data)) : ?>
-                    <tr class="text-center">
-                      <td colspan="7">Data Tidak Ada</td>
-                    </tr>
+                  <tr class="text-center">
+                    <td colspan="7">Data Tidak Ada</td>
+                  </tr>
                 <?php endif; ?>
                 <?php $no = 1;
                 foreach ($data as $barang): ?>
@@ -202,9 +202,9 @@ $username = $_SESSION['username'];
               </thead>
               <tbody id="myTable">
                 <?php if (empty($dataKategori)) : ?>
-                    <tr class="text-center">
-                      <td colspan="4">Data Tidak Ada</td>
-                    </tr>
+                  <tr class="text-center">
+                    <td colspan="4">Data Tidak Ada</td>
+                  </tr>
                 <?php endif; ?>
                 <?php $no = 1;
                 foreach ($dataKategori as $kategori): ?>
@@ -308,103 +308,427 @@ $username = $_SESSION['username'];
   <script src="../js/sidebar.js"></script>
 
   <script>
-    // Variabel global untuk paginasi
+    // Ventra POS Barang - JavaScript Functions
+
+    // Global variables for pagination
     let currentPage = 1;
-    const rowsPerPage = 10;
+    let rowsPerPage = 2;
+    let filteredRows = [];
 
-    // Fungsi untuk konfirmasi hapus barang
-    function confirmDeleteBarang(id, namaBarang) {
-      document.getElementById('barangName').textContent = namaBarang;
-      document.getElementById('confirmDeleteBarangBtn').href = 'hapusBarang.php?id=' + id;
-      new bootstrap.Modal(document.getElementById('deleteBarangModal')).show();
+    // Initialize when page loads
+    document.addEventListener('DOMContentLoaded', function() {
+      updateDateTime();
+      setInterval(updateDateTime, 1000);
+      initializePagination();
+    });
+
+    // Update date and time display
+    function updateDateTime() {
+      const now = new Date();
+      const timeOptions = {
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: false
+      };
+      const dateOptions = {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      };
+
+      const clockElement = document.getElementById('clock');
+      const dateElement = document.getElementById('date');
+
+      if (clockElement) {
+        clockElement.textContent = now.toLocaleTimeString('id-ID', timeOptions);
+      }
+      if (dateElement) {
+        dateElement.textContent = now.toLocaleDateString('id-ID', dateOptions);
+      }
     }
 
-    // Fungsi untuk konfirmasi hapus kategori
-    function confirmDeleteKategori(idKategori, namaKategori) {
-      document.getElementById('kategoriName').textContent = namaKategori;
-      document.getElementById('confirmDeleteKategoriBtn').href = 'hapusKategori.php?id_kategori=' + idKategori;
-      new bootstrap.Modal(document.getElementById('deleteKategoriModal')).show();
-    }
+    // Filter table function
+    function filterTable(columnIndex, filterValue) {
+      const table = document.getElementById('myTable');
+      const rows = table.getElementsByTagName('tr');
 
-    // Fungsi untuk memfilter tabel
-    function filterTable(columnIndex, value) {
-      const table = document.querySelector('.table-responsive table');
-      const rows = table.querySelectorAll('tbody tr');
+      // Reset to first page when filtering
+      currentPage = 1;
 
-      rows.forEach(row => {
-        const cell = row.cells[columnIndex]; // Fixed: use columnIndex directly
-        const cellText = cell.textContent.toLowerCase();
-        const searchText = value.toLowerCase();
+      // Clear filtered rows array
+      filteredRows = [];
 
-        if (cellText.includes(searchText)) {
-          row.style.display = '';
-        } else {
-          row.style.display = 'none';
+      for (let i = 0; i < rows.length; i++) {
+        const cells = rows[i].getElementsByTagName('td');
+
+        if (cells.length > 0) {
+          let cellText = '';
+
+          // Get text from specific column
+          if (cells[columnIndex]) {
+            cellText = cells[columnIndex].textContent || cells[columnIndex].innerText;
+          }
+
+          // Check if filter value matches
+          if (filterValue === '' || cellText.toLowerCase().includes(filterValue.toLowerCase())) {
+            filteredRows.push(rows[i]);
+          }
         }
-      });
+      }
 
-      currentPage = 1; // Reset ke halaman pertama setelah filter
-      updatePagination();
+      // Apply pagination to filtered results
+      displayPage(currentPage);
     }
 
-    // Fungsi untuk paginasi
-    function updatePagination() {
-      const table = document.querySelector('.table-responsive table');
-      const rows = Array.from(table.querySelectorAll('tbody tr:not([style*="display: none"])'));
-      const totalPages = Math.ceil(rows.length / rowsPerPage);
+    // Initialize pagination
+    function initializePagination() {
+      const table = document.getElementById('myTable');
+      const rows = table.getElementsByTagName('tr');
 
-      document.getElementById('pageInfo').textContent = `Halaman ${currentPage} dari ${totalPages}`;
+      // Store all rows initially
+      filteredRows = Array.from(rows).filter(row => row.getElementsByTagName('td').length > 0);
 
-      // Sembunyikan semua baris
-      rows.forEach(row => row.style.display = 'none');
-
-      // Tampilkan baris untuk halaman saat ini
-      const start = (currentPage - 1) * rowsPerPage;
-      const end = start + rowsPerPage;
-
-      rows.slice(start, end).forEach(row => row.style.display = '');
-
-      // Nonaktifkan tombol jika diperlukan
-      document.querySelector('.btn-primary.btn-sm').disabled = currentPage === 1;
-      document.querySelector('.btn-success.btn-sm').disabled = currentPage === totalPages || totalPages === 0;
+      displayPage(currentPage);
     }
 
+    // Display specific page
+    function displayPage(page) {
+      const table = document.getElementById('myTable');
+      const allRows = table.getElementsByTagName('tr');
+
+      // Hide all rows first
+      for (let i = 0; i < allRows.length; i++) {
+        if (allRows[i].getElementsByTagName('td').length > 0) {
+          allRows[i].style.display = 'none';
+        }
+      }
+
+      // Calculate start and end index
+      const startIndex = (page - 1) * rowsPerPage;
+      const endIndex = startIndex + rowsPerPage;
+
+      // Show rows for current page
+      for (let i = startIndex; i < endIndex && i < filteredRows.length; i++) {
+        filteredRows[i].style.display = '';
+      }
+
+      // Update page info
+      updatePageInfo();
+    }
+
+    // Update page information
+    function updatePageInfo() {
+      const totalRows = filteredRows.length;
+      const totalPages = Math.ceil(totalRows / rowsPerPage);
+      const pageInfoElement = document.getElementById('pageInfo');
+
+      if (pageInfoElement) {
+        if (totalRows === 0) {
+          pageInfoElement.textContent = 'Tidak ada data';
+        } else {
+          const startItem = (currentPage - 1) * rowsPerPage + 1;
+          const endItem = Math.min(currentPage * rowsPerPage, totalRows);
+          pageInfoElement.textContent = `Halaman ${currentPage} dari ${totalPages} (${startItem}-${endItem} dari ${totalRows} item)`;
+        }
+      }
+
+      // Disable/enable navigation buttons
+      const prevBtn = document.querySelector('button[onclick="prevPage()"]');
+      const nextBtn = document.querySelector('button[onclick="nextPage()"]');
+
+      if (prevBtn) {
+        prevBtn.disabled = currentPage <= 1;
+      }
+      if (nextBtn) {
+        nextBtn.disabled = currentPage >= Math.ceil(totalRows / rowsPerPage);
+      }
+    }
+
+    // Previous page function
     function prevPage() {
       if (currentPage > 1) {
         currentPage--;
-        updatePagination();
+        displayPage(currentPage);
       }
     }
 
+    // Next page function
     function nextPage() {
-      const table = document.querySelector('.table-responsive table');
-      const visibleRows = Array.from(table.querySelectorAll('tbody tr:not([style*="display: none"])')).length;
-
-      if (currentPage * rowsPerPage < visibleRows) {
+      const totalPages = Math.ceil(filteredRows.length / rowsPerPage);
+      if (currentPage < totalPages) {
         currentPage++;
-        updatePagination();
+        displayPage(currentPage);
       }
     }
 
-    // Inisialisasi saat halaman dimuat
-    document.addEventListener('DOMContentLoaded', function() {
-      updatePagination();
+    // Confirm delete barang
+    function confirmDeleteBarang(id, namaBarang) {
+      const modal = new bootstrap.Modal(document.getElementById('deleteBarangModal'));
+      const barangNameElement = document.getElementById('barangName');
+      const confirmBtn = document.getElementById('confirmDeleteBarangBtn');
 
-      // Event listener untuk filter
-      document.getElementById('filterKode').addEventListener('input', function() {
-        filterTable(0, this.value); // Kolom ID (index 0)
-      });
+      if (barangNameElement) {
+        barangNameElement.textContent = `"${namaBarang}"`;
+      }
 
-      document.getElementById('filterNama').addEventListener('input', function() {
-        filterTable(2, this.value); // Kolom Nama Barang (index 2)
-      });
+      if (confirmBtn) {
+        confirmBtn.href = `deleteBarang.php?id=${id}`;
+      }
 
-      document.getElementById('filterKategori').addEventListener('change', function() {
-        filterTable(5, this.value); // Kolom Kategori (index 5)
+      modal.show();
+    }
+
+    // Confirm delete kategori
+    function confirmDeleteKategori(idKategori, namaKategori) {
+      const modal = new bootstrap.Modal(document.getElementById('deleteKategoriModal'));
+      const kategoriNameElement = document.getElementById('kategoriName');
+      const confirmBtn = document.getElementById('confirmDeleteKategoriBtn');
+
+      if (kategoriNameElement) {
+        kategoriNameElement.textContent = `"${namaKategori}"`;
+      }
+
+      if (confirmBtn) {
+        confirmBtn.href = `deleteKategori.php?id_kategori=${idKategori}`;
+      }
+
+      modal.show();
+    }
+
+    // Clear all filters
+    function clearAllFilters() {
+      document.getElementById('filterKode').value = '';
+      document.getElementById('filterNama').value = '';
+      document.getElementById('filterKategori').value = '';
+
+      // Reset to show all data
+      initializePagination();
+    }
+
+    // Search function for real-time filtering
+    function searchTable() {
+      const searchInput = document.getElementById('globalSearch');
+      if (!searchInput) return;
+
+      const searchValue = searchInput.value.toLowerCase();
+      const table = document.getElementById('myTable');
+      const rows = table.getElementsByTagName('tr');
+
+      filteredRows = [];
+
+      for (let i = 0; i < rows.length; i++) {
+        const cells = rows[i].getElementsByTagName('td');
+        let found = false;
+
+        if (cells.length > 0) {
+          for (let j = 0; j < cells.length; j++) {
+            const cellText = cells[j].textContent || cells[j].innerText;
+            if (cellText.toLowerCase().includes(searchValue)) {
+              found = true;
+              break;
+            }
+          }
+
+          if (found) {
+            filteredRows.push(rows[i]);
+          }
+        }
+      }
+
+      currentPage = 1;
+      displayPage(currentPage);
+    }
+
+    // Show loading indicator
+    function showLoading() {
+      const loadingHtml = `
+        <div class="d-flex justify-content-center align-items-center p-4">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <span class="ms-2">Memuat data...</span>
+        </div>
+    `;
+
+      const tableBody = document.getElementById('myTable');
+      if (tableBody) {
+        tableBody.innerHTML = loadingHtml;
+      }
+    }
+
+    // Show success message
+    function showSuccessMessage(message) {
+      const alertHtml = `
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="material-symbols-rounded me-2">check_circle</i>
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    `;
+
+      const container = document.querySelector('.container-fluid');
+      if (container) {
+        container.insertAdjacentHTML('afterbegin', alertHtml);
+
+        // Auto dismiss after 5 seconds
+        setTimeout(() => {
+          const alert = container.querySelector('.alert');
+          if (alert) {
+            const bsAlert = new bootstrap.Alert(alert);
+            bsAlert.close();
+          }
+        }, 5000);
+      }
+    }
+
+    // Show error message
+    function showErrorMessage(message) {
+      const alertHtml = `
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="material-symbols-rounded me-2">error</i>
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    `;
+
+      const container = document.querySelector('.container-fluid');
+      if (container) {
+        container.insertAdjacentHTML('afterbegin', alertHtml);
+
+        // Auto dismiss after 5 seconds
+        setTimeout(() => {
+          const alert = container.querySelector('.alert');
+          if (alert) {
+            const bsAlert = new bootstrap.Alert(alert);
+            bsAlert.close();
+          }
+        }, 5000);
+      }
+    }
+
+    // Validate image file
+    function validateImageFile(input) {
+      const file = input.files[0];
+      const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
+      const maxSize = 5 * 1024 * 1024; // 5MB
+
+      if (file) {
+        if (!allowedTypes.includes(file.type)) {
+          showErrorMessage('Format file tidak didukung. Gunakan JPG, PNG, atau GIF.');
+          input.value = '';
+          return false;
+        }
+
+        if (file.size > maxSize) {
+          showErrorMessage('Ukuran file terlalu besar. Maksimal 5MB.');
+          input.value = '';
+          return false;
+        }
+
+        // Preview image
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          const preview = document.getElementById('imagePreview');
+          if (preview) {
+            preview.src = e.target.result;
+            preview.style.display = 'block';
+          }
+        };
+        reader.readAsDataURL(file);
+      }
+
+      return true;
+    }
+
+    // Format currency input
+    function formatCurrency(input) {
+      let value = input.value.replace(/[^\d]/g, '');
+
+      if (value) {
+        value = parseInt(value).toLocaleString('id-ID');
+        input.value = 'Rp ' + value;
+      }
+    }
+
+    // Remove currency formatting for form submission
+    function removeCurrencyFormat(input) {
+      let value = input.value.replace(/[^\d]/g, '');
+      input.value = value;
+    }
+
+    // Print table
+    function printTable() {
+      const printWindow = window.open('', '_blank');
+      const tableContent = document.querySelector('.table-card').innerHTML;
+
+      printWindow.document.write(`
+        <html>
+            <head>
+                <title>Data Barang - Ventra POS</title>
+                <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+                <style>
+                    body { font-family: Arial, sans-serif; }
+                    .table img { max-width: 50px; height: auto; }
+                    @media print {
+                        .btn { display: none; }
+                        .pagination { display: none; }
+                    }
+                </style>
+            </head>
+            <body>
+                <div class="container">
+                    <h2 class="text-center mb-4">Data Barang - Ventra POS</h2>
+                    <p class="text-center text-muted mb-4">Dicetak pada: ${new Date().toLocaleDateString('id-ID')}</p>
+                    ${tableContent}
+                </div>
+            </body>
+        </html>
+    `);
+
+      printWindow.document.close();
+      printWindow.print();
+    }
+
+    // Export to CSV
+    function exportToCSV() {
+      const table = document.querySelector('.table');
+      const rows = table.querySelectorAll('tr');
+      let csv = [];
+
+      for (let i = 0; i < rows.length; i++) {
+        const row = [];
+        const cols = rows[i].querySelectorAll('td, th');
+
+        for (let j = 0; j < cols.length - 1; j++) { // Exclude action column
+          if (j === 1) { // Skip image column
+            row.push('');
+          } else {
+            let cellText = cols[j].innerText;
+            row.push('"' + cellText.replace(/"/g, '""') + '"');
+          }
+        }
+        csv.push(row.join(','));
+      }
+
+      const csvContent = csv.join('\n');
+      const blob = new Blob([csvContent], {
+        type: 'text/csv;charset=utf-8;'
       });
-    });
+      const link = document.createElement('a');
+
+      if (link.download !== undefined) {
+        const url = URL.createObjectURL(blob);
+        link.setAttribute('href', url);
+        link.setAttribute('download', `data_barang_${new Date().toISOString().split('T')[0]}.csv`);
+        link.style.visibility = 'hidden';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      }
+    }
   </script>
-
 </body>
 
 </html>
