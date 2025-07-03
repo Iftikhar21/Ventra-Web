@@ -158,7 +158,7 @@ if (isset($_POST['btnTambah'])) {
 
             <button class="btn btn-success d-flex align-items-center" type="submit" name="btnTambah">
               <span class="material-symbols-rounded me-2">add</span>
-              Simpan
+              Tambah
             </button>
           </form>
         </div>
