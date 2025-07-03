@@ -1092,7 +1092,7 @@ $username = $_SESSION['username'];
       const timestamp = new Date().toISOString().slice(0, 19).replace(/:/g, '-');
 
       // Export file
-      XLSX.writeFile(wb, `Laporan_Ventra_POS${tanggalFilter}_${timestamp}.xlsx`);
+      XLSX.writeFile(wb, `Laporan_Penjualan_Fashion_24_${tanggalFilter}_${timestamp}.xlsx`);
 
       // Tampilkan notifikasi berhasil
       if (typeof Swal !== 'undefined') {
