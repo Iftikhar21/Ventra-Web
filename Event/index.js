@@ -1,6 +1,6 @@
 // Global variables
 let currentPage = 1;
-const rowsPerPage = 2; // Adjust as needed
+const rowsPerPage = 5; // Adjust as needed
 let filteredRows = [];
 
 // Initialize when DOM is loaded
