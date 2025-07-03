@@ -1,77 +1,115 @@
+// Global variables
 let currentPage = 1;
-const rowsPerPage = 5;
+const rowsPerPage = 2; // Adjust as needed
 let filteredRows = [];
 
-function filterTable() {
-    const kodeFilter = document.getElementById("filterKode").value.toLowerCase();
-    const namaFilter = document.getElementById("filterNama").value.toLowerCase();
-    const waktuAktifFilter = document.getElementById("filterWaktuAktif").value;
-    const waktuNonAktifFilter = document.getElementById("filterWaktuNonAktif").value;
+// Initialize when DOM is loaded
+document.addEventListener('DOMContentLoaded', function () {
+  initializePagination();
 
-    const table = document.getElementById("myTable");
-    const rows = table.getElementsByTagName("tr");
+  // Add event listeners for filters
+  document.getElementById('filterKode')?.addEventListener('input', function () {
+    filterTable(0, this.value);
+  });
 
-    filteredRows = []; // Kosongkan dulu
+  document.getElementById('filterNama')?.addEventListener('input', function () {
+    filterTable(1, this.value);
+  });
+});
 
-    for (let i = 0; i < rows.length; i++) {
-        const cols = rows[i].getElementsByTagName("td");
-        if (cols.length < 5) continue;
+// Initialize pagination
+function initializePagination() {
+  const table = document.getElementById('myTable');
+  if (!table) return;
 
-        const kode = cols[0].textContent.toLowerCase();
-        const nama = cols[1].textContent.toLowerCase();
-        const waktuAktif = cols[3].textContent.trim().split(" ")[0]; // posisi kolom 3
-        const waktuNonAktif = cols[4].textContent.trim().split(" ")[0]; // posisi kolom 4
+  const rows = table.getElementsByTagName('tr');
+  filteredRows = Array.from(rows).filter(row => row.getElementsByTagName('td').length > 0);
 
-        const matchKode = kode.includes(kodeFilter);
-        const matchNama = nama.includes(namaFilter);
-        const matchWaktuAktif = !waktuAktifFilter || waktuAktif === waktuAktifFilter;
-        const matchWaktuNonAktif = !waktuNonAktifFilter || waktuNonAktif === waktuNonAktifFilter;
-
-        if (matchKode && matchNama && matchWaktuAktif && matchWaktuNonAktif) {
-            filteredRows.push(rows[i]); // tambahkan ke array jika cocok
-        }
-    }
-
-    showPage(1); // Tampilkan halaman pertama dari hasil filter
+  displayPage(currentPage);
 }
 
-function showPage(page) {
+// Display specific page
+function displayPage(page) {
+  const startIndex = (page - 1) * rowsPerPage;
+  const endIndex = startIndex + rowsPerPage;
+
+  // Hide all rows first
+  filteredRows.forEach(row => row.style.display = 'none');
+
+  // Show rows for current page
+  for (let i = startIndex; i < endIndex && i < filteredRows.length; i++) {
+    filteredRows[i].style.display = '';
+  }
+
+  updatePageInfo();
+}
+
+// Update page information
+function updatePageInfo() {
   const totalRows = filteredRows.length;
   const totalPages = Math.ceil(totalRows / rowsPerPage);
+  const pageInfoElement = document.getElementById('pageInfo');
 
-  // Batasi nilai halaman
-  if (page < 1) page = 1;
-  if (page > totalPages) page = totalPages;
+  if (pageInfoElement) {
+    if (totalRows === 0) {
+      pageInfoElement.textContent = 'Tidak ada data';
+    } else {
+      const startItem = (currentPage - 1) * rowsPerPage + 1;
+      const endItem = Math.min(currentPage * rowsPerPage, totalRows);
+      pageInfoElement.textContent = `Halaman ${currentPage} dari ${totalPages} (${startItem}-${endItem} dari ${totalRows} item)`;
+    }
+  }
 
-  // Sembunyikan semua baris dan tampilkan sesuai halaman
-  const table = document.getElementById("myTable");
-  const rows = table.getElementsByTagName("tr");
+  // Update button states
+  const prevBtn = document.querySelector('button[onclick="prevPage()"]');
+  const nextBtn = document.querySelector('button[onclick="nextPage()"]');
 
-  // Sembunyikan semua baris terlebih dahulu
+  if (prevBtn) prevBtn.disabled = currentPage <= 1;
+  if (nextBtn) nextBtn.disabled = currentPage >= totalPages || totalPages === 0;
+}
+
+// Filter table function
+function filterTable(columnIndex, searchText) {
+  const table = document.getElementById('myTable');
+  if (!table) return;
+
+  const rows = table.getElementsByTagName('tr');
+  filteredRows = [];
+
   for (let i = 0; i < rows.length; i++) {
-    rows[i].style.display = "none";
+    const row = rows[i];
+    const cells = row.getElementsByTagName('td');
+
+    if (cells.length === 0) continue; // Skip header row
+
+    const cell = cells[columnIndex];
+    const cellValue = cell.textContent || cell.innerText;
+    const searchValue = searchText.toLowerCase();
+
+    if (searchText === '' || cellValue.toLowerCase().includes(searchValue)) {
+      row.style.display = '';
+      filteredRows.push(row);
+    } else {
+      row.style.display = 'none';
+    }
   }
 
-  // Tampilkan baris yang sesuai dengan halaman yang dipilih
-  const startIdx = (page - 1) * rowsPerPage;
-  const endIdx = page * rowsPerPage;
+  currentPage = 1;
+  displayPage(currentPage);
+}
 
-  for (let i = startIdx; i < endIdx && i < totalRows; i++) {
-    filteredRows[i].style.display = "";
+// Navigation functions - must be global
+window.prevPage = function () {
+  if (currentPage > 1) {
+    currentPage--;
+    displayPage(currentPage);
   }
-
-  document.getElementById("pageInfo").innerText = `Halaman ${page} dari ${totalPages}`;
-  currentPage = page;
 }
 
-function nextPage() {
-  showPage(currentPage + 1);
+window.nextPage = function () {
+  const totalPages = Math.ceil(filteredRows.length / rowsPerPage);
+  if (currentPage < totalPages) {
+    currentPage++;
+    displayPage(currentPage);
+  }
 }
-
-function prevPage() {
-  showPage(currentPage - 1);
-}
-
-document.addEventListener("DOMContentLoaded", () => {
-  filterTable();  // Panggil filterTable saat halaman pertama kali dimuat
-});

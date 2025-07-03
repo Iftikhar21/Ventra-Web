@@ -118,11 +118,11 @@ $username = $_SESSION['username'];
           <div class="row mb-3">
             <div class="col-md-3">
               <label for="filterKode" class="form-label">ID Event</label>
-              <input type="text" id="filterKode" class="form-control" placeholder="Cari ID Event" onkeyup="filterTable(1, this.value)">
+              <input type="text" id="filterKode" class="form-control" placeholder="Cari ID Event" onkeyup="filterTable(0, this.value)">
             </div>
             <div class="col-md-3">
               <label for="filterNama" class="form-label">Nama Event</label>
-              <input type="text" id="filterNama" class="form-control" placeholder="Cari Nama Event" onkeyup="filterTable(2, this.value)">
+              <input type="text" id="filterNama" class="form-control" placeholder="Cari Nama Event" onkeyup="filterTable(1, this.value)">
             </div>
           </div>
           <div class="table-responsive">
@@ -152,12 +152,6 @@ $username = $_SESSION['username'];
                     <td><?= $event['waktu_aktif']; ?></td>
                     <td><?= $event['waktu_non_aktif']; ?></td>
                     <td class="text-center">
-                      <!-- <a href="editEvent.php?id_event=<?= $event['id_event']; ?>" class="btn btn-warning btn-sm">
-                              <i class="material-symbols-rounded" style="color: #fff; margin-top: 2px;">edit</i>
-                          </a>
-                          <a href="hapusEvent.php?id_event=<?= $event['id_event']; ?>" class="btn btn-danger btn-sm">
-                              <i class="material-symbols-rounded" style="margin-top: 2px;">delete</i>
-                          </a> -->
                       <a href="detailEvent.php?id_event=<?= $event['id_event']; ?>" class="btn btn-info btn-sm text-light">
                         <i class="fa-regular fa-eye me-2"></i>Lihat Detail
                       </a>
@@ -179,27 +173,8 @@ $username = $_SESSION['username'];
 
   <!-- Scripts -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-  <script src="index.js"></script>
   <script src="../js/sidebar.js"></script>
-
-  <script>
-    function confirmDeleteEvent(idEvent, namaEvent) {
-      const modal = new bootstrap.Modal(document.getElementById('deleteEventModal'));
-      const eventNameElement = document.getElementById('eventName');
-      const confirmBtn = document.getElementById('confirmDeleteEvent');
-
-      if (eventNameElement) {
-        eventNameElement.textContent = `"${namaEvent}"`;
-      }
-
-      if (confirmBtn) {
-        confirmBtn.href = `hapusEvent.php?id_event=${idEvent}`;
-      }
-
-      modal.show();
-    }
-  </script>
-
+  <script src="index.js" defer></script>
 
 </body>
 

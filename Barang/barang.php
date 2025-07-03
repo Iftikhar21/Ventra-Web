@@ -558,17 +558,61 @@ $username = $_SESSION['username'];
     function confirmDeleteKategori(idKategori, namaKategori) {
       const modal = new bootstrap.Modal(document.getElementById('deleteKategoriModal'));
       const kategoriNameElement = document.getElementById('kategoriName');
-      const confirmBtn = document.getElementById('confirmDeleteKategoriBtn');
 
       if (kategoriNameElement) {
         kategoriNameElement.textContent = `"${namaKategori}"`;
       }
 
+      // Set onclick handler untuk tombol konfirmasi
+      const confirmBtn = document.getElementById('confirmDeleteKategoriBtn');
       if (confirmBtn) {
-        confirmBtn.href = `hapusKategori.php?id_kategori=${idKategori}`;
+        confirmBtn.onclick = function() {
+          checkAndDeleteKategori(idKategori, namaKategori);
+        };
       }
 
       modal.show();
+    }
+
+    function checkAndDeleteKategori(idKategori, namaKategori) {
+      // Kirim request AJAX untuk mengecek dan menghapus
+      fetch(`hapusKategori.php?id_kategori=${idKategori}`)
+        .then(response => response.json())
+        .then(data => {
+          const messageModal = new bootstrap.Modal(document.getElementById('messageModal'));
+          const messageBody = document.getElementById('messageModalBody');
+          const messageTitle = document.querySelector('#messageModalLabel');
+
+          if (data.success) {
+            messageTitle.innerHTML = '<i class="fa-solid fa-circle-check me-2"></i> Berhasil';
+            messageBody.innerHTML = `Kategori <span class="text-primary">${namaKategori}</span> berhasil dihapus.`;
+
+            // Tutup modal delete
+            const deleteModal = bootstrap.Modal.getInstance(document.getElementById('deleteKategoriModal'));
+            deleteModal.hide();
+
+            // Tampilkan modal pesan
+            messageModal.show();
+
+            // Reload halaman setelah 2 detik
+            setTimeout(() => {
+              window.location.reload();
+            }, 2000);
+          } else {
+            messageTitle.innerHTML = '<i class="fa-solid fa-circle-exclamation me-2"></i> Gagal';
+            messageBody.innerHTML = `Kategori <span class="text-primary">${namaKategori}</span> tidak bisa dihapus karena: <br><span class="text-danger">${data.message}</span>`;
+
+            // Tutup modal delete
+            const deleteModal = bootstrap.Modal.getInstance(document.getElementById('deleteKategoriModal'));
+            deleteModal.hide();
+
+            // Tampilkan modal pesan
+            messageModal.show();
+          }
+        })
+        .catch(error => {
+          console.error('Error:', error);
+        });
     }
 
     // Clear all filters
