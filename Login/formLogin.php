@@ -24,12 +24,38 @@
     <title>Login</title>
     <link rel="icon" href="../Img/logoBusanaSatu.png" type="image/x-icon">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link rel="stylesheet" href="../Style/login.css">
+    <style>
+        .password-toggle {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #6c757d;
+            cursor: pointer;
+            z-index: 10;
+        }
+        
+        .password-toggle:hover {
+            color: #495057;
+        }
+        
+        .password-input-wrapper {
+            position: relative;
+        }
+        
+        .password-input-wrapper input {
+            padding-right: 45px;
+        }
+    </style>
 </head>
 <body>
     <div class="login-container">
         <div class="form-section">
-            <h2 class="form-title">Selamat Datang di Ventra!</h2>
+            <h2 class="form-title">Selamat Datang di<br>Fashion 24!</h2>
             <p class="text-muted">Silahkan Login Sebagai Admin!</p>
             <form method="POST">
                 <div class="mb-3">
@@ -38,12 +64,11 @@
                 </div>
                 <div class="mb-3">
                     <label for="password" class="form-label">Password</label>
-                    <input type="password" class="form-control" id="password" name="password" placeholder="********" required>
-                </div>
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="rememberMe" onclick="showPasswd()">
-                        <label class="form-check-label" for="rememberMe">Show Password</label>
+                    <div class="password-input-wrapper">
+                        <input type="password" class="form-control" id="password" name="password" placeholder="********" required>
+                        <button type="button" class="password-toggle" data-target="password">
+                            <i class="fa-solid fa-eye-slash"></i>
+                        </button>
                     </div>
                 </div>
                 <button type="submit" name="submit" class="btn btn-black w-100 mb-3">Sign In</button>
@@ -59,13 +84,26 @@
         </div>
     </div>
 
-  <script>
-    function showPasswd() {
-      const x = document.getElementById("password");
-      x.type = x.type === "password" ? "text" : "password";
-    }
-  </script>
+    <script>
+        document.querySelectorAll('.password-toggle').forEach(button => {
+            button.addEventListener('click', function() {
+                const targetId = this.getAttribute('data-target');
+                const input = document.getElementById(targetId);
+                const icon = this.querySelector('i');
 
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js"></script>
+                if (input.type === 'password') {
+                    input.type = 'text';
+                    icon.classList.remove('fa-eye-slash');
+                    icon.classList.add('fa-eye');
+                } else {
+                    input.type = 'password';
+                    icon.classList.remove('fa-eye');
+                    icon.classList.add('fa-eye-slash');
+                }
+            });
+        });
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

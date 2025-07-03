@@ -539,7 +539,7 @@ $sqlDetail = getDetailBarangByProduk($id);
         }
       });
 
-      pdf.save('barcode_ventra.pdf');
+      pdf.save('barcode_products_fashion24.pdf');
     }
 
     // Modified printBarcode function to handle multiple copies
