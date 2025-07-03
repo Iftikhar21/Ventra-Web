@@ -67,8 +67,7 @@ if (isset($_POST['btnEdit'])) {
   <!-- Sidebar -->
   <div class="sidebar" id="sidebar">
     <div class="logo">
-      <img src="../Img/VentraLogo.jpg" alt="logo" />
-      <span class="nav-text fw-bold">Ventra POS</span>
+      <img src="../Img/logoBusana.png" alt="logo" />
     </div>
     <ul class="nav flex-column mt-3">
       <li class="nav-item">
@@ -79,7 +78,7 @@ if (isset($_POST['btnEdit'])) {
       </li>
       <li class="nav-item">
         <a class="nav-link active" href="../Barang/barang.php">
-          <i class="material-symbols-rounded">inventory_2</i>
+          <i class="material-symbols-rounded">package_2</i>
           <span class="nav-text">Barang</span>
         </a>
       </li>

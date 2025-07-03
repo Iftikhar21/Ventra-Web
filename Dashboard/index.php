@@ -46,8 +46,7 @@ $username = $_SESSION['username'];
   <!-- Sidebar -->
   <div class="sidebar" id="sidebar">
     <div class="logo">
-      <img src="../Img/VentraLogo.jpg" alt="logo" />
-      <span class="nav-text fw-bold">Ventra POS</span>
+      <img src="../Img/logoBusana.png" alt="logo" />
     </div>
     <ul class="nav flex-column mt-3">
       <li class="nav-item">
@@ -58,7 +57,7 @@ $username = $_SESSION['username'];
       </li>
       <li class="nav-item">
         <a class="nav-link" href="../Barang/barang.php">
-          <i class="material-symbols-rounded">inventory_2</i>
+          <i class="material-symbols-rounded">package_2</i>
           <span class="nav-text">Barang</span>
         </a>
       </li>
@@ -129,8 +128,8 @@ $username = $_SESSION['username'];
                 <p class="card-text" style="color: red;"><?= $jumlahBarangMenipis; ?></p>
                 <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#modalBarangHabis">Lihat Barang</button>
               </div>
-              <i class="fa-solid fa-box" style="font-size: 36px; color: #ff0000; background-color:rgb(255, 186, 186); padding: 15px; border-radius: 10px;"></i>
-              <!-- <i class="material-symbols-rounded">inventory_2</i> -->
+              <!-- <i class="fa-solid fa-box" style="font-size: 36px; color: #ff0000; background-color:rgb(255, 186, 186); padding: 15px; border-radius: 10px;"></i> -->
+              <i class="material-symbols-rounded" style="font-size: 36px; color: #ff0000; background-color:rgb(255, 186, 186); padding: 15px; border-radius: 10px;">package_2</i>
             </div>
           </div>
         </div>
@@ -141,8 +140,8 @@ $username = $_SESSION['username'];
                 <h5 class="card-title">Jumlah Total Barang</h5>
                 <p class="card-text"><?= $jumlahProduk; ?></p>
               </div>
-              <i class="fa-solid fa-box" style="font-size: 36px; color: #003366; background-color:rgb(133, 194, 255); padding: 15px; border-radius: 10px;"></i>
-              <!-- <i class="material-symbols-rounded" style="font-size: 48px; color: #003366; background-color:rgb(133, 194, 255); padding: 5px; border-radius: 10px;">inventory_2</i> -->
+              <i class="material-symbols-rounded" style="font-size: 36px; color: #003366; background-color:rgb(133, 194, 255); padding: 15px; border-radius: 10px;">package_2</i>
+              <!-- <i class="fa-solid fa-box" style="font-size: 36px; color: #003366; background-color:rgb(133, 194, 255); padding: 15px; border-radius: 10px;"></i> -->
             </div>
           </div>
         </div>
