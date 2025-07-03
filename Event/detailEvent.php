@@ -165,8 +165,9 @@ if (isset($_POST['id_event']) && isset($_POST['product_ids'])) {
                                             <a href="editEvent.php?id_event=<?= $dataEvent['id_event']; ?>" class="btn btn-warning btn-sm d-flex align-items-center text-light">
                                                 <i class="fa-solid fa-pen p-1"></i>
                                             </a>
-                                            <a href="hapusEvent.php?id_event=<?= $dataEvent['id_event']; ?>" class="btn btn-danger btn-sm d-flex align-items-center">
-                                                <i class="fa-solid fa-trash p-1"></i>
+                                            <a href="#" class="btn btn-danger btn-sm"
+                                                onclick="confirmDeleteEvent(<?= $dataEvent['id_event']; ?>, '<?= addslashes($dataEvent['nama_event']); ?>')">
+                                                <i class="material-symbols-rounded" style="margin-top: 2px;">delete</i>
                                             </a>
                                         </div>
                                     </div>
@@ -354,6 +355,39 @@ if (isset($_POST['id_event']) && isset($_POST['product_ids'])) {
         </div>
     </div>
 
+    <div class="modal fade" id="deleteEventModal" tabindex="-1" aria-labelledby="deleteEventModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title" id="deleteEventModalLabel">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        Konfirmasi Hapus Event
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="text-center py-4">
+                        <i class="fas fa-trash-alt text-danger mb-3" style="font-size: 3rem;"></i>
+                        <h5 class="fw-bold mb-2">Yakin ingin menghapus event ini?</h5>
+                        <p id="eventName" class="text-muted mb-3"></p>
+                        <p class="text-danger small">
+                            <i class="fas fa-info-circle me-2"></i>
+                            Data yang dihapus tidak dapat dikembalikan
+                        </p>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="fas fa-times me-2"></i> Batal
+                    </button>
+                    <a id="confirmDeleteEvent" href="#" class="btn btn-danger">
+                        <i class="fas fa-trash me-2"></i> Ya, Hapus
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="index.js"></script>
@@ -361,6 +395,29 @@ if (isset($_POST['id_event']) && isset($_POST['product_ids'])) {
 
     <!-- Add this JavaScript code before the closing </body> tag -->
     <script>
+        function confirmDeleteEvent(idEvent, namaEvent) {
+            // Pastikan modal ada di DOM
+            const modalElement = document.getElementById('deleteEventModal');
+            if (!modalElement) {
+                console.error('Modal element not found');
+                return;
+            }
+
+            const modal = new bootstrap.Modal(modalElement);
+
+            // Update konten modal
+            const eventNameElement = document.getElementById('eventName');
+            const confirmBtn = document.getElementById('confirmDeleteEvent');
+
+            if (eventNameElement && confirmBtn) {
+                eventNameElement.textContent = `"${namaEvent}"`;
+                confirmBtn.href = `hapusEvent.php?id_event=${idEvent}`;
+                modal.show();
+            } else {
+                console.error('Required elements not found in modal');
+            }
+        }
+
         // Filter products in the modal
         document.getElementById('searchProduct').addEventListener('input', function() {
             const searchTerm = this.value.toLowerCase();
