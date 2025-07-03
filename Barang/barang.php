@@ -474,7 +474,7 @@ $username = $_SESSION['username'];
       }
 
       if (confirmBtn) {
-        confirmBtn.href = `deleteBarang.php?id=${id}`;
+        confirmBtn.href = `hapusBarang.php?id=${id}`;
       }
 
       modal.show();
