@@ -180,8 +180,56 @@ $sqlDetail = getDetailBarangByProduk($id);
               </div>
             </div>
           </div>
+          <div class="row mt-4 mb-4">
+            <h3 class="fw-bold mb-3">> Tambah Detail Barang</h3>
+            <form action="" method="POST" enctype="multipart/form-data">
+              <input type="hidden" name="produk_id" value="<?= $id ?>">
+              <input type="hidden" name="barcode" id="barcodeInput">
+              <div class="row mb-3">
+                <div class="col">
+                  <label for="kodeBarang" class="form-label">Kode Barang</label>
+                  <input type="text" class="form-control" name="kodeBarang" id="kodeBarang" required>
+                </div>
+                <div class="col">
+                  <label for="ukuran" class="form-label">Ukuran</label>
+                  <input type="text" class="form-control" name="ukuran" required>
+                </div>
+                <div class="col">
+                  <label for="stock" class="form-label">Stok</label>
+                  <input type="number" class="form-control" name="stock" required>
+                </div>
+              </div>
+
+              <div class="row mb-3">
+                <div class="col-12">
+                  <label for="barcode" class="form-label">Preview Barcode</label>
+                </div>
+                <div class="col barcode">
+                  <svg id="barcode"></svg>
+                </div>
+              </div>
+
+              <div class="row mb-3 align-items-center">
+                <div class="col-md-6">
+                  <label for="pattern" class="form-label">Pattern (Upload)</label>
+                  <input type="file" class="form-control" id="input-photo" name="pattern" accept="image/*">
+                </div>
+                <div class="col-md-6 text-center img-pattern">
+                  <label class="form-label d-block">Preview Pattern</label>
+                  <img id="preview-pattern" alt="Gambar Pattern" class="img-thumbnail" style="max-height: 200px;">
+                </div>
+              </div>
+
+              <button class="btn btn-success d-flex align-items-center" type="submit" name="btnTambah">
+                <span class="material-symbols-rounded me-2">add</span>
+                Tambah
+              </button>
+            </form>
+          </div>
+          <hr>
           <!-- Filter Input di Luar Tabel -->
-          <div class="row mb-3">
+          <div class="row mt-4 mb-4">
+            <h3 class="fw-bold mb-3">> Tabel Detail Barang</h3>
             <div class="col-md-3">
               <input type="text" id="filterKode" class="form-control" placeholder="Cari Kode Barang" onkeyup="filterTable(2, this.value)">
             </div>
@@ -261,54 +309,6 @@ $sqlDetail = getDetailBarangByProduk($id);
               <button class="btn btn-success btn-sm" onclick="nextPage()">Berikutnya</button>
             </div>
           </div>
-        </div>
-
-        <div class="container mt-4">
-          <h3 class="fw-bold mb-3">> Tambah Detail Barang</h3>
-          <form action="" method="POST" enctype="multipart/form-data">
-            <input type="hidden" name="produk_id" value="<?= $id ?>">
-            <input type="hidden" name="barcode" id="barcodeInput">
-            <div class="row mb-3">
-              <div class="col">
-                <label for="kodeBarang" class="form-label">Kode Barang</label>
-                <input type="text" class="form-control" name="kodeBarang" id="kodeBarang" required>
-              </div>
-              <div class="col">
-                <label for="ukuran" class="form-label">Ukuran</label>
-                <input type="text" class="form-control" name="ukuran" required>
-              </div>
-              <div class="col">
-                <label for="stock" class="form-label">Stok</label>
-                <input type="number" class="form-control" name="stock" required>
-              </div>
-            </div>
-
-            <div class="row mb-3">
-              <div class="col-12">
-                <label for="barcode" class="form-label">Preview Barcode</label>
-              </div>
-              <div class="col barcode">
-                <svg id="barcode"></svg>
-              </div>
-            </div>
-
-
-            <div class="row mb-3 align-items-center">
-              <div class="col-md-6">
-                <label for="pattern" class="form-label">Pattern (Upload)</label>
-                <input type="file" class="form-control" id="input-photo" name="pattern" accept="image/*">
-              </div>
-              <div class="col-md-6 text-center">
-                <label class="form-label d-block">Preview Pattern</label>
-                <img id="preview-pattern" alt="Gambar Barang" class="img-thumbnail" style="max-height: 200px;">
-              </div>
-            </div>
-
-            <button class="btn btn-success d-flex align-items-center" type="submit" name="btnTambah">
-              <span class="material-symbols-rounded me-2">add</span>
-              Tambah
-            </button>
-          </form>
         </div>
       </div>
     </div>

@@ -380,26 +380,11 @@ $username = $_SESSION['username'];
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
-          <!-- Filter Section -->
-          <!-- <div class="row mb-3">
-            <div class="col-md-8">
-              <input type="text" class="form-control" id="searchProduct" placeholder="Cari nama barang...">
-            </div>
-            <div class="col-md-4">
-              <select id="filterKategori" class="form-select" onchange="filterTable(5, this.value)">
-                <option value="">Semua Kategori</option>
-                <?php foreach ($dataKategori as $kategori): ?>
-                  <option value="<?= $kategori['nama_kategori']; ?>"><?= $kategori['nama_kategori']; ?></option>
-                <?php endforeach; ?>
-              </select>
-            </div>
-          </div> -->
-
           <!-- Product List -->
           <div class="product-list-container" style="max-height: 400px; overflow-y: auto;">
             <?php if (!empty($dataBarangMenipis)) : ?>
               <?php foreach ($dataBarangMenipis as $product) : ?>
-                <a href="../Barang/editDetailBarang.php?id=<?= $product['id']; ?>&&Kode_Brg=<?= $product['Kode_Brg']; ?>" class="text-decoration-none">
+                <a href="../Barang/editDetailBarang.php?id=<?= $product['id']; ?>&&Kode_Brg=<?= $product['Kode_Brg']; ?>&&produk_id=<?= $product['produk_id']; ?>" class="text-decoration-none">
                   <div class="product-item border rounded p-3 mb-2 cursor-pointer"
                     data-category="<?= $product['Kode_Brg']; ?>"
                     onclick="toggleCheckbox(this)">
