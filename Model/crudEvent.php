@@ -7,12 +7,30 @@
         $koneksi = Connection();
         $hasil = mysqli_query($koneksi, $sql);
         $i = 0;
+
+        $currentTime = date('Y-m-d H:i:s');
+
         while ($baris = mysqli_fetch_assoc($hasil)){
             $data[$i]['id_event'] = $baris['id_event'];
             $data[$i]['nama_event'] = $baris['nama_event'];
             $data[$i]['total_diskon'] = $baris['total_diskon'];
             $data[$i]['waktu_aktif'] = $baris['waktu_aktif'];
             $data[$i]['waktu_non_aktif'] = $baris['waktu_non_aktif'];
+
+             // Menentukan status berdasarkan waktu
+            $activeTime = $baris['waktu_aktif'];
+            $inactiveTime = $baris['waktu_non_aktif'];
+            
+            if ($activeTime && $inactiveTime) {
+                if ($currentTime >= $activeTime && $currentTime <= $inactiveTime) {
+                    $data[$i]['Status'] = 'Active';
+                } else {
+                    $data[$i]['Status'] = 'Inactive';
+                }
+            } else {
+                $data[$i]['Status'] = 'Unknown';
+            }
+
             $i++;
         }
         mysqli_close($koneksi);

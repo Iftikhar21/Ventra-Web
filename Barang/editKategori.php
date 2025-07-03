@@ -67,7 +67,8 @@ if (isset($_POST['btnEdit'])) {
   <!-- Sidebar -->
   <div class="sidebar" id="sidebar">
     <div class="logo">
-      <img src="../Img/logoBusana.png" alt="logo" />
+      <img src="../Img/logoBusana.png" alt="logo" class="logo-full" />
+      <img src="../Img/logoBusanaSatu.png" alt="logo" class="logo-collapsed" />
     </div>
     <ul class="nav flex-column mt-3">
       <li class="nav-item">
@@ -156,7 +157,7 @@ if (isset($_POST['btnEdit'])) {
                 <input type="text" class="form-control" name="nama_kategori" required value="<?php echo $namaKategori ?>">
               </div>
             </div>
-  
+
             <button class="btn btn-success d-flex align-items-center" type="submit" name="btnEdit">
               <span class="material-symbols-rounded me-2">check</span>
               Simpan

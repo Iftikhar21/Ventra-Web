@@ -30,12 +30,24 @@ body::-webkit-scrollbar {
 .sidebar .logo {
   display: flex;
   align-items: center;
-  padding: 25px;
+  padding: 50px 25px 40px 25px;
 }
 
 .sidebar .logo img {
-  width: 200px;
+  position: absolute;
+  transition: all 0.3s ease;
   object-fit: cover;
+}
+
+.sidebar .logo .logo-full {
+  width: 200px;
+  opacity: 1;
+}
+
+.sidebar .logo .logo-collapsed {
+  width: 40px; /* Sesuaikan dengan ukuran logo mini */
+  opacity: 0;
+  left: 15px; /* Posisi logo mini */
 }
 
 .sidebar .nav-link {
@@ -63,6 +75,14 @@ body::-webkit-scrollbar {
   opacity: 0;
   width: 0;
   overflow: hidden;
+}
+
+.sidebar.collapsed .logo .logo-full {
+  opacity: 0;
+}
+
+.sidebar.collapsed .logo .logo-collapsed {
+  opacity: 1;
 }
 
 .collapse-menu {

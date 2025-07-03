@@ -46,7 +46,8 @@ if (isset($_POST['btnTambah'])) {
   <!-- Sidebar -->
   <div class="sidebar" id="sidebar">
     <div class="logo">
-      <img src="../Img/logoBusana.png" alt="logo" />
+      <img src="../Img/logoBusana.png" alt="logo" class="logo-full" />
+      <img src="../Img/logoBusanaSatu.png" alt="logo" class="logo-collapsed" />
     </div>
     <ul class="nav flex-column mt-3">
       <li class="nav-item">
@@ -134,7 +135,7 @@ if (isset($_POST['btnTambah'])) {
                 <input type="text" class="form-control" name="nama_kategori" required>
               </div>
             </div>
-  
+
             <button class="btn btn-success d-flex align-items-center" type="submit" name="btnTambah">
               <span class="material-symbols-rounded me-2">add</span>
               Tambah

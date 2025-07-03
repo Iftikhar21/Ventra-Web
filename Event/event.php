@@ -34,7 +34,8 @@ $username = $_SESSION['username'];
   <!-- Sidebar -->
   <div class="sidebar" id="sidebar">
     <div class="logo">
-      <img src="../Img/logoBusana.png" alt="logo" />
+      <img src="../Img/logoBusana.png" alt="logo" class="logo-full" />
+      <img src="../Img/logoBusanaSatu.png" alt="logo" class="logo-collapsed" />
     </div>
     <ul class="nav flex-column mt-3">
       <li class="nav-item">
@@ -133,6 +134,7 @@ $username = $_SESSION['username'];
                   <th>Total Diskon</th>
                   <th>Waktu Aktif</th>
                   <th>Waktu Non Aktif</th>
+                  <th>Status</th>
                   <th>Aksi</th>
                 </tr>
               </thead>
@@ -150,6 +152,15 @@ $username = $_SESSION['username'];
                     <td class="text-center"><?= $event['total_diskon']; ?> %</td>
                     <td><?= $event['waktu_aktif']; ?></td>
                     <td><?= $event['waktu_non_aktif']; ?></td>
+                    <td>
+                      <?php if ($event['Status'] === 'Active'): ?>
+                        <span class="text-success fw-bold"><?= $event['Status']; ?></span>
+                      <?php elseif ($event['Status'] === 'Inactive'): ?>
+                        <span class="text-danger fw-bold"><?= $event['Status']; ?></span>
+                      <?php else: ?>
+                        <span class="text-warning fw-bold"><?= $event['Status']; ?></span>
+                      <?php endif; ?>
+                    </td>
                     <td class="text-center">
                       <a href="detailEvent.php?id_event=<?= $event['id_event']; ?>" class="btn btn-info btn-sm text-light">
                         <i class="fa-regular fa-eye me-2"></i>Lihat Detail

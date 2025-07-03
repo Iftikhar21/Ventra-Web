@@ -80,7 +80,8 @@ if (isset($_POST['btnUpdate'])) {
   <!-- Sidebar -->
   <div class="sidebar" id="sidebar">
     <div class="logo">
-      <img src="../Img/logoBusana.png" alt="logo" />
+      <img src="../Img/logoBusana.png" alt="logo" class="logo-full" />
+      <img src="../Img/logoBusanaSatu.png" alt="logo" class="logo-collapsed" />
     </div>
     <ul class="nav flex-column mt-3">
       <li class="nav-item">
@@ -176,7 +177,7 @@ if (isset($_POST['btnUpdate'])) {
                 <input type="number" class="form-control" name="stock" required value="<?= $data['stock'] ?>">
               </div>
             </div>
-  
+
             <div class="row mb-3">
               <div class="col-12">
                 <label for="barcode" class="form-label">Preview Barcode</label>
@@ -185,8 +186,8 @@ if (isset($_POST['btnUpdate'])) {
                 <svg id="barcode"></svg>
               </div>
             </div>
-  
-  
+
+
             <div class="row mb-3 align-items-center">
               <div class="col-md-6">
                 <label for="pattern" class="form-label">Pattern (Upload)</label>
@@ -197,7 +198,7 @@ if (isset($_POST['btnUpdate'])) {
                 <img id="preview-pattern" alt="Gambar Barang" class="img-thumbnail" style="max-height: 200px;">
               </div>
             </div>
-  
+
             <button class="btn btn-success d-flex align-items-center" type="submit" name="btnUpdate">
               <span class="material-symbols-rounded me-2">check</span>
               Simpan

@@ -1,21 +1,14 @@
 // Fungsi untuk toggle sidebar
 function toggleSidebar() {
     const sidebar = document.querySelector('.sidebar');
-    const toggleBtn = document.querySelectorAll('.toggle-btn');
-    if (toggleBtn.length > 0) {
-        toggleBtn.forEach(btn => {
-            btn.addEventListener('click', toggleSidebar);
-        });
-    } else {
-        console.error('Tidak ada toggle button ditemukan!');
-    }
+    const toggleBtn = document.querySelector('.toggle-btn'); // Ubah ke querySelector biasa karena hanya ada satu tombol
     const mainContent = document.querySelector('.main-content');
+    const logoFull = document.querySelector('.logo-full');
+    const logoMini = document.querySelector('.logo-collapsed');
 
     if (!sidebar || !toggleBtn || !mainContent) {
         console.log('Elemen tidak ditemukan!');
         return;
-    } else {
-        console.log('Elemen ditemukan, melanjutkan toggle sidebar...');
     }
 
     if (window.innerWidth <= 768) {
@@ -29,9 +22,21 @@ function toggleSidebar() {
         if (sidebar.classList.contains('collapsed')) {
             toggleBtn.style.left = '90px';
             mainContent.style.marginLeft = '90px';
+            
+            // Animasi logo
+            if (logoFull && logoMini) {
+                logoFull.style.opacity = '0';
+                logoMini.style.opacity = '1';
+            }
         } else {
             toggleBtn.style.left = '260px';
             mainContent.style.marginLeft = '250px';
+            
+            // Animasi logo
+            if (logoFull && logoMini) {
+                logoFull.style.opacity = '1';
+                logoMini.style.opacity = '0';
+            }
         }
     }
 }
@@ -69,6 +74,19 @@ document.addEventListener('DOMContentLoaded', function() {
         toggleBtn.addEventListener('click', toggleSidebar);
     } else {
         console.error('Toggle button tidak ditemukan!');
+    }
+
+    // Inisialisasi logo sesuai state awal
+    const sidebar = document.querySelector('.sidebar');
+    const logoFull = document.querySelector('.logo-full');
+    const logoMini = document.querySelector('.logo-collapsed');
+    
+    if (sidebar && sidebar.classList.contains('collapsed')) {
+        if (logoFull) logoFull.style.opacity = '0';
+        if (logoMini) logoMini.style.opacity = '1';
+    } else {
+        if (logoFull) logoFull.style.opacity = '1';
+        if (logoMini) logoMini.style.opacity = '0';
     }
 
     // Jalankan clock pertama kali dan set interval

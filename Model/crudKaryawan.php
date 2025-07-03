@@ -7,11 +7,30 @@
         $koneksi = Connection();
         $hasil = mysqli_query($koneksi, $sql);
         $i = 0;
+        
+        // Waktu saat ini
+        $currentTime = date('Y-m-d H:i:s');
+        
         while ($baris = mysqli_fetch_assoc($hasil)){
             $data[$i]['NISN'] = $baris['NISN'];
             $data[$i]['Nama'] = $baris['Nama'];
             $data[$i]['WaktuAktif'] = $baris['WaktuAktif'];
             $data[$i]['WaktuNonAktif'] = $baris['WaktuNonAktif'];
+            
+            // Menentukan status berdasarkan waktu
+            $activeTime = $baris['WaktuAktif'];
+            $inactiveTime = $baris['WaktuNonAktif'];
+            
+            if ($activeTime && $inactiveTime) {
+                if ($currentTime >= $activeTime && $currentTime <= $inactiveTime) {
+                    $data[$i]['Status'] = 'Active';
+                } else {
+                    $data[$i]['Status'] = 'Inactive';
+                }
+            } else {
+                $data[$i]['Status'] = 'Unknown';
+            }
+            
             $i++;
         }
         mysqli_close($koneksi);

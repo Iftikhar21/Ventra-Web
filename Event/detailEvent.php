@@ -58,7 +58,8 @@ if (isset($_POST['id_event']) && isset($_POST['product_ids'])) {
     <!-- Sidebar -->
     <div class="sidebar" id="sidebar">
         <div class="logo">
-            <img src="../Img/logoBusana.png" alt="logo" />
+            <img src="../Img/logoBusana.png" alt="logo" class="logo-full" />
+            <img src="../Img/logoBusanaSatu.png" alt="logo" class="logo-collapsed" />
         </div>
         <ul class="nav flex-column mt-3">
             <li class="nav-item">

@@ -34,7 +34,8 @@ $username = $_SESSION['username'];
   <!-- Sidebar -->
   <div class="sidebar" id="sidebar">
     <div class="logo">
-      <img src="../Img/logoBusana.png" alt="logo" />
+      <img src="../Img/logoBusana.png" alt="logo" class="logo-full" />
+      <img src="../Img/logoBusanaSatu.png" alt="logo" class="logo-collapsed" />
     </div>
     <ul class="nav flex-column mt-3">
       <li class="nav-item">
@@ -131,6 +132,7 @@ $username = $_SESSION['username'];
                   <th>Nama Kasir</th>
                   <th>Waktu Aktif</th>
                   <th>Waktu Non Aktif</th>
+                  <th>Status</th>
                   <th class="text-center">Aksi</th>
                 </tr>
               </thead>
@@ -142,6 +144,15 @@ $username = $_SESSION['username'];
                     <td><?= $karyawan['Nama']; ?></td>
                     <td><?= $karyawan['WaktuAktif']; ?></td>
                     <td><?= $karyawan['WaktuNonAktif']; ?></td>
+                    <td>
+                      <?php if ($karyawan['Status'] === 'Active'): ?>
+                        <span class="text-success fw-bold"><?= $karyawan['Status']; ?></span>
+                      <?php elseif ($karyawan['Status'] === 'Inactive'): ?>
+                        <span class="text-danger fw-bold"><?= $karyawan['Status']; ?></span>
+                      <?php else: ?>
+                        <span class="text-warning fw-bold"><?= $karyawan['Status']; ?></span>
+                      <?php endif; ?>
+                    </td>
                     <td class="text-center">
                       <a href="editKasir.php?NISN=<?= $karyawan['NISN']; ?>" class="btn btn-warning btn-sm">
                         <i class="material-symbols-rounded" style="color: #fff; margin-top: 2px;">edit</i>

@@ -53,7 +53,8 @@ if (isset($_POST['btnTambah'])) {
   <!-- Sidebar -->
   <div class="sidebar" id="sidebar">
     <div class="logo">
-      <img src="../Img/logoBusana.png" alt="logo" />
+      <img src="../Img/logoBusana.png" alt="logo" class="logo-full" />
+      <img src="../Img/logoBusanaSatu.png" alt="logo" class="logo-collapsed" />
     </div>
     <ul class="nav flex-column mt-3">
       <li class="nav-item">
@@ -129,7 +130,7 @@ if (isset($_POST['btnTambah'])) {
         </a>
 
       </div>
-      <div class="row">        
+      <div class="row">
         <div class="container">
           <form action="" method="POST" enctype="multipart/form-data">
             <div class="col">
@@ -145,7 +146,7 @@ if (isset($_POST['btnTambah'])) {
                 <input type="text" class="form-control" name="Bahan" required>
               </div>
             </div>
-  
+
             <div class="row mb-3">
               <div class="col">
                 <label for="harga_jual" class="form-label">Harga</label>
@@ -163,7 +164,7 @@ if (isset($_POST['btnTambah'])) {
                 </select>
               </div>
             </div>
-  
+
             <div class="row mb-3 align-items-center">
               <div class="col-md-6">
                 <label for="Gambar" class="form-label">Gambar (Upload)</label>
@@ -174,7 +175,7 @@ if (isset($_POST['btnTambah'])) {
                 <img id="preview-gambar" alt="Gambar Barang" class="img-thumbnail" style="max-height: 200px;">
               </div>
             </div>
-  
+
             <button class="btn btn-success d-flex align-items-center" type="submit" name="btnTambah">
               <span class="material-symbols-rounded me-2">add</span>
               Tambah
