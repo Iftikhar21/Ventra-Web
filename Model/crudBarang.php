@@ -88,10 +88,10 @@
         return $hasil ? 1 : 0;
     }
 
-    function deleteBarang($kodeBarang) {
+    function deleteBarang($id) {
         $koneksi = Connection();
         // Pastikan untuk menghapus detail di tempat terpisah
-        $sql = "DELETE FROM ventra_produk WHERE Kode_Brg = '$kodeBarang'";
+        $sql = "DELETE FROM ventra_produk WHERE id = '$id'";
         $hasil = mysqli_query($koneksi, $sql);
         mysqli_close($koneksi);
         return $hasil ? 1 : 0;
@@ -217,7 +217,7 @@
 
     function deleteDetailBarangByProduk($kodeBarang) {
         $koneksi = Connection();
-        $sql = "DELETE FROM ventra_produk_detail WHERE produk_id = '$kodeBarang'";
+        $sql = "DELETE FROM ventra_produk_detail WHERE Kode_Brg = '$kodeBarang'";
         $hasil = mysqli_query($koneksi, $sql);
         mysqli_close($koneksi);
         return $hasil ? 1 : 0;

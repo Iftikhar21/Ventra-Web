@@ -249,7 +249,8 @@ $sqlDetail = getDetailBarangByProduk($id);
                       <a href="editDetailBarang.php?Kode_Brg=<?= $barang['Kode_Brg']; ?>" class="btn btn-warning btn-sm">
                         <i class="material-symbols-rounded" style="color: #fff; margin-top: 2px;">edit</i>
                       </a>
-                      <a href="hapusDetailBarang.php?Kode_Brg=<?= $barang['Kode_Brg']; ?>" class="btn btn-danger btn-sm">
+                      <a href="#" class="btn btn-danger btn-sm"
+                        onclick="confirmDeleteDetailBarang('<?= $barang['Kode_Brg']; ?>', '<?= $barang['Kode_Brg']; ?>')">
                         <i class="material-symbols-rounded" style="margin-top: 2px;">delete</i>
                       </a>
                     </td>
@@ -333,6 +334,41 @@ $sqlDetail = getDetailBarangByProduk($id);
     </div>
   </div>
 
+  <div class="modal fade" id="deleteDetailBarang" tabindex="-1" aria-labelledby="deleteDetailBarangLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="deleteDetailBarangLabel">
+            <i class="fa-solid fa-triangle-exclamation me-2 text-danger"></i>
+            Konfirmasi Hapus Detail Barang
+          </h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="text-center">
+            <i class="material-symbols-rounded text-danger mb-3" style="font-size: 4rem;">delete_forever</i>
+            <p class="fw-bold">Yakin ingin menghapus detail barang ini?</p>
+            <p id="detailBarangKodeBarang" class="text-muted"></p>
+            <p class="text-warning small">
+              <i class="fa-solid fa-circle-info me-2"></i>
+              Data yang dihapus tidak dapat dikembalikan
+            </p>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+            <i class="fa-solid fa-xmark me-2"></i>
+            Batal
+          </button>
+          <a id="confirmDeleteDetailBarang" href="#" class="btn btn-danger">
+            <i class="fa-solid fa-trash me-2"></i>
+            Ya, Hapus
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Tambahkan modal ini di bagian sebelum penutup </body> -->
   <div class="modal fade" id="copyModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
@@ -373,6 +409,23 @@ $sqlDetail = getDetailBarangByProduk($id);
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
   <script>
+    function confirmDeleteDetailBarang(Kode_Brg, namaBarang) {
+      const modal = new bootstrap.Modal(document.getElementById('deleteDetailBarang'));
+      const confirmBtn = document.getElementById('confirmDeleteDetailBarang');
+
+      // Dapatkan produk_id dari URL atau dari data
+      const urlParams = new URLSearchParams(window.location.search);
+      const produk_id = urlParams.get('id');
+
+      // Update link hapus dengan menyertakan produk_id
+      confirmBtn.href = `hapusDetailBarang.php?Kode_Brg=${Kode_Brg}&produk_id=${produk_id}`;
+
+      // Tampilkan nama barang di modal
+      document.getElementById('detailBarangKodeBarang').textContent = namaBarang;
+
+      modal.show();
+    }
+    
     async function showCopyModal() {
       return new Promise((resolve) => {
         const modal = new bootstrap.Modal(document.getElementById('copyModal'));

@@ -139,9 +139,9 @@ $username = $_SESSION['username'];
               </thead>
               <tbody id="myTable">
                 <?php if (empty($data)) : ?>
-                    <tr class="text-center">
-                      <td colspan="6">Data Tidak Ada</td>
-                    </tr>
+                  <tr class="text-center">
+                    <td colspan="6">Data Tidak Ada</td>
+                  </tr>
                 <?php endif; ?>
                 <?php $no = 1;
                 foreach ($data as $event): ?>
@@ -177,10 +177,65 @@ $username = $_SESSION['username'];
     </div>
   </main>
 
+  <div class="modal fade" id="deleteEventModal" tabindex="-1" aria-labelledby="deleteEventModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="deleteEventModalLabel">
+            <i class="fa-solid fa-triangle-exclamation me-2 text-danger"></i>
+            Konfirmasi Hapus Event
+          </h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="text-center">
+            <i class="material-symbols-rounded text-danger mb-3" style="font-size: 4rem;">delete_forever</i>
+            <p class="fw-bold">Yakin ingin menghapus Event ini?</p>
+            <p id="eventName" class="text-muted"></p>
+            <p class="text-warning small">
+              <i class="fa-solid fa-circle-info me-2"></i>
+              Data yang dihapus tidak dapat dikembalikan
+            </p>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+            <i class="fa-solid fa-xmark me-2"></i>
+            Batal
+          </button>
+          <a id="confirmDeleteEvent" href="#" class="btn btn-danger">
+            <i class="fa-solid fa-trash me-2"></i>
+            Ya, Hapus
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Scripts -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script src="index.js"></script>
   <script src="../js/sidebar.js"></script>
+
+  <script>
+    function confirmDeleteEvent(idEvent, namaEvent) {
+      const modal = new bootstrap.Modal(document.getElementById('deleteEventModal'));
+      const barangNameElement = document.getElementById('barangName');
+      const confirmBtn = document.getElementById('confirmDeleteBarangBtn');
+
+      if (barangNameElement) {
+        barangNameElement.textContent = `"${namaBarang}"`;
+      }
+
+      if (confirmBtn) {
+        confirmBtn.href = `hapusBarang.php?id=${id}`;
+      }
+
+      modal.show();
+    }
+  </script>
+
+
 </body>
 
 </html>

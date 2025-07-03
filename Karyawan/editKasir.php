@@ -152,7 +152,7 @@ if (isset($_POST['btnEdit'])) {
           <form action="" method="POST" enctype="multipart/form-data">
             <div class="row mb-3">
               <div class="col">
-                <label for="nisn" class="form-label">ID Kasir</label>
+                <label for="nisn" class="form-label">NISN</label>
                 <input type="number" class="form-control" name="nisn" required value="<?php echo $nisn ?>" readonly>
               </div>
               <div class="col">

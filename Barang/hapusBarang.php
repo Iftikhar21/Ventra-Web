@@ -8,8 +8,8 @@
       }
 
     if (isset($_GET['id'])) {
-        $kodeBarang = $_GET['id'];
-        deleteBarang($kodeBarang);
+        $id = $_GET['id'];
+        deleteBarang($id);
         header('location:barang.php');
     }
 ?> 
