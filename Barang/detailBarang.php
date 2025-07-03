@@ -37,7 +37,7 @@ if (isset($_POST['btnTambah'])) {
 // Get product data
 $data = getBarang($id);
 $allBarang = getAllBarang();
-$dataUkuran = getDetailBarangByProduk($id);
+$dataUkuran = getUkuranWhereID($id);
 
 // If product not found, redirect to product list
 if (empty($data)) {

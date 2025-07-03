@@ -249,4 +249,17 @@
         mysqli_close($koneksi);
         return $data;
     }
+
+    function getUkuranWhereID($id) {
+        $data = array();
+        $sql = "SELECT DISTINCT ukuran FROM ventra_produk_detail WHERE produk_id = '$id'";
+        $koneksi = Connection();
+        $hasil = mysqli_query($koneksi, $sql);
+        while ($baris = mysqli_fetch_assoc($hasil)) {
+            $data[] = $baris;
+        }
+        mysqli_close($koneksi);
+        return $data;
+    }
+
 ?>
