@@ -37,7 +37,7 @@ if (isset($_POST['btnTambah'])) {
 // Get product data
 $data = getBarang($id);
 $allBarang = getAllBarang();
-$dataKategori = getAllKategori();
+$dataUkuran = getAllBarangDanDetail();
 
 // If product not found, redirect to product list
 if (empty($data)) {
@@ -181,26 +181,23 @@ $sqlDetail = getDetailBarangByProduk($id);
           </div>
           <!-- Filter Input di Luar Tabel -->
           <div class="row mb-3">
-            <div class="col-md-2">
-              <input type="text" id="filterKode" class="form-control" placeholder="Cari Kode Barang" onkeyup="filterTable(1, this.value)">
+            <div class="col-md-3">
+              <input type="text" id="filterKode" class="form-control" placeholder="Cari Kode Barang" onkeyup="filterTable(2, this.value)">
             </div>
             <div class="col-md-3">
-              <input type="text" id="filterNama" class="form-control" placeholder="Cari Nama Barang" onkeyup="filterTable(2, this.value)">
-            </div>
-            <div class="col-md-3">
-              <select id="filterKategori" class="form-select" onchange="filterTable(6, this.value)">
-                <option value="">Semua Kategori</option>
-                <?php foreach ($dataKategori as $kategori): ?>
-                  <option value="<?= $kategori['nama_kategori']; ?>"><?= $kategori['nama_kategori']; ?></option>
+              <select id="filterUkuran" class="form-select" onchange="filterTable(3, this.value)">
+                <option value="">Semua Ukuran</option>
+                <?php foreach ($dataUkuran as $ukuran): ?>
+                  <option value="<?= $ukuran['ukuran']; ?>"><?= $ukuran['ukuran']; ?></option>
                 <?php endforeach; ?>
               </select>
             </div>
-            <div class="col-md-2">
+            <div class="col-md-3">
               <button onclick="printBarcode()" class="btn btn-primary d-flex align-items-center w-100 no-print">
                 <span class="material-symbols-rounded me-2">print</span>Print
               </button>
             </div>
-            <div class="col-md-2">
+            <div class="col-md-3">
               <button onclick="exportToPDF()" class="btn btn-danger d-flex align-items-center w-100 no-print">
                 <span class="material-symbols-rounded me-2">print</span>Export PDF
               </button>
@@ -211,7 +208,7 @@ $sqlDetail = getDetailBarangByProduk($id);
             <table class="table table-striped table-borderless table-hover">
               <thead class="table-primary">
                 <tr class="text-center">
-                  <th><input type="checkbox" id="selectAll" class="no-print"></th>
+                  <th class="no-print"><input type="checkbox" id="selectAll"></th>
                   <th>ID Produk</th>
                   <th>Kode Barang</th>
                   <th>Ukuran</th>
@@ -227,10 +224,9 @@ $sqlDetail = getDetailBarangByProduk($id);
                     <td colspan="8">Data Tidak Ada</td>
                   </tr>
                 <?php endif; ?>
-                <?php $no = 1;
-                foreach ($sqlDetail as $barang): ?>
+                <?php foreach ($sqlDetail as $barang): ?>
                   <tr class="text-center">
-                    <td><input type="checkbox" class="barcode-check no-print" data-barcode="<?= $barang['barcode'] ?>"></td>
+                    <td class="no-print"><input type="checkbox" class="barcode-check" data-barcode="<?= $barang['barcode'] ?>"></td>
                     <td><?= $barang['produk_id']; ?></td>
                     <td><?= $barang['Kode_Brg']; ?></td>
                     <td><?= $barang['ukuran']; ?></td>
@@ -425,7 +421,7 @@ $sqlDetail = getDetailBarangByProduk($id);
 
       modal.show();
     }
-    
+
     async function showCopyModal() {
       return new Promise((resolve) => {
         const modal = new bootstrap.Modal(document.getElementById('copyModal'));
@@ -925,6 +921,127 @@ $sqlDetail = getDetailBarangByProduk($id);
       const kode = this.value;
       JsBarcode("#barcode", kode);
       document.getElementById("barcodeInput").value = kode;
+    });
+  </script>
+
+  <script>
+    // Pagination variables
+    let currentPage = 1;
+    const rowsPerPage = 10;
+    let filteredRows = [];
+
+    // Initialize pagination
+    function initializePagination() {
+      const table = document.getElementById('myTable');
+      const rows = table.getElementsByTagName('tr');
+
+      // Store all rows initially (excluding header row if any)
+      filteredRows = Array.from(rows).filter(row => row.getElementsByTagName('td').length > 0);
+
+      displayPage(currentPage);
+    }
+
+    // Display specific page
+    function displayPage(page) {
+      const table = document.getElementById('myTable');
+      const allRows = table.getElementsByTagName('tr');
+
+      // Hide all rows first (excluding header row if any)
+      for (let i = 0; i < allRows.length; i++) {
+        if (allRows[i].getElementsByTagName('td').length > 0) {
+          allRows[i].style.display = 'none';
+        }
+      }
+
+      // Calculate start and end index
+      const startIndex = (page - 1) * rowsPerPage;
+      const endIndex = startIndex + rowsPerPage;
+
+      // Show rows for current page
+      for (let i = startIndex; i < endIndex && i < filteredRows.length; i++) {
+        filteredRows[i].style.display = '';
+      }
+
+      // Update page info
+      updatePageInfo();
+    }
+
+    // Update page information
+    function updatePageInfo() {
+      const totalRows = filteredRows.length;
+      const totalPages = Math.ceil(totalRows / rowsPerPage);
+      const pageInfoElement = document.getElementById('pageInfo');
+
+      if (pageInfoElement) {
+        if (totalRows === 0) {
+          pageInfoElement.textContent = 'Tidak ada data';
+        } else {
+          const startItem = (currentPage - 1) * rowsPerPage + 1;
+          const endItem = Math.min(currentPage * rowsPerPage, totalRows);
+          pageInfoElement.textContent = `Halaman ${currentPage} dari ${totalPages} (${startItem}-${endItem} dari ${totalRows} item)`;
+        }
+      }
+
+      // Disable/enable navigation buttons
+      const prevBtn = document.querySelector('button[onclick="prevPage()"]');
+      const nextBtn = document.querySelector('button[onclick="nextPage()"]');
+
+      if (prevBtn) {
+        prevBtn.disabled = currentPage <= 1;
+      }
+      if (nextBtn) {
+        nextBtn.disabled = currentPage >= Math.ceil(totalRows / rowsPerPage);
+      }
+    }
+
+    // Previous page function
+    function prevPage() {
+      if (currentPage > 1) {
+        currentPage--;
+        displayPage(currentPage);
+      }
+    }
+
+    // Next page function
+    function nextPage() {
+      const totalPages = Math.ceil(filteredRows.length / rowsPerPage);
+      if (currentPage < totalPages) {
+        currentPage++;
+        displayPage(currentPage);
+      }
+    }
+
+    // Filter table function (assuming you have one)
+    function filterTable(columnIndex, filterValue) {
+      const table = document.getElementById('myTable');
+      const rows = table.getElementsByTagName('tr');
+
+      filteredRows = Array.from(rows).filter(row => {
+        const cells = row.getElementsByTagName('td');
+        if (cells.length === 0) return false; // Skip header row if any
+
+        const cellValue = cells[columnIndex].textContent || cells[columnIndex].innerText;
+        return cellValue.toUpperCase().includes(filterValue.toUpperCase());
+      });
+
+      currentPage = 1;
+      displayPage(currentPage);
+    }
+
+    // Initialize when page loads
+    document.addEventListener('DOMContentLoaded', function() {
+      initializePagination();
+
+      // Add event listeners to filter inputs
+      document.getElementById('filterKode').addEventListener('input', function() {
+        currentPage = 1;
+        filterTable(2, this.value);
+      });
+
+      document.getElementById('filterUkuran').addEventListener('change', function() {
+        currentPage = 1;
+        filterTable(3, this.value);
+      });
     });
   </script>
 
