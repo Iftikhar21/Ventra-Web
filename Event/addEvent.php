@@ -31,6 +31,7 @@ if (isset($_POST['btnTambah'])) {
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Ventra POS Event</title>
+  <link rel="icon" href="../Img/logoBusanaSatu.png" type="image/x-icon">
 
   <!-- Bootstrap & Icon Fonts -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
@@ -47,8 +48,8 @@ if (isset($_POST['btnTambah'])) {
   <!-- Sidebar -->
   <div class="sidebar" id="sidebar">
     <div class="logo">
-      <img src="../Img/logoBusana.png" alt="logo" class="logo-full"/>
-      <img src="../Img/logoBusanaSatu.png" alt="logo" class="logo-collapsed"/>
+      <img src="../Img/logoBusana.png" alt="logo" class="logo-full" />
+      <img src="../Img/logoBusanaSatu.png" alt="logo" class="logo-collapsed" />
     </div>
     <ul class="nav flex-column mt-3">
       <li class="nav-item">

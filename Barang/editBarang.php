@@ -72,6 +72,7 @@ if (isset($_POST['btnEdit'])) {
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Ventra POS Barang</title>
+  <link rel="icon" href="../Img/logoBusanaSatu.png" type="image/x-icon">
 
   <!-- Bootstrap & Icon Fonts -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
@@ -89,8 +90,8 @@ if (isset($_POST['btnEdit'])) {
   <!-- Sidebar -->
   <div class="sidebar" id="sidebar">
     <div class="logo">
-      <img src="../Img/logoBusana.png" alt="logo" class="logo-full"/>
-      <img src="../Img/logoBusanaSatu.png" alt="logo" class="logo-collapsed"/>
+      <img src="../Img/logoBusana.png" alt="logo" class="logo-full" />
+      <img src="../Img/logoBusanaSatu.png" alt="logo" class="logo-collapsed" />
     </div>
     <ul class="nav flex-column mt-3">
       <li class="nav-item">
@@ -166,7 +167,7 @@ if (isset($_POST['btnEdit'])) {
         </a>
 
       </div>
-      
+
       <div class="row">
         <div class="container">
           <form action="" method="POST" enctype="multipart/form-data">
@@ -180,7 +181,7 @@ if (isset($_POST['btnEdit'])) {
                 <input type="text" class="form-control" name="Nama_Brg" required value="<?= $barang['Nama_Brg'] ?>">
               </div>
             </div>
-  
+
             <div class="row mb-3">
               <div class="col">
                 <label for="Bahan" class="form-label">Bahan</label>
@@ -191,7 +192,7 @@ if (isset($_POST['btnEdit'])) {
                 <input type="number" class="form-control" name="harga_jual" required value="<?= $barang['harga_jual'] ?>">
               </div>
             </div>
-  
+
             <div class="row mb-3">
               <div class="col">
                 <label for="Kategori" class="form-label">Kategori</label>
@@ -206,8 +207,8 @@ if (isset($_POST['btnEdit'])) {
                 </select>
               </div>
             </div>
-  
-  
+
+
             <div class="row mb-3 align-items-center">
               <div class="col-md-6">
                 <label for="Gambar" class="form-label">Gambar (Upload)</label>
@@ -218,7 +219,7 @@ if (isset($_POST['btnEdit'])) {
                 <img id="preview-gambar" alt="Gambar Barang" class="img-thumbnail" style="max-height: 200px;">
               </div>
             </div>
-  
+
             <button class="btn btn-success d-flex align-items-center" type="submit" name="btnEdit">
               <span class="material-symbols-rounded me-2">check</span>
               Simpan
