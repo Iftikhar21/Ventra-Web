@@ -54,6 +54,8 @@ if (isset($_POST['btnUpdate'])) {
     echo "<script>alert('Gagal memperbarui detail barang!');</script>";
   }
 }
+
+$id = isset($_GET['produk_id']) ? $_GET['produk_id'] : '';
 ?>
 
 <!DOCTYPE html>
@@ -62,7 +64,7 @@ if (isset($_POST['btnUpdate'])) {
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Ventra POS Barang</title>
+  <title>Fashion 24 - Edit Detail Barang</title>
   <link rel="icon" href="../Img/logoBusanaSatu.png" type="image/x-icon">
 
   <!-- Bootstrap & Icon Fonts -->
@@ -152,7 +154,7 @@ if (isset($_POST['btnUpdate'])) {
           </div>
         </nav>
         <p class="text-muted">Lihat Data Detail Barang</p>
-        <a class="btn btn-info d-flex align-items-center" href="detailBarang.php" style="width: 100px;">
+        <a class="btn btn-info d-flex align-items-center" href="detailBarang.php?id=<?= $id ?>" style="width: 100px;">
           <span class="material-symbols-rounded me-2">chevron_left</span>
           Back
         </a>

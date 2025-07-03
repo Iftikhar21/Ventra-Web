@@ -35,7 +35,7 @@ if (isset($_POST['btnTambah'])) {
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Ventra POS Barang</title>
+  <title>Fashion 24 - Tambah Barang</title>
   <link rel="icon" href="../Img/logoBusanaSatu.png" type="image/x-icon">
 
   <!-- Bootstrap & Icon Fonts -->

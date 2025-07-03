@@ -20,7 +20,7 @@ $username = $_SESSION['username'];
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Ventra POS Barang</title>
+  <title>Fashion 24 - Barang</title>
   <link rel="icon" href="../Img/logoBusanaSatu.png" type="image/x-icon">
 
   <!-- Bootstrap & Icon Fonts -->
@@ -339,7 +339,7 @@ $username = $_SESSION['username'];
   <script src="../js/sidebar.js"></script>
 
   <script>
-    // Ventra POS Barang - JavaScript Functions
+    // JavaScript Functions
 
     // Global variables for pagination
     let currentPage = 1;
@@ -785,7 +785,7 @@ $username = $_SESSION['username'];
       printWindow.document.write(`
         <html>
             <head>
-                <title>Data Barang - Ventra POS</title>
+                <title>Data Barang - Fashion 24</title>
                 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
                 <style>
                     body { font-family: Arial, sans-serif; }
@@ -798,7 +798,7 @@ $username = $_SESSION['username'];
             </head>
             <body>
                 <div class="container">
-                    <h2 class="text-center mb-4">Data Barang - Ventra POS</h2>
+                    <h2 class="text-center mb-4">Data Barang - Fashion 24</h2>
                     <p class="text-center text-muted mb-4">Dicetak pada: ${new Date().toLocaleDateString('id-ID')}</p>
                     ${tableContent}
                 </div>

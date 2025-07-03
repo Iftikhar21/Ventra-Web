@@ -55,7 +55,7 @@ if (isset($_POST['btnEdit'])) {
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Ventra POS Event</title>
+  <title>Fashion 24 - Edit Event</title>
   <link rel="icon" href="../Img/logoBusanaSatu.png" type="image/x-icon">
 
   <!-- Bootstrap & Icon Fonts -->

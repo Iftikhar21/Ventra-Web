@@ -56,7 +56,7 @@ $sqlDetail = getDetailBarangByProduk($id);
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Ventra POS Barang</title>
+  <title>Fashion 24 - Detail Barang</title>
   <link rel="icon" href="../Img/logoBusanaSatu.png" type="image/x-icon">
 
   <!-- Bootstrap & Icon Fonts -->
@@ -243,7 +243,7 @@ $sqlDetail = getDetailBarangByProduk($id);
                       <?php endif; ?>
                     </td>
                     <td class="text-center">
-                      <a href="editDetailBarang.php?Kode_Brg=<?= $barang['Kode_Brg']; ?>" class="btn btn-warning btn-sm">
+                      <a href="editDetailBarang.php?Kode_Brg=<?= $barang['Kode_Brg']; ?>&&produk_id=<?= $barang['produk_id']; ?>" class="btn btn-warning btn-sm">
                         <i class="material-symbols-rounded" style="color: #fff; margin-top: 2px;">edit</i>
                       </a>
                       <a href="#" class="btn btn-danger btn-sm"
