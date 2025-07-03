@@ -7,8 +7,8 @@
         exit();
       }
 
-    if (isset($_GET['id'])) {
-        $kodeBarang = $_GET['id'];
+    if (isset($_GET['Kode_Brg'])) {
+        $kodeBarang = $_GET['Kode_Brg'];
         deleteBarang($kodeBarang);
         header('location:barang.php');
     }

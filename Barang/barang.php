@@ -491,7 +491,7 @@ $username = $_SESSION['username'];
       }
 
       if (confirmBtn) {
-        confirmBtn.href = `deleteKategori.php?id_kategori=${idKategori}`;
+        confirmBtn.href = `hapusKategori.php?id_kategori=${idKategori}`;
       }
 
       modal.show();
