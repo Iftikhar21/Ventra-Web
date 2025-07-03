@@ -403,7 +403,7 @@ $username = $_SESSION['username'];
               <?php endforeach; ?>
             <?php else : ?>
               <div class="text-center py-5">
-                <div class="text-muted">Tidak ada produk yang tersedia untuk ditambahkan</div>
+                <div class="text-muted">Tidak ada produk yang stok nya menipis</div>
               </div>
             <?php endif; ?>
           </div>
