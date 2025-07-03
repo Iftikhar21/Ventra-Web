@@ -90,11 +90,23 @@
 
     function deleteBarang($id) {
         $koneksi = Connection();
-        // Pastikan untuk menghapus detail di tempat terpisah
+        
+        // Cek apakah ada detail produk terkait
+        $checkSql = "SELECT COUNT(*) as total FROM ventra_produk_detail WHERE produk_id = '$id'";
+        $checkResult = mysqli_query($koneksi, $checkSql);
+        $row = mysqli_fetch_assoc($checkResult);
+        
+        if ($row['total'] > 0) {
+            mysqli_close($koneksi);
+            return false; // Tidak bisa dihapus karena ada detail produk
+        }
+        
+        // Jika tidak ada detail produk, lanjutkan penghapusan
         $sql = "DELETE FROM ventra_produk WHERE id = '$id'";
-        $hasil = mysqli_query($koneksi, $sql);
+        $result = mysqli_query($koneksi, $sql);
+        
         mysqli_close($koneksi);
-        return $hasil ? 1 : 0;
+        return $result;
     }
 
     function getDetailBarangByProduk($id) {

@@ -302,6 +302,36 @@ $username = $_SESSION['username'];
     </div>
   </div>
 
+  <!-- Modal untuk Pesan -->
+  <div class="modal fade" id="messageModal" tabindex="-1" aria-labelledby="messageModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title text-primary" id="messageModalLabel">
+            <i class="fa-solid fa-circle-info me-2"></i>
+          </h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="text-center">
+            <i class="material-symbols-rounded text-primary mb-3" style="font-size: 4rem;">info</i>
+            <div id="messageModalBody" class="fw-bold"></div>
+            <p class="text-muted small mt-3">
+              <i class="fa-solid fa-circle-exclamation me-2"></i>
+              Tekan tombol Tutup untuk melanjutkan
+            </p>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" data-bs-dismiss="modal">
+            <i class="fa-solid fa-check me-2"></i>
+            Tutup
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Scripts -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script src="index.js"></script>
@@ -467,17 +497,61 @@ $username = $_SESSION['username'];
     function confirmDeleteBarang(id, namaBarang) {
       const modal = new bootstrap.Modal(document.getElementById('deleteBarangModal'));
       const barangNameElement = document.getElementById('barangName');
-      const confirmBtn = document.getElementById('confirmDeleteBarangBtn');
 
       if (barangNameElement) {
         barangNameElement.textContent = `"${namaBarang}"`;
       }
 
+      // Set onclick handler untuk tombol konfirmasi
+      const confirmBtn = document.getElementById('confirmDeleteBarangBtn');
       if (confirmBtn) {
-        confirmBtn.href = `hapusBarang.php?id=${id}`;
+        confirmBtn.onclick = function() {
+          checkAndDeleteBarang(id, namaBarang);
+        };
       }
 
       modal.show();
+    }
+
+    function checkAndDeleteBarang(id, namaBarang) {
+      // Kirim request AJAX untuk mengecek dan menghapus
+      fetch(`hapusBarang.php?id=${id}`)
+        .then(response => response.json())
+        .then(data => {
+          const messageModal = new bootstrap.Modal(document.getElementById('messageModal'));
+          const messageBody = document.getElementById('messageModalBody');
+          const messageTitle = document.querySelector('#messageModalLabel');
+
+          if (data.success) {
+            messageTitle.innerHTML = '<i class="fa-solid fa-circle-check me-2"></i> Berhasil';
+            messageBody.innerHTML = `Barang <span class="text-primary">${namaBarang}</span> berhasil dihapus.`;
+
+            // Tutup modal delete
+            const deleteModal = bootstrap.Modal.getInstance(document.getElementById('deleteBarangModal'));
+            deleteModal.hide();
+
+            // Tampilkan modal pesan
+            messageModal.show();
+
+            // Reload halaman setelah 2 detik
+            setTimeout(() => {
+              window.location.reload();
+            }, 2000);
+          } else {
+            messageTitle.innerHTML = '<i class="fa-solid fa-circle-exclamation me-2"></i> Gagal';
+            messageBody.innerHTML = `Barang <span class="text-primary">${namaBarang}</span> tidak bisa dihapus karena: <br><span class="text-danger">${data.message}</span>`;
+
+            // Tutup modal delete
+            const deleteModal = bootstrap.Modal.getInstance(document.getElementById('deleteBarangModal'));
+            deleteModal.hide();
+
+            // Tampilkan modal pesan
+            messageModal.show();
+          }
+        })
+        .catch(error => {
+          console.error('Error:', error);
+        });
     }
 
     // Confirm delete kategori
@@ -728,6 +802,44 @@ $username = $_SESSION['username'];
         document.body.removeChild(link);
       }
     }
+  </script>
+
+  <script>
+    // Fungsi untuk menampilkan modal pesan
+    function showMessageModal(title, message) {
+      const modal = new bootstrap.Modal(document.getElementById('messageModal'));
+      const modalHeader = document.querySelector('#messageModal .modal-header');
+
+      document.getElementById('messageModalLabel').textContent = title;
+      document.getElementById('messageModalBody').textContent = message;
+
+      // Ubah warna header berdasarkan status
+      if (title === 'Sukses') {
+        modalHeader.classList.remove('bg-danger');
+        modalHeader.classList.add('bg-success');
+      } else {
+        modalHeader.classList.remove('bg-success');
+        modalHeader.classList.add('bg-danger');
+      }
+
+      modal.show();
+    }
+
+    // Cek parameter URL saat halaman dimuat
+    document.addEventListener('DOMContentLoaded', function() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const status = urlParams.get('status');
+      const message = urlParams.get('message');
+
+      if (status && message) {
+        const title = status === 'success' ? 'Sukses' : 'Error';
+        showMessageModal(title, decodeURIComponent(message));
+
+        // Hapus parameter dari URL tanpa reload
+        const newUrl = window.location.pathname;
+        window.history.replaceState({}, document.title, newUrl);
+      }
+    });
   </script>
 </body>
 
