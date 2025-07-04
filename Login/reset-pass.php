@@ -5,35 +5,8 @@ session_start();
 // Handle form submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $token = $_POST['token'];
-    $username = $_POST['username'];
     $password = $_POST['password'];
     $confirm_password = $_POST['confirm_password'];
-
-    // Validasi username
-    // if (empty($username)) {
-    //     $_SESSION['error'] = "Username tidak boleh kosong!";
-    //     header("Location: reset-pass.php?token=" . urlencode($token));
-    //     exit();
-    // }
-
-    // if (strlen($username) < 3) {
-    //     $_SESSION['error'] = "Username minimal 3 karakter!";
-    //     header("Location: reset-pass.php?token=" . urlencode($token));
-    //     exit();
-    // }
-
-    // Cek apakah username sudah digunakan oleh user lain
-    $sql = "SELECT id FROM admin WHERE username = ?";
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("s", $username);
-    $stmt->execute();
-    $result = $stmt->get_result();
-
-    if ($result->num_rows > 0) {
-        $_SESSION['error'] = "Username sudah digunakan!";
-        header("Location: reset-pass.php?token=" . urlencode($token));
-        exit();
-    }
 
     // Validate passwords match
     if ($password !== $confirm_password) {
@@ -92,9 +65,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // Update password
     $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
-    $sql = "UPDATE admin SET username = ?, password = ?, reset_token_hash = NULL, reset_token_expires_at = NULL WHERE id = ?";
+    $sql = "UPDATE admin SET password = ?, reset_token_hash = NULL, reset_token_expires_at = NULL WHERE id = ?";
     $stmt = $conn->prepare($sql);
-    $stmt->bind_param("ssi", $username, $hashedPassword, $user['id']);
+    $stmt->bind_param("ss", $hashedPassword, $user['id']);
 
     if ($stmt->execute()) {
         $_SESSION['success'] = "Password berhasil diupdate. Silakan login dengan password baru Anda.";
@@ -102,7 +75,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 alert('Password berhasil diupdate. Silakan login dengan password baru Anda.');
                 window.location.href = '../Login/formLogin.php';
             </script>";
-        // header("Location: ../Login/formLogin.php");
+        header("Location: ../Login/formLogin.php");
         exit();
     } else {
         $_SESSION['error'] = "Gagal mengupdate password. Silakan coba lagi.";
@@ -212,13 +185,12 @@ if ($user === null) {
     <div class="login-container">
         <div class="form-section">
             <h2 class="form-title">Reset Password</h2>
-            <p class="text-muted">Silahkan Masukkan Password atau Username yang Baru!</p>
+            <p class="text-muted">Silahkan Masukkan Password yang Baru!</p>
 
             <!-- Informasi Akun -->
             <div class="mb-2">
-                <label for="username">Username Baru</label>
-                <input type="text" class="form-control" id="username" name="username" value="<?php echo htmlspecialchars($user['username'] ?? ''); ?>" required />
-                <div id="username-error" class="text-danger" style="font-size: 0.8rem;"></div>
+                <label for="username">Username</label>
+                <input type="text" class="form-control" name="username" value="<?php echo htmlspecialchars($user['username'] ?? 'N/A'); ?>" disabled />
             </div>
 
             <div class="mb-3">
@@ -406,19 +378,6 @@ if ($user === null) {
                 confirmMessage.textContent = "Password tidak cocok!";
             } else {
                 confirmMessage.textContent = "";
-            }
-        });
-
-        // Validasi username real-time
-        const usernameInput = document.getElementById('username');
-        usernameInput.addEventListener('input', function() {
-            const username = this.value;
-            const usernameError = document.getElementById('username-error');
-
-            if (username.length < 3) {
-                usernameError.textContent = "Username minimal 3 karakter";
-            } else {
-                usernameError.textContent = "";
             }
         });
     </script>
