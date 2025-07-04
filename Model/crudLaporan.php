@@ -85,6 +85,7 @@
                     vdb.*,
                     vp.Nama_Brg AS nama_produk,
                     vdt.harga AS harga_satuan,
+                    SUM(vdt.total_harga) AS total_harga,
                     SUM(vdt.JMLH) AS total_barang_terjual
                 FROM 
                     ventra_transaksi vt

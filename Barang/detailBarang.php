@@ -23,36 +23,37 @@ if (isset($_POST['btnTambah'])) {
   $barcode = $_POST['barcode'];
   $stock = $_POST['stock'];
   
+  $pattern = ''; // Default empty pattern
+  
+  // Handle file upload only if a file was selected
+  if (isset($_FILES['pattern'])) {
     $patternFile = $_FILES['pattern'];
-    $pattern = ''; // untuk disimpan ke database
     
+    // Only process if there's actually a file uploaded and no errors
     if ($patternFile['error'] === UPLOAD_ERR_OK) {
       $uploadDir = '../../Ventra/uploads/patterns/';
-      $newFilename = basename($patternFile['name']); // gunakan nama file asli
+      $newFilename = basename($patternFile['name']); // use original filename
       $fullPath = $uploadDir . $newFilename;
     
-      // Buat folder jika belum ada
+      // Create directory if it doesn't exist
       if (!file_exists($uploadDir)) {
         mkdir($uploadDir, 0777, true);
       }
     
-      // Pindahkan file ke folder tujuan
+      // Move uploaded file
       if (move_uploaded_file($patternFile['tmp_name'], $fullPath)) {
-        $pattern = $newFilename; // simpan nama file ke database
+        $pattern = $newFilename; // save filename to database
       } else {
-        echo "<script>alert('Gagal upload file!');</script>";
-        exit;
+        echo "<script>alert('Gagal memindahkan file!');</script>";
       }
-    } else {
-      echo "<script>alert('Upload error!');</script>";
-      exit;
+    } elseif ($patternFile['error'] !== UPLOAD_ERR_NO_FILE) {
+      // Only show error if it's not "no file uploaded" error
+      echo "<script>alert('Error upload file: ".$patternFile['error']."');</script>";
     }
-
-
-
+  }
 
   // Call function to add product detail
-  $result = addDetailBarang($kodeBarang, $produk_id, $ukuran, $pattern,  $barcode, $stock);
+  $result = addDetailBarang($kodeBarang, $produk_id, $ukuran, $pattern, $barcode, $stock);
 
   if ($result == 1) {
     echo "<script>window.location='detailBarang.php?id=" . $id . "';</script>";
