@@ -1,10 +1,10 @@
 <?php 
-
+require_once('../Connection/connection.php');
 $token = $_GET['token'];
 
 $token_hash = hash('sha256', $token);
 
-$conn = require_once('../Connection/connection.php');
+$conn = Connection();
 
 $sql = "SELECT * FROM admin WHERE reset_token_hash = ?";
 
