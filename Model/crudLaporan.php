@@ -75,51 +75,40 @@
 
     function getLaporanByTanggal($tanggal) {
         $data = array();
-
         $koneksi = Connection();
         $tanggal = mysqli_real_escape_string($koneksi, $tanggal);
         
+        // Query yang diperbaiki - ambil data per item transaksi tanpa SUM
         $sql = "SELECT 
-                    vt.*,
-                    vdt.*,
-                    vdb.*,
+                    vt.ID_Transaksi,
+                    vt.tanggal_transaksi,
+                    vt.Payment,
                     vp.Nama_Brg AS nama_produk,
+                    vdb.ukuran,
                     vdt.harga AS harga_satuan,
-                    SUM(vdt.total_harga) AS total_harga,
-                    SUM(vdt.JMLH) AS total_barang_terjual
-                FROM 
-                    ventra_transaksi vt
-                JOIN 
-                    ventra_detail_transaksi vdt ON vt.ID_Transaksi = vdt.id_transaksi
-                JOIN 
-                    ventra_produk_detail vdb ON vdt.kode_barang = vdb.barcode
-                JOIN 
-                    ventra_produk vp ON vdb.produk_id = vp.id
-                WHERE 
-                    DATE(vt.tanggal_transaksi) = '$tanggal'
-                GROUP BY 
-                    vdb.Kode_Brg";
-
+                    vdt.JMLH,
+                    vdb.stock,
+                    vdt.total_harga
+                FROM ventra_transaksi vt
+                JOIN ventra_detail_transaksi vdt ON vt.ID_Transaksi = vdt.id_transaksi
+                JOIN ventra_produk_detail vdb ON vdt.kode_barang = vdb.barcode
+                JOIN ventra_produk vp ON vdb.produk_id = vp.id
+                WHERE DATE(vt.tanggal_transaksi) = '$tanggal'
+                ORDER BY vt.tanggal_transaksi, vp.Nama_Brg";
 
         $hasil = mysqli_query($koneksi, $sql);
-        $i = 0;
         while ($baris = mysqli_fetch_assoc($hasil)) {
-            $data[$i]['ID_Transaksi'] = $baris['ID_Transaksi'];
-            $data[$i]['Total'] = $baris['Total'];
-            $data[$i]['Payment'] = $baris['Payment'];
-            $data[$i]['Kasir'] = $baris['Kasir'];
-            $data[$i]['uang_dibayar'] = $baris['uang_dibayar'];
-            $data[$i]['no_rek'] = $baris['no_rek'];
-            $data[$i]['tanggal_transaksi'] = $baris['tanggal_transaksi'];
-            $data[$i]['kode_barang'] = $baris['kode_barang'];
-            $data[$i]['JMLH'] = $baris['total_barang_terjual'];
-            $data[$i]['harga'] = $baris['harga'];
-            $data[$i]['total_harga'] = $baris['total_harga'];
-            $data[$i]['nama_produk'] = $baris['nama_produk'];
-            $data[$i]['harga_satuan'] = $baris['harga_satuan'];
-            $data[$i]['stock'] = $baris['stock'];
-            $data[$i]['ukuran'] = $baris['ukuran'];
-            $i++;
+            $data[] = [
+                'ID_Transaksi' => $baris['ID_Transaksi'],
+                'tanggal_transaksi' => $baris['tanggal_transaksi'],
+                'Payment' => $baris['Payment'],
+                'nama_produk' => $baris['nama_produk'],
+                'ukuran' => $baris['ukuran'],
+                'harga_satuan' => $baris['harga_satuan'],
+                'JMLH' => $baris['JMLH'],
+                'stock' => $baris['stock'],
+                'total_harga' => $baris['total_harga']
+            ];
         }
 
         mysqli_close($koneksi);
@@ -130,16 +119,18 @@
         $data = array();
         $koneksi = Connection();
         $tanggal = mysqli_real_escape_string($koneksi, $tanggal);
-    
+
+        // Hitung total berdasarkan detail transaksi untuk konsistensi
         $sql = "SELECT 
                     vt.Payment AS metode,
-                    SUM(vt.uang_dibayar) AS total,
+                    SUM(vdt.total_harga) AS total,
                     COUNT(DISTINCT vt.ID_Transaksi) AS jumlah_transaksi
                 FROM ventra_transaksi vt
+                JOIN ventra_detail_transaksi vdt ON vt.ID_Transaksi = vdt.id_transaksi
                 WHERE DATE(vt.tanggal_transaksi) = '$tanggal'
                 GROUP BY vt.Payment
                 ORDER BY total DESC";
-    
+
         $hasil = mysqli_query($koneksi, $sql);
         while ($baris = mysqli_fetch_assoc($hasil)) {
             $data[] = [

@@ -277,67 +277,38 @@ $username = $_SESSION['username'];
                       <table class="table table-bordered text-center" id="paymentMethodTable">
                         <thead class="table-light">
                           <tr>
-                            <!--<th width="10%">No</th>-->
                             <th class="text-start">Metode Pembayaran</th>
-                            <th>Jumlah</th>
+                            <th>Jumlah Transaksi</th>
                             <th width="30%">Total</th>
                           </tr>
                         </thead>
                         <tbody>
                           <?php if (empty($dataMetodePembayaranPerTanggal)): ?>
                             <tr>
-                              <td colspan="4" class="text-center">Data tidak ada.</td>
+                              <td colspan="3" class="text-center">Data tidak ada.</td>
                             </tr>
-                          <?php endif; ?>
+                          <?php else: ?>
+                            <?php
+                            $grandTotal = 0;
+                            $paymentMethods = [];
 
-                          <?php
-                          $no = 1;
-                          $grandTotal = 0;
-
-                          $metodePembayaranDenganDiskon = [];
-
-                          foreach ($dataPerTanggal as $laporan) {
-                            $event = getAllEvent();
-                            $diskonTransaksi = 0;
-                            $tanggalTransaksi = strtotime($laporan['tanggal_transaksi']);
-
-                            foreach ($event as $ev) {
-                              $waktuAktif = strtotime($ev['waktu_aktif']);
-                              $waktuNonAktif = strtotime($ev['waktu_non_aktif']);
-
-                              if ($tanggalTransaksi >= $waktuAktif && $tanggalTransaksi <= $waktuNonAktif) {
-                                $diskonTransaksi = $ev['total_diskon'];
-                                break;
-                              }
-                            }
-
-                            $totalSebelumDiskon = $laporan['harga_satuan'] * $laporan['JMLH'];
-                            $totalSetelahDiskon = $totalSebelumDiskon - ($totalSebelumDiskon * ($diskonTransaksi / 100));
-
-                            $metodePembayaran = $laporan['Payment'];
-
-                            if (!isset($metodePembayaranDenganDiskon[$metodePembayaran])) {
-                              $metodePembayaranDenganDiskon[$metodePembayaran] = [
-                                'metode' => $metodePembayaran,
-                                'jumlah_transaksi' => 0,
-                                'total' => 0
+                            // Hitung ulang dari data transaksi asli untuk konsistensi
+                            foreach ($dataMetodePembayaranPerTanggal as $metode) {
+                              $paymentMethods[$metode['metode']] = [
+                                'count' => $metode['jumlah_transaksi'],
+                                'total' => $metode['total']
                               ];
+                              $grandTotal += $metode['total'];
                             }
 
-                            $metodePembayaranDenganDiskon[$metodePembayaran]['jumlah_transaksi']++;
-                            $metodePembayaranDenganDiskon[$metodePembayaran]['total'] += $totalSetelahDiskon;
-
-                            $grandTotal += $totalSetelahDiskon;
-                          }
-
-                          foreach ($metodePembayaranDenganDiskon as $metode): ?>
-                            <tr>
-                              <!--<td><?= $no++; ?></td>-->
-                              <td class="text-start"><?= $metode['metode']; ?></td>
-                              <td><?= $metode['jumlah_transaksi']; ?></td>
-                              <td><?= "Rp " . number_format($metode['total'], 0, ',', '.'); ?></td>
-                            </tr>
-                          <?php endforeach; ?>
+                            foreach ($paymentMethods as $method => $data): ?>
+                              <tr>
+                                <td class="text-start"><?= htmlspecialchars($method); ?></td>
+                                <td><?= $data['count']; ?></td>
+                                <td><?= "Rp " . number_format($data['total'], 0, ',', '.'); ?></td>
+                              </tr>
+                            <?php endforeach; ?>
+                          <?php endif; ?>
                         </tbody>
                         <tfoot class="table-secondary text-center">
                           <tr>
@@ -352,26 +323,31 @@ $username = $_SESSION['username'];
                         <h5 class="card-title text-center py-2">Statistik Penjualan</h5>
                         <?php if (empty($dataPerTanggal)): ?>
                           <p class="text-center">Data tidak ada.</p>
-                        <?php endif; ?>
-                        <?php if (!empty($dataPerTanggal)): ?>
+                        <?php else: ?>
                           <div class="card-body p-0">
                             <div class="row g-0">
                               <div class="col-12 col-md-6">
                                 <div class="stat-item">
-                                  <p class="stat-label">Transaksi</p>
-                                  <div class="stat-number text-primary"><?= count($dataPerTanggal); ?></div>
+                                  <p class="stat-label">Transaksi Unik</p>
+                                  <div class="stat-number text-primary">
+                                    <?= count(array_unique(array_column($dataPerTanggal, 'ID_Transaksi'))); ?>
+                                  </div>
                                 </div>
                               </div>
                               <div class="col-12 col-md-6">
                                 <div class="stat-item">
                                   <p class="stat-label">Item Terjual</p>
-                                  <div class="stat-number text-info"><?= array_sum(array_column($dataPerTanggal, 'JMLH')); ?></div>
+                                  <div class="stat-number text-info">
+                                    <?= array_sum(array_column($dataPerTanggal, 'JMLH')); ?>
+                                  </div>
                                 </div>
                               </div>
                               <div class="col-12 col-md-12">
                                 <div class="stat-item">
                                   <p class="stat-label">Total Pendapatan <?= date('d M Y', strtotime($tanggalFilter)); ?></p>
-                                  <div class="stat-number text-success"><?= "Rp " . number_format($grandTotal, 0, ',', '.'); ?></div>
+                                  <div class="stat-number text-success">
+                                    <?= "Rp " . number_format($grandTotal, 0, ',', '.'); ?>
+                                  </div>
                                 </div>
                               </div>
                               <div class="row mt-2 mb-2">
@@ -379,7 +355,7 @@ $username = $_SESSION['username'];
                                   <div class="text-center">
                                     <small class="opacity-75">
                                       <i class="fas fa-clock me-1"></i>
-                                      Data diperbarui secara real-time • <?= date('d M Y', strtotime($tanggalFilter)); ?>
+                                      Data per <?= date('d M Y H:i:s'); ?>
                                     </small>
                                   </div>
                                 </div>
@@ -569,95 +545,74 @@ $username = $_SESSION['username'];
 
     // PERBAIKAN UTAMA: Fungsi updateStatistics yang lebih akurat
     function updateStatistics() {
-      // Gunakan data yang sudah difilter berdasarkan tanggal dan filter lainnya
       const visibleRows = filteredRows.length > 0 ? filteredRows : document.querySelectorAll('#myTable tr');
 
       let totalTransaksi = 0;
       let totalItemTerjual = 0;
       let totalPendapatan = 0;
-
-      // Hitung statistik berdasarkan SEMUA data yang difilter, bukan hanya yang terlihat di halaman
-      visibleRows.forEach(row => {
-        totalTransaksi++;
-
-        // Ambil data dari kolom yang benar
-        const itemTerjual = parseInt(row.cells[4].textContent) || 0; // Kolom "Terjual"
-        const pendapatanText = row.cells[7].textContent; // Kolom "Uang"
-
-        // Bersihkan format rupiah dan konversi ke angka
-        const pendapatan = parseFloat(pendapatanText.replace(/[Rp\s,.]/g, '')) || 0;
-
-        totalItemTerjual += itemTerjual;
-        totalPendapatan += pendapatan;
-      });
-
-      // Update statistik di card dengan format yang benar
-      const statElements = document.querySelectorAll('.stat-number');
-      if (statElements[0]) statElements[0].textContent = totalTransaksi;
-      if (statElements[1]) statElements[1].textContent = totalItemTerjual;
-      if (statElements[2]) statElements[2].textContent = 'Rp ' + totalPendapatan.toLocaleString('id-ID');
-
-      // Update juga tabel metode pembayaran berdasarkan data yang difilter
-      updatePaymentMethodTable(visibleRows);
-    }
-
-    // Fungsi baru untuk update tabel metode pembayaran berdasarkan data yang difilter
-    function updatePaymentMethodTable(visibleRows) {
       const paymentMethods = {};
-      let grandTotal = 0;
 
-      // Hitung ulang metode pembayaran berdasarkan data yang difilter
+      // Hitung dari data yang tampil di tabel
       visibleRows.forEach(row => {
-        const metode = row.getAttribute('data-metode');
-        const pendapatanText = row.cells[7].textContent;
-        const pendapatan = parseFloat(pendapatanText.replace(/[Rp\s,.]/g, '')) || 0;
+        if (row.cells && row.cells.length >= 7) {
+          totalTransaksi++;
 
-        // PERBAIKAN: Ambil jumlah item terjual dari kolom yang benar (kolom ke-4, index 4)
-        const itemTerjual = parseInt(row.cells[4].textContent) || 0;
+          // Ambil data dari kolom tabel
+          const itemTerjual = parseInt(row.cells[4].textContent) || 0;
+          totalItemTerjual += itemTerjual;
 
-        if (!paymentMethods[metode]) {
-          paymentMethods[metode] = {
-            jumlahTransaksi: 0, // Jumlah transaksi
-            jumlahItem: 0, // Total item terjual
-            total: 0
-          };
+          const subtotalText = row.cells[6].textContent;
+          const subtotal = parseFloat(subtotalText.replace(/[^\d]/g, '')) || 0;
+          totalPendapatan += subtotal;
+
+          // Hitung metode pembayaran
+          const metode = row.getAttribute('data-metode');
+          if (metode) {
+            if (!paymentMethods[metode]) {
+              paymentMethods[metode] = {
+                jumlahTransaksi: 0,
+                total: 0
+              };
+            }
+            paymentMethods[metode].jumlahTransaksi++;
+            paymentMethods[metode].total += subtotal;
+          }
         }
-
-        paymentMethods[metode].jumlahTransaksi++; // Increment jumlah transaksi
-        paymentMethods[metode].jumlahItem += itemTerjual; // Tambahkan item terjual
-        paymentMethods[metode].total += pendapatan;
-        grandTotal += pendapatan;
       });
+
+      // Update statistik
+      document.querySelector('.stat-number:nth-child(1)').textContent = totalTransaksi;
+      document.querySelector('.stat-number:nth-child(2)').textContent = totalItemTerjual;
+      document.querySelector('.stat-number:nth-child(3)').textContent = 'Rp ' + totalPendapatan.toLocaleString('id-ID');
 
       // Update tabel metode pembayaran
-      const paymentTableBody = document.querySelector('#paymentMethodTable tbody');
-      const paymentTableFooter = document.querySelector('#paymentMethodTable tfoot');
+      updatePaymentMethodTable(paymentMethods, totalPendapatan);
+    }
 
-      if (paymentTableBody) {
-        paymentTableBody.innerHTML = '';
-        let no = 1;
+    function updatePaymentMethodTable(paymentMethods, grandTotal) {
+      const tbody = document.querySelector('#paymentMethodTable tbody');
+      const tfoot = document.querySelector('#paymentMethodTable tfoot');
 
-        Object.entries(paymentMethods).forEach(([metode, data]) => {
-          const row = document.createElement('tr');
-          row.innerHTML = `
-            <td>${no++}</td>
+      tbody.innerHTML = '';
+
+      // Isi data metode pembayaran
+      Object.entries(paymentMethods).forEach(([metode, data]) => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
             <td class="text-start">${metode}</td>
-            <td>${data.jumlahItem}</td>
+            <td>${data.jumlahTransaksi}</td>
             <td>Rp ${data.total.toLocaleString('id-ID')}</td>
-          `;
-          paymentTableBody.appendChild(row);
-        });
-      }
-
-      // Update total di footer
-      if (paymentTableFooter) {
-        paymentTableFooter.innerHTML = `
-          <tr>
-            <td colspan="3">TOTAL PENDAPATAN</td>
-            <td>Rp ${grandTotal.toLocaleString('id-ID')}</td>
-          </tr>
         `;
-      }
+        tbody.appendChild(row);
+      });
+
+      // Update total
+      tfoot.innerHTML = `
+        <tr>
+            <td colspan="2">TOTAL PENDAPATAN</td>
+            <td>Rp ${grandTotal.toLocaleString('id-ID')}</td>
+        </tr>
+    `;
     }
     // Fungsi export Excel yang diperbaiki - semua data dalam 1 sheet
     function exportToExcel() {
