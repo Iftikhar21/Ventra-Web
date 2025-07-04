@@ -154,7 +154,7 @@
                     </div>
 
                     <div class="mb-2">
-                        <label for=email">Email</label>
+                        <label for="email">Email</label>
                         <input type="email" class="form-control" name="email" placeholder="Enter your email" required />
                         <!-- <small class="text-muted">Contoh: contoh@domain.com</small> -->
                     </div>

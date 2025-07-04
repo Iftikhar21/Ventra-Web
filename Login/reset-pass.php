@@ -1,4 +1,4 @@
-<?php 
+<?php
 require_once('../Connection/connection.php');
 session_start();
 
@@ -7,14 +7,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $token = $_POST['token'];
     $password = $_POST['password'];
     $confirm_password = $_POST['confirm_password'];
-    
+
     // Validate passwords match
     if ($password !== $confirm_password) {
         $_SESSION['error'] = "Password dan konfirmasi password tidak cocok!";
         header("Location: reset-pass.php?token=" . urlencode($token));
         exit();
     }
-    
+
     // Validasi kompleksitas password
     if (strlen($password) < 8) {
         $_SESSION['error'] = "Password minimal 8 karakter!";
@@ -45,10 +45,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         header("Location: reset-pass.php?token=" . urlencode($token));
         exit();
     }
-    
+
     $token_hash = hash('sha256', $token);
     $conn = Connection();
-    
+
     // Check token validity
     $sql = "SELECT * FROM admin WHERE reset_token_hash = ?";
     $stmt = $conn->prepare($sql);
@@ -56,19 +56,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $stmt->execute();
     $result = $stmt->get_result();
     $user = $result->fetch_assoc();
-    
+
     if ($user === null) {
         $_SESSION['error'] = "Token tidak valid atau telah kedaluwarsa.";
         header("Location: ../Login/formLogin.php");
         exit();
     }
-    
+
     // Update password
     $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
     $sql = "UPDATE admin SET password = ?, reset_token_hash = NULL, reset_token_expires_at = NULL WHERE id = ?";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("ss", $hashedPassword, $user['id']);
-    
+
     if ($stmt->execute()) {
         $_SESSION['success'] = "Password berhasil diupdate. Silakan login dengan password baru Anda.";
         header("Location: ../Login/formLogin.php");
@@ -159,18 +159,18 @@ if ($user === null) {
         .invalid {
             color: #dc3545;
         }
-        
+
         .account-info {
             background-color: #f8f9fa;
             border-radius: 5px;
             padding: 15px;
             margin-bottom: 20px;
         }
-        
+
         .account-info p {
             margin-bottom: 5px;
         }
-        
+
         .account-info strong {
             color: #495057;
         }
@@ -182,16 +182,22 @@ if ($user === null) {
         <div class="form-section">
             <h2 class="form-title">Reset Password</h2>
             <p class="text-muted">Silahkan Masukkan Password yang Baru!</p>
-            
+
             <!-- Informasi Akun -->
-            <div class="account-info">
-                <p><strong>Username:</strong> <?php echo htmlspecialchars($user['username']); ?></p>
-                <p><strong>Email:</strong> <?php echo htmlspecialchars($user['email']); ?></p>
+            <div class="mb-2">
+                <label for="username">Username</label>
+                <input type="text" class="form-control" name="username" value="<?php echo htmlspecialchars($user['username'] ?? 'N/A'); ?>" disabled />
             </div>
-            
+
+            <div class="mb-3">
+                <label for="email">Email</label>
+                <input type="email" class="form-control" name="email" value="<?php echo htmlspecialchars($user['email'] ?? 'N/A'); ?>" disabled />
+                <!-- <small class="text-muted">Contoh: contoh@domain.com</small> -->
+            </div>
+
             <form method="POST" id="resetForm">
-                <input type="hidden" name="token" value="<?php echo htmlspecialchars($token); ?>">   
-                
+                <input type="hidden" name="token" value="<?php echo htmlspecialchars($token); ?>">
+
                 <!-- Password -->
                 <div class="mb-3">
                     <label for="password">Password Baru</label>
@@ -237,7 +243,7 @@ if ($user === null) {
                     </div>
                     <div id="confirm-message" class="text-danger" style="font-size: 0.8rem;"></div>
                 </div>
-                
+
                 <button type="submit" name="submit" class="btn btn-dark w-100">Reset Password</button>
             </form>
         </div>
