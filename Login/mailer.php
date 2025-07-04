@@ -13,7 +13,7 @@ $mail->SMTPAuth = true;
 $mail->Host = 'smtp.gmail.com'; // Ganti dengan host SMTP Anda
 $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
 $mail->Port = 587; // Ganti dengan port SMTP Anda
-$mail->SMTPDebug = 2; // Aktifkan debug mode
+// $mail->SMTPDebug = 2;
 $mail->Username = 'iftikharazharchaudhry@gmail.com'; // Ganti dengan username SMTP Anda
 $mail->Password = 'nlrq twkf yrlj hjof'; // Ganti dengan password SMTP Anda
 
