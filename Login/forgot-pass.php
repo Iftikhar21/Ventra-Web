@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -16,11 +17,10 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: linear-gradient(135deg, 
-                rgba(0, 0, 0, 0.8), 
-                rgba(52, 152, 219, 0.3), 
-                rgba(155, 89, 182, 0.3)
-            );
+            background: linear-gradient(135deg,
+                    rgba(0, 0, 0, 0.8),
+                    rgba(52, 152, 219, 0.3),
+                    rgba(155, 89, 182, 0.3));
             display: flex;
             justify-content: center;
             align-items: center;
@@ -28,21 +28,21 @@
             display: none;
             backdrop-filter: blur(10px);
         }
-        
+
         .loading-container {
             display: flex;
             flex-direction: column;
             align-items: center;
             text-align: center;
         }
-        
+
         .loading-spinner {
             position: relative;
             width: 80px;
             height: 80px;
             margin-bottom: 20px;
         }
-        
+
         .spinner-ring {
             position: absolute;
             width: 100%;
@@ -51,30 +51,30 @@
             border-radius: 50%;
             animation: spin 1.5s linear infinite;
         }
-        
+
         .spinner-ring:nth-child(1) {
             border-top: 4px solid #3498db;
             animation-delay: 0s;
         }
-        
+
         .spinner-ring:nth-child(2) {
             border-right: 4px solid #e74c3c;
             animation-delay: -0.3s;
             animation-duration: 1.2s;
         }
-        
+
         .spinner-ring:nth-child(3) {
             border-bottom: 4px solid #f39c12;
             animation-delay: -0.6s;
             animation-duration: 1.8s;
         }
-        
+
         .spinner-ring:nth-child(4) {
             border-left: 4px solid #2ecc71;
             animation-delay: -0.9s;
             animation-duration: 2.1s;
         }
-        
+
         .spinner-center {
             position: absolute;
             top: 50%;
@@ -86,23 +86,31 @@
             border-radius: 50%;
             animation: pulse 2s ease-in-out infinite;
         }
-        
+
         @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
         }
-        
+
         @keyframes pulse {
-            0%, 100% { 
+
+            0%,
+            100% {
                 transform: translate(-50%, -50%) scale(1);
                 opacity: 1;
             }
-            50% { 
+
+            50% {
                 transform: translate(-50%, -50%) scale(1.5);
                 opacity: 0.7;
             }
         }
-        
+
         .loading-text {
             color: #fff;
             font-size: 1.2em;
@@ -110,36 +118,59 @@
             margin-bottom: 10px;
             animation: fadeInOut 2s ease-in-out infinite;
         }
-        
+
         .loading-dots {
             color: #fff;
             font-size: 1.5em;
             letter-spacing: 2px;
         }
-        
+
         .loading-dots span {
             animation: blink 1.4s infinite;
         }
-        
-        .loading-dots span:nth-child(1) { animation-delay: 0s; }
-        .loading-dots span:nth-child(2) { animation-delay: 0.2s; }
-        .loading-dots span:nth-child(3) { animation-delay: 0.4s; }
-        
+
+        .loading-dots span:nth-child(1) {
+            animation-delay: 0s;
+        }
+
+        .loading-dots span:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .loading-dots span:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
         @keyframes fadeInOut {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.5;
+            }
         }
-        
+
         @keyframes blink {
-            0%, 50% { opacity: 1; }
-            25%, 75% { opacity: 0.3; }
+
+            0%,
+            50% {
+                opacity: 1;
+            }
+
+            25%,
+            75% {
+                opacity: 0.3;
+            }
         }
-        
+
         .btn-loading {
             position: relative;
             overflow: hidden;
         }
-        
+
         .btn-loading .spinner-border {
             position: absolute;
             left: 50%;
@@ -148,11 +179,11 @@
             margin-top: -12px;
             display: none;
         }
-        
+
         .btn-loading.loading {
             color: transparent;
         }
-        
+
         .btn-loading.loading::before {
             content: '';
             position: absolute;
@@ -160,15 +191,20 @@
             left: -100%;
             width: 100%;
             height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
             animation: shimmer 1.5s infinite;
         }
-        
+
         @keyframes shimmer {
-            0% { left: -100%; }
-            100% { left: 100%; }
+            0% {
+                left: -100%;
+            }
+
+            100% {
+                left: 100%;
+            }
         }
-        
+
         /* Additional floating particles effect */
         .loading-particles {
             position: absolute;
@@ -179,7 +215,7 @@
             overflow: hidden;
             pointer-events: none;
         }
-        
+
         .particle {
             position: absolute;
             width: 4px;
@@ -188,38 +224,86 @@
             border-radius: 50%;
             animation: float 3s infinite ease-in-out;
         }
-        
-        .particle:nth-child(1) { left: 10%; animation-delay: 0s; }
-        .particle:nth-child(2) { left: 20%; animation-delay: 0.5s; }
-        .particle:nth-child(3) { left: 30%; animation-delay: 1s; }
-        .particle:nth-child(4) { left: 40%; animation-delay: 1.5s; }
-        .particle:nth-child(5) { left: 50%; animation-delay: 2s; }
-        .particle:nth-child(6) { left: 60%; animation-delay: 2.5s; }
-        .particle:nth-child(7) { left: 70%; animation-delay: 3s; }
-        .particle:nth-child(8) { left: 80%; animation-delay: 3.5s; }
-        .particle:nth-child(9) { left: 90%; animation-delay: 4s; }
-        
+
+        .particle:nth-child(1) {
+            left: 10%;
+            animation-delay: 0s;
+        }
+
+        .particle:nth-child(2) {
+            left: 20%;
+            animation-delay: 0.5s;
+        }
+
+        .particle:nth-child(3) {
+            left: 30%;
+            animation-delay: 1s;
+        }
+
+        .particle:nth-child(4) {
+            left: 40%;
+            animation-delay: 1.5s;
+        }
+
+        .particle:nth-child(5) {
+            left: 50%;
+            animation-delay: 2s;
+        }
+
+        .particle:nth-child(6) {
+            left: 60%;
+            animation-delay: 2.5s;
+        }
+
+        .particle:nth-child(7) {
+            left: 70%;
+            animation-delay: 3s;
+        }
+
+        .particle:nth-child(8) {
+            left: 80%;
+            animation-delay: 3.5s;
+        }
+
+        .particle:nth-child(9) {
+            left: 90%;
+            animation-delay: 4s;
+        }
+
         @keyframes float {
-            0%, 100% { 
+
+            0%,
+            100% {
                 transform: translateY(100vh) scale(0);
                 opacity: 0;
             }
-            10%, 90% { 
+
+            10%,
+            90% {
                 opacity: 1;
                 transform: scale(1);
             }
-            50% { 
+
+            50% {
                 transform: translateY(-10vh) scale(1);
                 opacity: 1;
             }
         }
     </style>
 </head>
+
 <body>
     <div class="login-container">
         <div class="form-section">
             <h2 class="form-title">Kamu Lupa Password ?</h2>
-            <p class="text-muted">Silahkan Masukkan <span class="fw-bold">Email</span> Untuk Me-Reset <span class="fw-bold">Password</span> atau <span class="fw-bold">Username</span> Kamu!<br>Email Harus Valid Sesuai dengan <span class="fw-bold">Data Register</span> Kamu!</p>
+            <p class="mb-2">Pastikan email yang kamu masukkan <strong>valid dan sesuai dengan data registrasimu</strong>.</p>
+            <hr>
+            <p class="mb-0">
+                <strong>Kamu lupa Username?</strong> Tenang!<br>
+                - Setelah memasukkan Email, kami akan mengirimkan link Reset Password ke Emailmu<br>
+                - Saat membuka link tersebut, <strong>Username kamu akan ditampilkan jelas</strong> di halaman <strong>Reset Password</strong>
+            </p>
+            <hr>
             <form method="POST" action="send-pass-reset.php" id="resetForm">
                 <div class="mb-3">
                     <label for="email" class="form-label">Email</label>
@@ -276,21 +360,21 @@
         document.getElementById('resetForm').addEventListener('submit', function(e) {
             const submitBtn = document.getElementById('submitBtn');
             const loadingOverlay = document.getElementById('loadingOverlay');
-            
+
             // Show loading state on button
             submitBtn.disabled = true;
             submitBtn.classList.add('loading');
             submitBtn.querySelector('.btn-text').textContent = 'Sending...';
             submitBtn.querySelector('.spinner-border').style.display = 'inline-block';
-            
+
             // Show full-page loading overlay with enhanced animations
             loadingOverlay.style.display = 'flex';
-            
+
             // Add subtle fade-in effect
             setTimeout(() => {
                 loadingOverlay.style.opacity = '1';
             }, 10);
-            
+
             // If you want to hide the overlay when the form submission is complete,
             // you'll need to handle that in the response from send-pass-reset.php
             // For now, it will stay visible until page reload/redirect
@@ -299,4 +383,5 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js"></script>
 </body>
+
 </html>
