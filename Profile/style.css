@@ -1,0 +1,136 @@
+/* Main Profile Container */
+.profile-container {
+    max-width: 1400px;
+    margin: 1rem auto;
+    padding: 1.5rem;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.08);
+}
+
+/* Profile Header */
+.profile-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #eee;
+}
+
+.profile-icon {
+    font-size: 2.5rem;
+    color: #3a7bd5;
+    margin-right: 1.5rem;
+}
+
+.profile-title h2 {
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+    color: #333;
+}
+
+.profile-title p {
+    color: #666;
+    margin-bottom: 0;
+}
+
+/* Form Section */
+.profile-form-section {
+    padding: 1.5rem 0;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-label {
+    font-weight: 500;
+    color: #444;
+    margin-bottom: 0.5rem;
+}
+
+.form-control {
+    border-radius: 8px;
+    padding: 10px 15px;
+    border: 1px solid #ddd;
+    transition: all 0.3s ease;
+}
+
+.form-control:focus {
+    border-color: #3a7bd5;
+    box-shadow: 0 0 0 0.2rem rgba(58, 123, 213, 0.1);
+}
+
+/* Info Box */
+.profile-info-box {
+    background-color: #f8fafc;
+    border-left: 3px solid #3a7bd5;
+    padding: 1.25rem;
+    border-radius: 8px;
+    margin: 2rem 0;
+    font-size: 0.95rem;
+}
+
+.profile-info-box i {
+    color: #3a7bd5;
+    margin-right: 0.5rem;
+}
+
+/* Action Buttons */
+.profile-actions {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #eee;
+}
+
+.btn-back {
+    border-radius: 8px;
+    padding: 8px 20px;
+    border: 1px solid #ddd;
+}
+
+.btn-save {
+    border-radius: 8px;
+    padding: 8px 25px;
+    background-color: #3a7bd5;
+    color: white;
+    border: none;
+    box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+    transition: all 0.3s ease;
+}
+
+.btn-save:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+    color: #fff;
+    background-color: #1c3e66;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .profile-container {
+        padding: 1.5rem;
+        margin: 1rem;
+    }
+    
+    .profile-header {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .profile-icon {
+        margin-right: 0;
+        margin-bottom: 1rem;
+    }
+    
+    .profile-actions {
+        flex-direction: column-reverse;
+        gap: 1rem;
+    }
+    
+    .btn-back, .btn-save {
+        width: 100%;
+    }
+}

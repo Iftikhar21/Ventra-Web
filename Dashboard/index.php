@@ -25,52 +25,6 @@ $dataAdmin = getAdminById($id);
 $username = $dataAdmin['username'];
 $email = $dataAdmin['email'];
 
-if (isset($_GET['action'])) {
-  if ($_GET['action'] == 'getProfile') {
-    $id = $_SESSION['ID'];
-    $data = getAdminById($id);
-
-    if ($data) {
-      echo json_encode([
-        'status' => true,
-        'username' => $data['username'],
-        'email' => $data['email']
-      ]);
-    } else {
-      echo json_encode(['status' => false, 'message' => 'Data admin tidak ditemukan']);
-    }
-    exit();
-  }
-}
-
-// Fungsi untuk update profile admin
-if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_GET['action']) && $_GET['action'] == 'updateProfile') {
-  $id = $_SESSION['ID'];
-  $username = $_POST['username'] ?? '';
-  $email = $_POST['email'] ?? '';
-
-  // Validasi input
-  if (empty($username) || empty($email)) {
-    echo json_encode(['status' => false, 'message' => 'Username dan email harus diisi']);
-    exit();
-  }
-
-  // Update data admin
-  $success = updateAdminProfile($id, $username, $email);
-
-  if ($success) {
-    $_SESSION['username'] = $username;
-    echo json_encode([
-      'status' => true,
-      'message' => 'Profile berhasil diupdate',
-      'newUsername' => $username
-    ]);
-  } else {
-    echo json_encode(['status' => false, 'message' => 'Gagal mengupdate profile']);
-  }
-  exit();
-}
-
 ?>
 
 <!DOCTYPE html>
@@ -138,6 +92,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_GET['action']) && $_GET['act
     <div class="sidebar-bottom">
       <ul class="nav flex-column">
         <li class="nav-item">
+          <a class="nav-link" href="../Profile/profile.php">
+            <i class="material-symbols-rounded">account_circle</i>
+            <span class="nav-text">Profile</span>
+          </a>
+        </li>
+        <li class="nav-item logout-item">
           <a class="nav-link" href="../Login/logout.php">
             <i class="material-symbols-rounded">logout</i>
             <span class="nav-text">Logout</span>
@@ -166,7 +126,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_GET['action']) && $_GET['act
                 <i class="material-symbols-rounded">account_circle</i>
               </a>
               <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-                <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#updateProfileModal">
+                <li><a class="dropdown-item" href="../Profile/profile.php">
                     <i class="fa-regular fa-user me-2"></i> Update Profile
                   </a></li>
                 <li>
@@ -386,91 +346,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_GET['action']) && $_GET['act
 
   <!-- Kumpulan Modal -->
 
-  <!-- Modal Update Profile -->
-  <div class="modal fade" id="updateProfileModal" tabindex="-1" aria-labelledby="updateProfileModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content border-0 shadow-lg">
-        <!-- Modal Header -->
-        <div class="modal-header bg-primary text-white">
-          <div class="d-flex align-items-center">
-            <div class="modal-icon-circle me-3">
-              <i class="fas fa-user-edit"></i>
-            </div>
-            <div>
-              <h5 class="modal-title mb-0" id="updateProfileModalLabel">Edit Profile</h5>
-            </div>
-          </div>
-          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-
-        <!-- Modal Body -->
-        <div class="modal-body p-4">
-          <form id="updateProfileForm" class="needs-validation" novalidate>
-            <!-- Username Field -->
-            <div class="mb-3">
-              <label for="username" class="form-label fw-medium">Username</label>
-              <div class="input-group">
-                <span class="input-group-text bg-light">
-                  <i class="fas fa-user text-muted"></i>
-                </span>
-                <input type="text" class="form-control" id="username" name="username" value="john_doe" required>
-                <div class="invalid-feedback">
-                  Please choose a username.
-                </div>
-              </div>
-            </div>
-
-            <!-- Email Field -->
-            <div class="mb-4">
-              <label for="email" class="form-label fw-medium">Email Address</label>
-              <div class="input-group">
-                <span class="input-group-text bg-light">
-                  <i class="fas fa-envelope text-muted"></i>
-                </span>
-                <input type="email" class="form-control" id="email" name="email" value="john@example.com" required>
-                <div class="invalid-feedback">
-                  Please provide a valid email.
-                </div>
-              </div>
-            </div>
-
-            <!-- Status Messages -->
-            <div class="alert alert-danger d-flex align-items-center d-none" id="updateProfileError" role="alert">
-              <i class="fas fa-exclamation-triangle me-2 flex-shrink-0"></i>
-              <div id="errorMessage">Error message here</div>
-            </div>
-
-            <div class="alert alert-success d-flex align-items-center d-none" id="updateProfileSuccess" role="alert">
-              <i class="fas fa-check-circle me-2 flex-shrink-0"></i>
-              <div id="successMessage">Success message here</div>
-            </div>
-          </form>
-          <p class="small mb-0">
-          <div class="row d-flex align-items-center">
-            <div class="col-1">
-              <i class="fa-solid fa-circle-info me-2"></i>
-            </div>
-            <div class="col-11">
-              <span class="fw-bold">Username</span> yang diubah akan memengaruhi login kamu. Pastikan kamu mengingat <span class="fw-bold">Username</span> kamu.
-            </div>
-          </div>
-          </p>
-        </div>
-
-        <!-- Modal Footer -->
-        <div class="modal-footer bg-light">
-          <button type="button" class="btn btn-outline-secondary rounded-pill px-4" data-bs-dismiss="modal">
-            <i class="fas fa-times me-2"></i>Cancel
-          </button>
-          <button type="button" class="btn btn-primary rounded-pill px-4" id="updateProfileBtn">
-            <span class="spinner-border spinner-border-sm d-none me-2" role="status" aria-hidden="true"></span>
-            <i class="fas fa-save me-2"></i>Save Changes
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
-
   <!-- Modal Barang Habis -->
   <div class="modal fade" id="modalBarangHabis" tabindex="-1" aria-labelledby="modalBarangHabisLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
@@ -535,65 +410,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_GET['action']) && $_GET['act
 
   <script src="index.js"></script>
   <script src="../js/sidebar.js"></script>
-
-  <script>
-    document.getElementById('updateProfileBtn').addEventListener('click', function(e) {
-      e.preventDefault();
-
-      const formData = new FormData(document.getElementById('updateProfileForm'));
-      const errorElement = document.getElementById('updateProfileError');
-      const successElement = document.getElementById('updateProfileSuccess');
-
-      // Tampilkan loading state
-      const btn = this;
-      btn.disabled = true;
-      btn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Menyimpan...';
-
-      fetch('index.php?action=updateProfile', {
-          method: 'POST',
-          body: formData
-        })
-        .then(response => response.json())
-        .then(data => {
-          if (data.status) {
-            errorElement.classList.add('d-none');
-            successElement.classList.remove('d-none');
-            successElement.textContent = data.message || 'Profile updated successfully!';
-
-            // Update UI dengan data baru
-            if (data.newUsername) {
-              document.querySelector('.fw-semibold').textContent = 'Hi, ' + data.newUsername + ' !';
-            }
-
-            setTimeout(() => {
-              $('#updateProfileModal').modal('hide');
-              successElement.classList.add('d-none');
-            }, 2000);
-          } else {
-            successElement.classList.add('d-none');
-            errorElement.classList.remove('d-none');
-            errorElement.textContent = data.message || 'Failed to update profile';
-          }
-        })
-        .catch(error => {
-          console.error('Error:', error);
-          errorElement.classList.remove('d-none');
-          errorElement.textContent = 'Terjadi kesalahan jaringan';
-        })
-        .finally(() => {
-          btn.disabled = false;
-          btn.textContent = 'Save changes';
-        });
-    });
-
-    // Isi form saat modal dibuka
-    document.getElementById('updateProfileModal').addEventListener('show.bs.modal', function() {
-      document.getElementById('updateProfileError').classList.add('d-none');
-      document.getElementById('updateProfileSuccess').classList.add('d-none');
-      document.getElementById('username').value = '<?= $username ?>';
-      document.getElementById('email').value = '<?= $email ?>';
-    });
-  </script>
 </body>
 
 </html>

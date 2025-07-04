@@ -66,6 +66,10 @@ body::-webkit-scrollbar {
   background-color: #27548A;
 }
 
+.sidebar .nav-link.active:hover {
+  background-color: #1c3e66;
+}
+
 .sidebar .nav-text {
   transition: opacity 0.3s, width 0.3s;
   white-space: nowrap;
@@ -148,7 +152,7 @@ body::-webkit-scrollbar {
   font-size: 0.95rem;
 }
 
-.sidebar-bottom .nav-item a:hover {
+.sidebar-bottom .nav-item.logout-item a:hover {
   background-color: red;
 }
 
@@ -180,7 +184,7 @@ body::-webkit-scrollbar {
     height: 40px;
     color: #333;
     border-radius: 50%;
-    background-color: #d1d1d1;
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
     display: flex;
     text-decoration: none;
     align-items: center;
@@ -190,7 +194,8 @@ body::-webkit-scrollbar {
 
 .user-avatar:hover {
     cursor: pointer;
-    background-color: #5b5b5b;
+    background-color: #c1c1c1;
+    transform: scale(1.1);
     color: #fff;
 }
 

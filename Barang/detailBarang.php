@@ -22,24 +22,24 @@ if (isset($_POST['btnTambah'])) {
   $ukuran = $_POST['ukuran'];
   $barcode = $_POST['barcode'];
   $stock = $_POST['stock'];
-  
+
   $pattern = ''; // Default empty pattern
-  
+
   // Handle file upload only if a file was selected
   if (isset($_FILES['pattern'])) {
     $patternFile = $_FILES['pattern'];
-    
+
     // Only process if there's actually a file uploaded and no errors
     if ($patternFile['error'] === UPLOAD_ERR_OK) {
       $uploadDir = '../../Ventra/uploads/patterns/';
       $newFilename = basename($patternFile['name']); // use original filename
       $fullPath = $uploadDir . $newFilename;
-    
+
       // Create directory if it doesn't exist
       if (!file_exists($uploadDir)) {
         mkdir($uploadDir, 0777, true);
       }
-    
+
       // Move uploaded file
       if (move_uploaded_file($patternFile['tmp_name'], $fullPath)) {
         $pattern = $newFilename; // save filename to database
@@ -48,7 +48,7 @@ if (isset($_POST['btnTambah'])) {
       }
     } elseif ($patternFile['error'] !== UPLOAD_ERR_NO_FILE) {
       // Only show error if it's not "no file uploaded" error
-      echo "<script>alert('Error upload file: ".$patternFile['error']."');</script>";
+      echo "<script>alert('Error upload file: " . $patternFile['error'] . "');</script>";
     }
   }
 
@@ -143,6 +143,12 @@ $sqlDetail = getDetailBarangByProduk($id);
     <div class="sidebar-bottom">
       <ul class="nav flex-column">
         <li class="nav-item">
+          <a class="nav-link" href="../Profile/profile.php">
+            <i class="material-symbols-rounded">account_circle</i>
+            <span class="nav-text">Profile</span>
+          </a>
+        </li>
+        <li class="nav-item logout-item">
           <a class="nav-link" href="../Login/logout.php">
             <i class="material-symbols-rounded">logout</i>
             <span class="nav-text">Logout</span>
@@ -167,9 +173,20 @@ $sqlDetail = getDetailBarangByProduk($id);
             <div id="date" class="text-nowrap fw-semibold text-dark"></div> |
             <div class="text-nowrap fw-semibold">Hi, <?= $username; ?> !</div>
             <div class="dropdown">
-              <a class="user-avatar dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              <a class="user-avatar dropdown-toggle" href="#" role="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                 <i class="material-symbols-rounded">account_circle</i>
               </a>
+              <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                <li><a class="dropdown-item" href="../Profile/profile.php">
+                    <i class="fa-regular fa-user me-2"></i> Update Profile
+                  </a></li>
+                <li>
+                  <hr class="dropdown-divider">
+                </li>
+                <li><a class="dropdown-item" href="../Login/logout.php">
+                    <i class="fa-solid fa-right-from-bracket"></i> Logout
+                  </a></li>
+              </ul>
             </div>
           </div>
         </nav>

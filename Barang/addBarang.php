@@ -94,6 +94,12 @@ if (isset($_POST['btnTambah'])) {
     <div class="sidebar-bottom">
       <ul class="nav flex-column">
         <li class="nav-item">
+          <a class="nav-link" href="../Profile/profile.php">
+            <i class="material-symbols-rounded">account_circle</i>
+            <span class="nav-text">Profile</span>
+          </a>
+        </li>
+        <li class="nav-item logout-item">
           <a class="nav-link" href="../Login/logout.php">
             <i class="material-symbols-rounded">logout</i>
             <span class="nav-text">Logout</span>
@@ -118,9 +124,20 @@ if (isset($_POST['btnTambah'])) {
             <div id="date" class="text-nowrap fw-semibold text-dark"></div> |
             <div class="text-nowrap fw-semibold">Hi, <?= $username; ?> !</div>
             <div class="dropdown">
-              <a class="user-avatar dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              <a class="user-avatar dropdown-toggle" href="#" role="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                 <i class="material-symbols-rounded">account_circle</i>
               </a>
+              <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                <li><a class="dropdown-item" href="../Profile/profile.php">
+                    <i class="fa-regular fa-user me-2"></i> Update Profile
+                  </a></li>
+                <li>
+                  <hr class="dropdown-divider">
+                </li>
+                <li><a class="dropdown-item" href="../Login/logout.php">
+                    <i class="fa-solid fa-right-from-bracket"></i> Logout
+                  </a></li>
+              </ul>
             </div>
           </div>
         </nav>

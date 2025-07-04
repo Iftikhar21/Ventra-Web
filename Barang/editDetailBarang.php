@@ -29,42 +29,42 @@ if (isset($_POST['btnUpdate'])) {
   $kodeBarangBaru = $_POST['kodeBarang']; // Kode Barang baru dari form
   $kodeBarangLama = $_GET['Kode_Brg']; // Kode Barang lama dari URL
 
-    $ukuran = $_POST['ukuran'];
-    $stock = $_POST['stock'];
-    $barcode = $_POST['barcode'];
-    $patternPath = null; // path untuk disimpan ke database (jika ada upload)
+  $ukuran = $_POST['ukuran'];
+  $stock = $_POST['stock'];
+  $barcode = $_POST['barcode'];
+  $patternPath = null; // path untuk disimpan ke database (jika ada upload)
 
-    if ($_FILES['pattern']['error'] === UPLOAD_ERR_OK) {
-      $patternFile = $_FILES['pattern'];
-      $uploadDir = '../../Ventra/uploads/patterns/';
-      $ext = basename($patternFile['name']);
-      $newFilename = $kodeBarangBaru . '.' . $ext;
-      $fullPath = $uploadDir . $newFilename;
-    
-      // Buat folder jika belum ada
-      if (!file_exists($uploadDir)) {
-        mkdir($uploadDir, 0777, true);
-      }
-    
-      // Hapus file lama jika sudah ada
-      if (file_exists($fullPath)) {
-        unlink($fullPath);
-      }
-    
-      // Upload file baru
-      if (move_uploaded_file($patternFile['tmp_name'], $fullPath)) {
-        $patternPath = $newFilename; // simpan relatif untuk DB
-      } else {
-        echo "<script>alert('Gagal upload file!');</script>";
-        exit;
-      }
-    } else {
-      // Tidak ada file baru diupload, patternPath tetap null
-      $patternPath = null;
+  if ($_FILES['pattern']['error'] === UPLOAD_ERR_OK) {
+    $patternFile = $_FILES['pattern'];
+    $uploadDir = '../../Ventra/uploads/patterns/';
+    $ext = basename($patternFile['name']);
+    $newFilename = $kodeBarangBaru . '.' . $ext;
+    $fullPath = $uploadDir . $newFilename;
+
+    // Buat folder jika belum ada
+    if (!file_exists($uploadDir)) {
+      mkdir($uploadDir, 0777, true);
     }
 
-    // Panggil fungsi update
-    $result = updateDetailBarang($kodeBarangLama, $kodeBarangBaru, $produk_id, $ukuran, $patternPath, $barcode, $stock);
+    // Hapus file lama jika sudah ada
+    if (file_exists($fullPath)) {
+      unlink($fullPath);
+    }
+
+    // Upload file baru
+    if (move_uploaded_file($patternFile['tmp_name'], $fullPath)) {
+      $patternPath = $newFilename; // simpan relatif untuk DB
+    } else {
+      echo "<script>alert('Gagal upload file!');</script>";
+      exit;
+    }
+  } else {
+    // Tidak ada file baru diupload, patternPath tetap null
+    $patternPath = null;
+  }
+
+  // Panggil fungsi update
+  $result = updateDetailBarang($kodeBarangLama, $kodeBarangBaru, $produk_id, $ukuran, $patternPath, $barcode, $stock);
 
   if ($result == 1) {
     echo "<script>alert('Detail barang berhasil diperbarui!');</script>";
@@ -144,6 +144,12 @@ $id = isset($_GET['produk_id']) ? $_GET['produk_id'] : '';
     <div class="sidebar-bottom">
       <ul class="nav flex-column">
         <li class="nav-item">
+          <a class="nav-link" href="../Profile/profile.php">
+            <i class="material-symbols-rounded">account_circle</i>
+            <span class="nav-text">Profile</span>
+          </a>
+        </li>
+        <li class="nav-item logout-item">
           <a class="nav-link" href="../Login/logout.php">
             <i class="material-symbols-rounded">logout</i>
             <span class="nav-text">Logout</span>
@@ -168,9 +174,20 @@ $id = isset($_GET['produk_id']) ? $_GET['produk_id'] : '';
             <div id="date" class="text-nowrap fw-semibold text-dark"></div> |
             <div class="text-nowrap fw-semibold">Hi, <?= $username; ?> !</div>
             <div class="dropdown">
-              <a class="user-avatar dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              <a class="user-avatar dropdown-toggle" href="#" role="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                 <i class="material-symbols-rounded">account_circle</i>
               </a>
+              <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                <li><a class="dropdown-item" href="../Profile/profile.php">
+                    <i class="fa-regular fa-user me-2"></i> Update Profile
+                  </a></li>
+                <li>
+                  <hr class="dropdown-divider">
+                </li>
+                <li><a class="dropdown-item" href="../Login/logout.php">
+                    <i class="fa-solid fa-right-from-bracket"></i> Logout
+                  </a></li>
+              </ul>
             </div>
           </div>
         </nav>
