@@ -35,7 +35,7 @@ if ($conn->affected_rows) {
 
     try {
         $mail->send();
-        echo "<script>alert('Link reset password telah dikirim ke email Anda.');</script>";
+        echo "<script>alert('Link reset password telah dikirim ke email Anda.'); window.location.href = '../Login/formLogin.php';</script>";
     } catch (Exception $e) {
         // Log error ke file atau tampilkan di konsol
         error_log("Gagal mengirim email: " . $e->getMessage());
