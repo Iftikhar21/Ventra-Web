@@ -80,7 +80,7 @@
                     </div>
                 </div>
                 <div class="mb-3">
-                    <a href="forgot-pass.php" class="text-center text-decoration-none">Forgot Password ?</a>
+                    <a href="forgot-pass.php" class="text-center text-decoration-none">Forgot Password or Username?</a>
                 </div>
                 <button type="submit" name="submit" class="btn btn-black w-100 mb-3">Sign In</button>
                 <div class="text-center">

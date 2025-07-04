@@ -219,7 +219,7 @@
     <div class="login-container">
         <div class="form-section">
             <h2 class="form-title">Kamu Lupa Password ?</h2>
-            <p class="text-muted">Silahkan Masukkan <span class="fw-bold">Email</span> Untuk Reset Password!<br>Email Harus Valid Sesuai dengan <span class="fw-bold">Username</span> Kamu!</p>
+            <p class="text-muted">Silahkan Masukkan <span class="fw-bold">Email</span> Untuk Me-Reset <span class="fw-bold">Password</span> atau <span class="fw-bold">Username</span> Kamu!<br>Email Harus Valid Sesuai dengan <span class="fw-bold">Data Register</span> Kamu!</p>
             <form method="POST" action="send-pass-reset.php" id="resetForm">
                 <div class="mb-3">
                     <label for="email" class="form-label">Email</label>

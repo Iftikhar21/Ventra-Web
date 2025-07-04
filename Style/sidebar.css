@@ -194,11 +194,10 @@ body::-webkit-scrollbar {
     color: #fff;
 }
 
-.user-avatar:focus-within {
+/* .user-avatar:focus-within {
     background-color: #5b5b5b;
     color: #fff;
-}
-
+} */
 
 .user-info {
     text-align: right;
