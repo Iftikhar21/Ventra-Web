@@ -206,7 +206,7 @@ if (isset($_POST['btnEdit'])) {
               </div>
               <div class="col">
                 <label for="harga_jual" class="form-label">Harga</label>
-                <input type="number" class="form-control" name="harga_jual" required value="<?= $barang['harga_jual'] ?>">
+                <input type="number" class="form-control" name="harga_jual" min="0" required value="<?= $barang['harga_jual'] ?>">
               </div>
             </div>
 

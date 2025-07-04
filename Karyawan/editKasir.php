@@ -171,7 +171,7 @@ if (isset($_POST['btnEdit'])) {
             <div class="row mb-3">
               <div class="col">
                 <label for="kode_kasir" class="form-label">Kode Kasir</label>
-                <input type="number" class="form-control" name="kode_kasir" required value="<?php echo $kodeKasir ?>" readonly>
+                <input type="number" class="form-control" name="kode_kasir" min="0" required value="<?php echo $kodeKasir ?>" readonly>
               </div>
               <div class="col">
                 <label for="nama_kasir" class="form-label">Nama Kasir</label>

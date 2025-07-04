@@ -215,7 +215,7 @@ $id = isset($_GET['produk_id']) ? $_GET['produk_id'] : '';
               </div>
               <div class="col">
                 <label for="stock" class="form-label">Stok</label>
-                <input type="number" class="form-control" name="stock" required value="<?= $data['stock'] ?>">
+                <input type="number" class="form-control" name="stock" min="0" required value="<?= $data['stock'] ?>">
               </div>
             </div>
 

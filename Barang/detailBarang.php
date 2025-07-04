@@ -241,7 +241,7 @@ $sqlDetail = getDetailBarangByProduk($id);
                 </div>
                 <div class="col">
                   <label for="stock" class="form-label">Stok</label>
-                  <input type="number" class="form-control" name="stock" required>
+                  <input type="number" class="form-control" name="stock" min="0" required>
                 </div>
               </div>
 

@@ -146,7 +146,7 @@ if (isset($_POST['btnTambah'])) {
             <div class="row mb-3">
               <div class="col">
                 <label for="id_kategori" class="form-label">ID Kategori</label>
-                <input type="number" class="form-control" name="id_kategori" required disabled>
+                <input type="number" class="form-control" name="id_kategori" min="0" required disabled>
               </div>
               <div class="col">
                 <label for="nama_kategori" class="form-label">Nama Kategori</label>

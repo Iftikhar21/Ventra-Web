@@ -147,7 +147,7 @@ if (isset($_POST['btnTambah'])) {
             <div class="row mb-3">
               <div class="col">
                 <label for="kode_kasir" class="form-label">Kode Kasir</label>
-                <input type="number" class="form-control" name="kode_kasir" id="kode_kasir" required maxlength="10">
+                <input type="number" class="form-control" name="kode_kasir" min="0" id="kode_kasir" required maxlength="10">
               </div>
               <div class="col">
                 <label for="nama_kasir" class="form-label">Nama Kasir</label>

@@ -173,7 +173,7 @@ if (isset($_POST['btnEdit'])) {
             <div class="row mb-3">
               <div class="col">
                 <label for="id_event" class="form-label">Id Event</label>
-                <input type="number" class="form-control" name="id_event" required value="<?php echo $idEvent ?>" readonly>
+                <input type="number" class="form-control" name="id_event" min="0" required value="<?php echo $idEvent ?>" readonly>
               </div>
               <div class="col">
                 <label for="nama_event" class="form-label">Nama Event</label>
@@ -195,7 +195,7 @@ if (isset($_POST['btnEdit'])) {
             <div class="row mb-3">
               <div class="col">
                 <label for="total_diskon" class="form-label">Total Diskon</label>
-                <input type="number" class="form-control" name="total_diskon" required value="<?php echo $totalDiskon ?>">
+                <input type="number" class="form-control" name="total_diskon" min="0" required value="<?php echo $totalDiskon ?>">
               </div>
             </div>
 

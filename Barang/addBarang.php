@@ -168,7 +168,7 @@ if (isset($_POST['btnTambah'])) {
             <div class="row mb-3">
               <div class="col">
                 <label for="harga_jual" class="form-label">Harga</label>
-                <input type="number" class="form-control" name="harga_jual" required>
+                <input type="number" class="form-control" name="harga_jual" min="0" required>
               </div>
               <div class="col">
                 <label for="Kategori" class="form-label">Kategori</label>
@@ -186,7 +186,7 @@ if (isset($_POST['btnTambah'])) {
             <div class="row mb-3 align-items-center">
               <div class="col-md-6">
                 <label for="Gambar" class="form-label">Gambar (Upload)</label>
-                <input type="file" class="form-control" id="input-photo" name="Gambar" accept="image/*">
+                <input type="file" class="form-control" id="input-photo" name="Gambar" accept="image/*" required>
               </div>
               <div class="col-md-6 text-center">
                 <label class="form-label d-block">Preview Gambar</label>
