@@ -205,13 +205,12 @@ $username = $_SESSION['username'];
                     <thead class="table-light">
                       <tr>
                         <!--<th width="5%">ID</th>-->
-                        <th width="10%">Tanggal</th>
+                        <th width="15%">Tanggal</th>
                         <th width="20%">Produk</th>
-                        <th width="5%">Ukuran</th>
+                        <th width="10%">Ukuran</th>
                         <th width="15%">Harga Jual</th>
-                        <th width="20%">Harga - Diskon</th>
-                        <th width="5%">Terjual</th>
-                        <th width="5%">Sisa</th>
+                        <th width="10%">Terjual</th>
+                        <th width="10%">Sisa</th>
                         <th width="20%">Sub Total</th>
                       </tr>
                     </thead>
@@ -248,7 +247,6 @@ $username = $_SESSION['username'];
                           <td><?= $laporan['nama_produk']; ?></td>
                           <td><?= $laporan['ukuran']; ?></td>
                           <td><?= "Rp " . number_format($laporan['harga_satuan'], 0, ',', '.'); ?></td>
-                          <td>Rp 50.000</td>
                           <td><?= $laporan['JMLH']; ?></td>
                           <td><?= $laporan['stock']; ?></td>
                           <td><?= "Rp. " . number_format($laporan['total_harga'], 0, ',', '.') ?></td>
