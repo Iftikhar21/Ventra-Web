@@ -296,7 +296,7 @@
     <div class="login-container">
         <div class="form-section">
             <h2 class="form-title">Anda Lupa Password ?</h2>
-            <p class="mb-2">Pastikan Email yang Anda masukkan <strong>valid dan sesuai dengan data registrasimu</strong>.</p>
+            <p class="mb-2">Pastikan Email yang Anda masukkan <strong>valid dan sesuai dengan data registrasi Anda</strong>.</p>
             <hr>
             <p class="mb-0">
                 <strong>Anda lupa Username?</strong> Tenang!<br>
