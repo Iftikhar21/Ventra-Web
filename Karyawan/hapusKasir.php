@@ -7,9 +7,9 @@
         exit();
       }
 
-    if (isset($_GET['NISN'])) {
-        $nisn = $_GET['NISN'];
-        deleteKasir($nisn);
+    if (isset($_GET['kode_kasir'])) {
+        $kodeKasir = $_GET['kode_kasir'];
+        deleteKasir($kodeKasir);
         header('location:karyawan.php');
     }
 ?> 

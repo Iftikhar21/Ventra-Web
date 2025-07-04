@@ -118,7 +118,7 @@ $username = $_SESSION['username'];
           <!-- Filter Input di Luar Tabel -->
           <div class="row mb-3">
             <div class="col-md-3">
-              <input type="text" id="filterKode" class="form-control" placeholder="Cari NISN Kasir" oninput="filterTable()">
+              <input type="text" id="filterKode" class="form-control" placeholder="Cari Kode Kasir" oninput="filterTable()">
             </div>
             <div class="col-md-3">
               <input type="text" id="filterNama" class="form-control" placeholder="Cari Nama Kasir" oninput="filterTable()">
@@ -129,7 +129,7 @@ $username = $_SESSION['username'];
             <table class="table table-striped table-bordered text-center">
               <thead class="table-primary">
                 <tr>
-                  <th>NISN</th>
+                  <th>Kode Kasir</th>
                   <th>Nama Kasir</th>
                   <th>Waktu Aktif</th>
                   <th>Waktu Non Aktif</th>
@@ -141,7 +141,7 @@ $username = $_SESSION['username'];
                 <?php $no = 1;
                 foreach ($data as $karyawan): ?>
                   <tr>
-                    <td><?= $karyawan['NISN']; ?></td>
+                    <td><?= $karyawan['kode_kasir']; ?></td>
                     <td><?= $karyawan['Nama']; ?></td>
                     <td><?= $karyawan['WaktuAktif']; ?></td>
                     <td><?= $karyawan['WaktuNonAktif']; ?></td>
@@ -155,11 +155,11 @@ $username = $_SESSION['username'];
                       <?php endif; ?>
                     </td>
                     <td class="text-center">
-                      <a href="editKasir.php?NISN=<?= $karyawan['NISN']; ?>" class="btn btn-warning btn-sm">
+                      <a href="editKasir.php?kode_kasir=<?= $karyawan['kode_kasir']; ?>" class="btn btn-warning btn-sm">
                         <i class="material-symbols-rounded" style="color: #fff; margin-top: 2px;">edit</i>
                       </a>
                       <a href="#" class="btn btn-danger btn-sm"
-                        onclick="confirmDeleteKaryawan(<?= $karyawan['NISN']; ?>, '<?= addslashes($karyawan['Nama']); ?>')">
+                        onclick="confirmDeleteKaryawan(<?= $karyawan['kode_kasir']; ?>, '<?= addslashes($karyawan['Nama']); ?>')">
                         <i class="material-symbols-rounded" style="margin-top: 2px;">delete</i>
                       </a>
                     </td>
@@ -219,9 +219,9 @@ $username = $_SESSION['username'];
   <script src="../js/sidebar.js"></script>
 
   <script>
-    function confirmDeleteKaryawan(nisn, namaKaryawan) {
+    function confirmDeleteKaryawan(kodeKasir, namaKaryawan) {
       document.getElementById('karyawanName').textContent = namaKaryawan;
-      document.getElementById('confirmDeleteKaryawanBtn').href = 'hapusKasir.php?NISN=' + nisn;
+      document.getElementById('confirmDeleteKaryawanBtn').href = 'hapusKasir.php?kode_kasir=' + kodeKasir;
       new bootstrap.Modal(document.getElementById('deleteKaryawanModal')).show();
     }
   </script>

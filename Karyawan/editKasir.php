@@ -10,20 +10,20 @@ $username = $_SESSION['username'];
 ?>
 
 <?php
-if (isset($_GET['NISN'])) {
-  $nisn = $_GET['NISN'];
+if (isset($_GET['kode_kasir'])) {
+  $kodeKasir = $_GET['kode_kasir'];
 } else {
-  echo "Masukkan NISN Kasir";
+  echo "Masukkan Kode Kasir";
   exit();
 }
-$data = getKasir($nisn);
+$data = getKasir($kodeKasir);
 if (empty($data)) {
-  echo "NISN Kasir Tidak Ditemukan !";
+  echo "Kode Kasir Tidak Ditemukan !";
   exit();
 } else {
   $event = $data[0]; // Ambil data pertama
 
-  $nisn = $event['NISN'];
+  $kodeKasir = $event['kode_kasir'];
   $namaKasir = $event['Nama'];
   $waktuAktif = $event['WaktuAktif'];
   $waktuNonAktif = $event['WaktuNonAktif'];
@@ -32,12 +32,12 @@ if (empty($data)) {
 
 <?php
 if (isset($_POST['btnEdit'])) {
-  $nisn = $_POST['nisn'];
+  $kodeKasir = $_POST['kode_kasir'];
   $namaKasir = $_POST['nama_kasir'];
   $waktuAktif = $_POST['waktu_aktif'];
   $waktuNonAktif = $_POST['waktu_non_aktif'];
 
-  $result = editKasir($nisn, $namaKasir, $waktuAktif, $waktuNonAktif);
+  $result = editKasir($kodeKasir, $namaKasir, $waktuAktif, $waktuNonAktif);
   if ($result) {
     header("Location:karyawan.php");
     exit();
@@ -153,8 +153,8 @@ if (isset($_POST['btnEdit'])) {
           <form action="" method="POST" enctype="multipart/form-data">
             <div class="row mb-3">
               <div class="col">
-                <label for="nisn" class="form-label">NISN</label>
-                <input type="number" class="form-control" name="nisn" required value="<?php echo $nisn ?>" readonly>
+                <label for="kode_kasir" class="form-label">Kode Kasir</label>
+                <input type="number" class="form-control" name="kode_kasir" required value="<?php echo $kodeKasir ?>" readonly>
               </div>
               <div class="col">
                 <label for="nama_kasir" class="form-label">Nama Kasir</label>
