@@ -29,21 +29,42 @@ if (isset($_POST['btnUpdate'])) {
   $kodeBarangBaru = $_POST['kodeBarang']; // Kode Barang baru dari form
   $kodeBarangLama = $_GET['Kode_Brg']; // Kode Barang lama dari URL
 
-  $ukuran = $_POST['ukuran'];
-  $stock = $_POST['stock'];
-  $barcode = $_POST['barcode'];
+    $ukuran = $_POST['ukuran'];
+    $stock = $_POST['stock'];
+    $barcode = $_POST['barcode'];
+    $patternPath = null; // path untuk disimpan ke database (jika ada upload)
 
-  // Inisialisasi $patternData sebagai null
-  $patternData = null;
+    if ($_FILES['pattern']['error'] === UPLOAD_ERR_OK) {
+      $patternFile = $_FILES['pattern'];
+      $uploadDir = '../../Ventra/uploads/patterns/';
+      $ext = basename($patternFile['name']);
+      $newFilename = $kodeBarangBaru . '.' . $ext;
+      $fullPath = $uploadDir . $newFilename;
+    
+      // Buat folder jika belum ada
+      if (!file_exists($uploadDir)) {
+        mkdir($uploadDir, 0777, true);
+      }
+    
+      // Hapus file lama jika sudah ada
+      if (file_exists($fullPath)) {
+        unlink($fullPath);
+      }
+    
+      // Upload file baru
+      if (move_uploaded_file($patternFile['tmp_name'], $fullPath)) {
+        $patternPath = $newFilename; // simpan relatif untuk DB
+      } else {
+        echo "<script>alert('Gagal upload file!');</script>";
+        exit;
+      }
+    } else {
+      // Tidak ada file baru diupload, patternPath tetap null
+      $patternPath = null;
+    }
 
-  // Cek apakah ada file baru diupload
-  if ($_FILES['pattern']['error'] === UPLOAD_ERR_OK) {
-    $patternTmp = $_FILES['pattern']['tmp_name'];
-    $patternData = file_get_contents($patternTmp);
-  }
-
-  // Panggil fungsi update dengan parameter baru
-  $result = updateDetailBarang($kodeBarangLama, $kodeBarangBaru, $produk_id, $ukuran, $patternData, $barcode, $stock);
+    // Panggil fungsi update
+    $result = updateDetailBarang($kodeBarangLama, $kodeBarangBaru, $produk_id, $ukuran, $patternPath, $barcode, $stock);
 
   if ($result == 1) {
     echo "<script>alert('Detail barang berhasil diperbarui!');</script>";
