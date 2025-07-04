@@ -71,6 +71,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if ($stmt->execute()) {
         $_SESSION['success'] = "Password berhasil diupdate. Silakan login dengan password baru Anda.";
+        echo "<script>
+                alert('Password berhasil diupdate. Silakan login dengan password baru Anda.');
+                window.location.href = '../Login/formLogin.php';
+            </script>";
         header("Location: ../Login/formLogin.php");
         exit();
     } else {
