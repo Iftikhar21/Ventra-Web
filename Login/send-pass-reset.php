@@ -30,7 +30,7 @@ if ($conn->affected_rows) {
 
     $mail->setFrom("neorozatech@gmail.com", "Neoroza Tech");
     $mail->addAddress($email);
-    $mail->Subject = "Permintaan Reset Password - Ventra Web";
+    $mail->Subject = "Permintaan Reset Password - Neoroza Tech";
     
     // Improved email content
     $mail->Body = "
@@ -62,12 +62,12 @@ if ($conn->affected_rows) {
     </head>
     <body>
         <div class='container'>
-            <div class='header'>Reset Password Ventra Web</div>
+            <div class='header'>Reset Password Akun Fashion 24</div>
             
             <div class='content'>
                 <p>Halo,</p>
                 
-                <p>Kami menerima permintaan untuk mereset password akun Ventra Web Anda. 
+                <p>Kami menerima permintaan untuk mereset password akun Fashion 24 Anda. 
                 Silakan klik tombol di bawah ini untuk melanjutkan proses reset password:</p>
                 
                 <p><a href='https://backend24.site/Rian/XI/recode/ventra-web/Login/reset-pass.php?token=$token' class='button'>Reset Password Saya</a></p>
@@ -79,12 +79,12 @@ if ($conn->affected_rows) {
                 Anda dapat mengabaikan email ini dan password Anda tidak akan berubah.</p>
                 
                 <p>Terima kasih,<br>
-                Tim Ventra Web</p>
+                Tim Neoroza Tech</p>
             </div>
             
             <div class='footer'>
                 <p>Email ini dikirim secara otomatis. Mohon tidak membalas email ini.</p>
-                <p>&copy; " . date('Y') . " Ventra Web. All rights reserved.</p>
+                <p>&copy; " . date('Y') . " Neoroza Tech. All rights reserved.</p>
             </div>
         </div>
     </body>
