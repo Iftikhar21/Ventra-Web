@@ -31,7 +31,7 @@ if ($conn->affected_rows) {
     $mail->setFrom("iftikharazharchaudhry@gmail.com", "Iftikhar");
     $mail->addAddress($email);
     $mail->Subject = "Reset Password";
-    $mail->Body = "Klik link berikut untuk reset password Anda: <a href='http://localhost/Fashion24/Login/reset-pass.php?token=$token'>Reset Password</a>";
+    $mail->Body = "Klik link berikut untuk reset password Anda: <a href='https://backend24.site/Rian/XI/recode/ventra-web/Login/reset-pass.php?token=$token'>Reset Password</a>";
 
     try {
         $mail->send();
