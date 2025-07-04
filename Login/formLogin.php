@@ -11,8 +11,16 @@
             header("Location: ../Dashboard/index.php");
             exit;
         } else {
-            echo "<script>alert('{$result["message"]}'); window.location='formLogin.php';</script>";
+            $error_message = $result["message"];
         }
+    }
+
+    if (isset($_SESSION['success'])) {
+        echo "<script>
+                    const successModal = new bootstrap.Modal(document.getElementById('successModal'));
+                    successModal.show();
+                </script>";
+        unset($_SESSION['success']);
     }
 ?>
 
@@ -87,7 +95,58 @@
         </div>
     </div>
 
+    <!-- Error Modal -->
+   <div class="modal fade" id="errorModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content" role="alert">
+                <div class="modal-header bg-danger text-light">
+                    <h5 class="modal-title">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        Login Gagal
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="modal-body text-center">
+                    <div class="error-icon-large">
+                        <i class="fas fa-times-circle"></i>
+                    </div>
+                    <div class="error-message">
+                        <!-- PHP content would go here -->
+                        <strong>Username atau password salah!</strong><br>
+                        Silakan coba lagi.
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">
+                        <i class="fas fa-redo me-2"></i>Coba Lagi
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+        <!-- Modal Success -->
+    <div class="modal fade" id="successModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content text-success text-center">
+                <div class="modal-header">
+                    <h5 class="modal-title">Registrasi Berhasil</h5>
+                </div>
+                <div class="modal-body">
+                    <?= $_SESSION['success'] ?? '' ?>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-success" data-bs-dismiss="modal">OK</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js"></script>
     <script>
+        // Toggle password visibility
         document.querySelectorAll('.password-toggle').forEach(button => {
             button.addEventListener('click', function() {
                 const targetId = this.getAttribute('data-target');
@@ -105,8 +164,14 @@
                 }
             });
         });
-    </script>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js"></script>
+        // Show error modal if there's an error
+        <?php if (isset($error_message)): ?>
+            document.addEventListener('DOMContentLoaded', function() {
+                var errorModal = new bootstrap.Modal(document.getElementById('errorModal'));
+                errorModal.show();
+            });
+        <?php endif; ?>
+    </script>
 </body>
 </html>
