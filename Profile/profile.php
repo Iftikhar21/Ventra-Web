@@ -139,7 +139,7 @@ unset($_SESSION['status'], $_SESSION['message']);
                         </div>
                     </div>
                 </nav>
-                <p class="text-muted">Update Profile Kamu</p>
+                <p class="text-muted">Update Profile Anda</p>
             </div>
             <div class="row">
                 <div class="profile-container">
@@ -150,7 +150,7 @@ unset($_SESSION['status'], $_SESSION['message']);
                         </div>
                         <div class="profile-title">
                             <h2>Edit Profile</h2>
-                            <p>Update Informasi Akun Kamu</p>
+                            <p>Update Informasi Akun Anda</p>
                         </div>
                     </div>
 
@@ -196,7 +196,7 @@ unset($_SESSION['status'], $_SESSION['message']);
                             <!-- Info Box -->
                             <div class="profile-info-box">
                                 <i class="fa-solid fa-circle-info"></i>
-                                <span><strong>Username & Email</strong> yang diubah akan memengaruhi login kamu. Pastikan kamu mengingat <strong>Username & Email</strong> kamu.</span>
+                                <span><strong>Username & Email</strong> yang diubah akan memengaruhi login Anda. Pastikan Anda mengingat <strong>Username & Email</strong> Anda.</span>
                             </div>
 
                             <!-- Form Buttons -->

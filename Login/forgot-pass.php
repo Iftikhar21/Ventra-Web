@@ -295,13 +295,13 @@
 <body>
     <div class="login-container">
         <div class="form-section">
-            <h2 class="form-title">Kamu Lupa Password ?</h2>
-            <p class="mb-2">Pastikan email yang kamu masukkan <strong>valid dan sesuai dengan data registrasimu</strong>.</p>
+            <h2 class="form-title">Anda Lupa Password ?</h2>
+            <p class="mb-2">Pastikan Email yang Anda masukkan <strong>valid dan sesuai dengan data registrasimu</strong>.</p>
             <hr>
             <p class="mb-0">
-                <strong>Kamu lupa Username?</strong> Tenang!<br>
-                - Setelah memasukkan Email, kami akan mengirimkan link Reset Password ke Emailmu<br>
-                - Saat membuka link tersebut, <strong>Username kamu akan ditampilkan jelas</strong> di halaman <strong>Reset Password</strong>
+                <strong>Anda lupa Username?</strong> Tenang!<br>
+                - Setelah memasukkan Email, kami akan mengirimkan link Reset Password ke Email Anda<br>
+                - Saat membuka link tersebut, <strong>Username Anda akan ditampilkan jelas</strong> di halaman <strong>Reset Password</strong>
             </p>
             <hr>
             <form method="POST" action="send-pass-reset.php" id="resetForm">
