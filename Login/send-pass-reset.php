@@ -42,5 +42,5 @@ if ($conn->affected_rows) {
         echo "<script>alert('Gagal mengirim email. Silakan coba lagi atau hubungi admin.'); window.location.href = 'forgot-pass.php';</script>";
     }
 } else {
-    echo "<script>alert('Email tidak ditemukan.'); window.location.href = '../Login/formLogin.php';</script>";
+    echo "<script>alert('Email tidak ditemukan.'); window.location.href = '../Login/forgot-pass.php';</script>";
 }
