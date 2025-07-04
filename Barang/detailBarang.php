@@ -20,9 +20,36 @@ if (isset($_POST['btnTambah'])) {
   $kodeBarang = $_POST['kodeBarang'];
   $produk_id = $_POST['produk_id'];
   $ukuran = $_POST['ukuran'];
-  $pattern = $_FILES['pattern']['tmp_name'];
   $barcode = $_POST['barcode'];
   $stock = $_POST['stock'];
+  
+    $patternFile = $_FILES['pattern'];
+    $pattern = ''; // untuk disimpan ke database
+    
+    if ($patternFile['error'] === UPLOAD_ERR_OK) {
+      $uploadDir = '../../Ventra/uploads/patterns/';
+      $newFilename = basename($patternFile['name']); // gunakan nama file asli
+      $fullPath = $uploadDir . $newFilename;
+    
+      // Buat folder jika belum ada
+      if (!file_exists($uploadDir)) {
+        mkdir($uploadDir, 0777, true);
+      }
+    
+      // Pindahkan file ke folder tujuan
+      if (move_uploaded_file($patternFile['tmp_name'], $fullPath)) {
+        $pattern = $newFilename; // simpan nama file ke database
+      } else {
+        echo "<script>alert('Gagal upload file!');</script>";
+        exit;
+      }
+    } else {
+      echo "<script>alert('Upload error!');</script>";
+      exit;
+    }
+
+
+
 
   // Call function to add product detail
   $result = addDetailBarang($kodeBarang, $produk_id, $ukuran, $pattern,  $barcode, $stock);
@@ -279,7 +306,7 @@ $sqlDetail = getDetailBarangByProduk($id);
                     <td><?= $barang['produk_id']; ?></td>
                     <td><?= $barang['Kode_Brg']; ?></td>
                     <td><?= $barang['ukuran']; ?></td>
-                    <td><img src="data:image/jpeg;base64,<?= base64_encode($barang['pattern']); ?>" alt="Produk Busana"></td>
+                    <td><img src="../../Ventra/uploads/patterns/<?= $barang['pattern']; ?>" alt="Produk Busana" style="max-height:100px;"></td>
                     <td><?= $barang['barcode']; ?></td>
                     <td class="text-center">
                       <?php if ($barang['stock'] < 5): ?>
