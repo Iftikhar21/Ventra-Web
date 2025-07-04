@@ -29,5 +29,17 @@ if ($user === null) {
 </head>
 <body>
     <h1>reset pass bro</h1>
+    <form action="update-pass.php" method="POST">
+        <input type="hidden" name="token" value="<?php echo htmlspecialchars($token); ?>">
+        <div>
+            <label for="password">Password Baru:</label>
+            <input type="password" id="password" name="password" required>
+        </div>
+        <div>
+            <label for="confirm_password">Konfirmasi Password:</label>
+            <input type="password" id="confirm_password" name="confirm_password" required>
+        </div>
+        <button type="submit">Reset Password</button>
+    </form>
 </body>
 </html>
