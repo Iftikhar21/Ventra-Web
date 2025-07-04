@@ -23,9 +23,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // }
 
     // Cek apakah username sudah digunakan oleh user lain
-    $sql = "SELECT id FROM admin WHERE username = ? AND id != ?";
+    $sql = "SELECT id FROM admin WHERE username = ?";
     $stmt = $conn->prepare($sql);
-    $stmt->bind_param("si", $username, $user['id']);
+    $stmt->bind_param("s", $username);
     $stmt->execute();
     $result = $stmt->get_result();
 
