@@ -18,12 +18,12 @@ $jumlahTransaksi = getTotalTransaksi();
 $jumlahBarangMenipis = getTotalBarangMenipis();
 $dataBarangMenipis = getBarangMenipis();
 
-$tanggal = date('Y-m-d');
+$tanggalHariIni = date('Y-m-d');
 
 $data = getAllLaporan();
 $dataMetodePembayaranPerHari = getRekapPembayaranHariIni();
 
-$tanggalFilter = isset($_GET['tanggal']) ? $_GET['tanggal'] : date('Y-m-d');
+$tanggalFilter = isset($_GET['tanggal']) ? $_GET['tanggal'] : $tanggalHariIni;
 $dataPerTanggal = getLaporanByTanggal($tanggalFilter);
 $dataMetodePembayaranPerTanggal = getRekapPembayaranByTanggal($tanggalFilter);
 
@@ -190,7 +190,7 @@ if (isset($_SESSION['delete_success'])) {
                       <i class="fa-solid fa-arrows-rotate"></i>
                     </button>
                     <input type="text" class="form-control" name="tanggal" id="tanggalFilter"
-                      value="<?= isset($_GET['tanggal']) ? $_GET['tanggal'] : $tanggal; ?>"
+                      value="<?= htmlspecialchars($tanggalFilter) ?>"
                       style="width: 150px;" readonly>
                     <i class="material-symbols-rounded fs-5">calendar_month</i>
                   </div>
@@ -537,7 +537,7 @@ if (isset($_SESSION['delete_success'])) {
 
       flatpickr("#tanggalFilter", {
         dateFormat: "Y-m-d",
-        defaultDate: selectedDate, // Pastikan selectedDate sudah dalam timezone yang benar
+        defaultDate: <?= $tanggalFilter ?>, // Pastikan selectedDate sudah dalam timezone yang benar
         plugins: [
           new confirmDatePlugin({
             showAlways: true,
