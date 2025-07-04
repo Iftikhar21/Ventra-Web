@@ -10,17 +10,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $confirm_password = $_POST['confirm_password'];
 
     // Validasi username
-    if (empty($username)) {
-        $_SESSION['error'] = "Username tidak boleh kosong!";
-        header("Location: reset-pass.php?token=" . urlencode($token));
-        exit();
-    }
+    // if (empty($username)) {
+    //     $_SESSION['error'] = "Username tidak boleh kosong!";
+    //     header("Location: reset-pass.php?token=" . urlencode($token));
+    //     exit();
+    // }
 
-    if (strlen($username) < 3) {
-        $_SESSION['error'] = "Username minimal 3 karakter!";
-        header("Location: reset-pass.php?token=" . urlencode($token));
-        exit();
-    }
+    // if (strlen($username) < 3) {
+    //     $_SESSION['error'] = "Username minimal 3 karakter!";
+    //     header("Location: reset-pass.php?token=" . urlencode($token));
+    //     exit();
+    // }
 
     // Cek apakah username sudah digunakan oleh user lain
     $sql = "SELECT id FROM admin WHERE username = ? AND id != ?";
