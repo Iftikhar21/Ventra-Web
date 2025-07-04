@@ -143,4 +143,35 @@
         return $data;
     }
 
+    function deleteLaporanByTanggal($tanggal) {
+        $koneksi = Connection();
+        $tanggal = mysqli_real_escape_string($koneksi, $tanggal);
+        
+        // Mulai transaction
+        mysqli_begin_transaction($koneksi);
+        
+        try {
+            // Pertama hapus detail transaksi
+            $sql1 = "DELETE vdt FROM ventra_detail_transaksi vdt
+                    JOIN ventra_transaksi vt ON vdt.id_transaksi = vt.ID_Transaksi
+                    WHERE DATE(vt.tanggal_transaksi) = '$tanggal'";
+            mysqli_query($koneksi, $sql1);
+            
+            // Kemudian hapus transaksi
+            $sql2 = "DELETE FROM ventra_transaksi 
+                    WHERE DATE(tanggal_transaksi) = '$tanggal'";
+            mysqli_query($koneksi, $sql2);
+            
+            // Commit transaction jika berhasil
+            mysqli_commit($koneksi);
+            return true;
+        } catch (Exception $e) {
+            // Rollback jika ada error
+            mysqli_rollback($koneksi);
+            return false;
+        } finally {
+            mysqli_close($koneksi);
+        }
+    }
+
 ?>

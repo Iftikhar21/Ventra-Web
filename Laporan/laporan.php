@@ -29,6 +29,33 @@ $dataMetodePembayaranPerTanggal = getRekapPembayaranByTanggal($tanggalFilter);
 
 
 $username = $_SESSION['username'];
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_date'])) {
+  $dateToDelete = $_POST['delete_date'];
+  if (deleteLaporanByTanggal($dateToDelete)) {
+    // Simpan pesan sukses dalam session untuk ditampilkan setelah redirect
+    $_SESSION['delete_success'] = [
+      'message' => 'Laporan tanggal ' . htmlspecialchars($dateToDelete) . ' berhasil dihapus',
+      'date' => $dateToDelete
+    ];
+    header("Location: laporan.php?tanggal=" . urlencode($tanggalFilter));
+    exit();
+  } else {
+    echo '<div class="alert alert-danger">Gagal menghapus laporan</div>';
+  }
+}
+
+// Tampilkan modal sukses jika ada session
+if (isset($_SESSION['delete_success'])) {
+  echo '<script>
+    document.addEventListener("DOMContentLoaded", function() {
+      const successModal = new bootstrap.Modal(document.getElementById("successModal"));
+      document.getElementById("successMessage").textContent = "' . $_SESSION['delete_success']['message'] . '";
+      successModal.show();
+    });
+  </script>';
+  unset($_SESSION['delete_success']); // Hapus session setelah ditampilkan
+}
 ?>
 
 <!DOCTYPE html>
@@ -167,9 +194,8 @@ $username = $_SESSION['username'];
           <?php endif; ?>
 
           <?php if (!empty($dataPerTanggal)): ?>
-            <!-- Filter Input di Luar Tabel -->
-            <div class="row mb-3">
-              <div class="col-md-3">
+            <div class="row mb-3 d-flex justify-content-end align-items-center">
+              <!-- <div class="col-md-3">
                 <label for="" class="form-label">ID Transaksi</label>
                 <input type="text" id="filterID" class="form-control" placeholder="Cari..." oninput="filterTable()">
               </div>
@@ -183,15 +209,31 @@ $username = $_SESSION['username'];
                   <option value="" selected>-- Semua Metode --</option>
                   <?php foreach ($dataMetodePembayaranPerTanggal as $metode): ?>
                     <option value="<?= $metode['metode'] ?>">
-                      <?= $metode['metode'] ?> <!-- Ini yang menampilkan teks opsi -->
+                      <?= $metode['metode'] ?>
                     </option>
                   <?php endforeach; ?>
                 </select>
-              </div>
-              <div class="col-md-3">
-                <label for="" class="form-label">Export ke Excel</label>
-                <button onclick="exportToExcel()" class="btn btn-success d-flex align-items-center w-100 no-print">
-                  <span class="material-symbols-rounded me-2">open_in_new</span>Export
+              </div> -->
+              <div class="col-md-12 d-flex justify-content-end">
+                <button onclick="showDeleteConfirmation('<?= $tanggalFilter ?>')" class="btn btn-danger d-flex align-items-center me-2">
+                  <span class="material-symbols-rounded me-2">delete</span>Hapus Laporan
+                </button>
+                <button onclick="exportToExcel()" class="btn-glass d-flex align-items-center no-print">
+                  <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="24" height="24" viewBox="0 0 48 48" class="me-2">
+                    <path fill="#169154" d="M29,6H15.744C14.781,6,14,6.781,14,7.744v7.259h15V6z"></path>
+                    <path fill="#18482a" d="M14,33.054v7.202C14,41.219,14.781,42,15.743,42H29v-8.946H14z"></path>
+                    <path fill="#0c8045" d="M14 15.003H29V24.005000000000003H14z"></path>
+                    <path fill="#17472a" d="M14 24.005H29V33.055H14z"></path>
+                    <g>
+                      <path fill="#29c27f" d="M42.256,6H29v9.003h15V7.744C44,6.781,43.219,6,42.256,6z"></path>
+                      <path fill="#27663f" d="M29,33.054V42h13.257C43.219,42,44,41.219,44,40.257v-7.202H29z"></path>
+                      <path fill="#19ac65" d="M29 15.003H44V24.005000000000003H29z"></path>
+                      <path fill="#129652" d="M29 24.005H44V33.055H29z"></path>
+                    </g>
+                    <path fill="#0c7238" d="M22.319,34H5.681C4.753,34,4,33.247,4,32.319V15.681C4,14.753,4.753,14,5.681,14h16.638 C23.247,14,24,14.753,24,15.681v16.638C24,33.247,23.247,34,22.319,34z"></path>
+                    <path fill="#fff" d="M9.807 19L12.193 19 14.129 22.754 16.175 19 18.404 19 15.333 24 18.474 29 16.123 29 14.013 25.07 11.912 29 9.526 29 12.719 23.982z"></path>
+                  </svg>Export to Excel
+                  <!-- <span class="material-symbols-rounded me-2">open_in_new</span> -->
                 </button>
               </div>
             </div>
@@ -375,6 +417,56 @@ $username = $_SESSION['username'];
     </div>
   </main>
 
+  <!-- Delete Confirmation Modal -->
+  <div class="modal fade" id="deleteConfirmationModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header bg-danger text-white">
+          <h5 class="modal-title" id="deleteModalLabel">Konfirmasi Penghapusan</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <p>Anda yakin ingin menghapus semua data laporan untuk tanggal:</p>
+          <p class="fw-bold" id="dateToDeleteText"></p>
+          <p class="text-danger"><i class="fas fa-exclamation-triangle me-2"></i>Data yang dihapus tidak dapat dikembalikan!</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+          <form method="post" id="deleteForm">
+            <input type="hidden" name="delete_date" id="deleteDateInput">
+            <button type="submit" class="btn btn-danger">
+              <i class="fas fa-trash me-1"></i> Ya, Hapus
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Success Notification Modal -->
+  <div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header bg-success text-white">
+          <h5 class="modal-title" id="successModalLabel">Berhasil</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="d-flex align-items-center">
+            <i class="fas fa-check-circle text-success me-3" style="font-size: 2rem;"></i>
+            <div>
+              <h5 class="mb-1">Laporan berhasil dihapus</h5>
+              <p class="mb-0" id="successMessage"></p>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-success" data-bs-dismiss="modal">Tutup</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Scripts -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
@@ -385,6 +477,39 @@ $username = $_SESSION['username'];
   <script src="../js/sidebar.js"></script>
 
   <script>
+    // Function to show delete confirmation modal
+    function showDeleteConfirmation(date) {
+      const modal = new bootstrap.Modal(document.getElementById('deleteConfirmationModal'));
+
+      // Format tanggal untuk ditampilkan (contoh: "Selasa, 12 Maret 2024")
+      const options = {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      };
+      const formattedDate = new Date(date).toLocaleDateString('id-ID', options);
+
+      document.getElementById('dateToDeleteText').textContent = formattedDate;
+      document.getElementById('deleteDateInput').value = date;
+      modal.show();
+    }
+
+    // Event listener untuk form submission
+    // Event listener untuk form submission
+    document.getElementById('deleteForm').addEventListener('submit', function(e) {
+      // Tutup modal konfirmasi
+      const confirmModal = bootstrap.Modal.getInstance(document.getElementById('deleteConfirmationModal'));
+      confirmModal.hide();
+
+      // Tampilkan loading state
+      const submitBtn = this.querySelector('button[type="submit"]');
+      submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span> Menghapus...';
+      submitBtn.disabled = true;
+
+      // Form akan tetap di-submit secara normal
+    });
+
     document.addEventListener('DOMContentLoaded', function() {
       // Cek apakah ada parameter tanggal di URL
       const urlParams = new URLSearchParams(window.location.search);
