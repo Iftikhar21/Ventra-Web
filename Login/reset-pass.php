@@ -75,7 +75,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 alert('Password berhasil diupdate. Silakan login dengan password baru Anda.');
                 window.location.href = '../Login/formLogin.php';
             </script>";
-        header("Location: ../Login/formLogin.php");
+        // header("Location: ../Login/formLogin.php");
         exit();
     } else {
         $_SESSION['error'] = "Gagal mengupdate password. Silakan coba lagi.";
