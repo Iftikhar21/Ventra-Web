@@ -157,45 +157,23 @@
         return $jumlah;
     }
 
-    function addDetailBarang($kodeBarang, $produk_id, $ukuran, $pattern, $barcode, $stock) {
+    function addDetailBarang($kodeBarang, $produk_id, $ukuran, $patternPath, $barcode, $stock) {
         $koneksi = Connection();
-
-        // Penanganan gambar/pattern
-        $photoData = null;
-        if (!empty($pattern) && file_exists($pattern)) {
-            $content = file_get_contents($pattern);
-            $photoData = mysqli_real_escape_string($koneksi, $content);
-            $photoData = "'$photoData'"; // Bungkus dalam tanda kutip jika ada isinya
-        } else {
-            $photoData = "NULL"; // Biarkan sebagai NULL SQL
-        }
-
-        // Escape dan handle nilai NULL untuk parameter lainnya
-        $kodeBarang = !empty($kodeBarang) ? "'" . mysqli_real_escape_string($koneksi, $kodeBarang) . "'" : "NULL";
-        $ukuran = !empty($ukuran) ? "'" . mysqli_real_escape_string($koneksi, $ukuran) . "'" : "NULL";
-        $barcode = !empty($barcode) ? "'" . mysqli_real_escape_string($koneksi, $barcode) . "'" : "NULL";
-        $stock = $stock !== null ? "'" . mysqli_real_escape_string($koneksi, $stock) . "'" : "NULL";
-        $produk_id = $produk_id !== null ? $produk_id : "NULL";
-
-        // Cek apakah data sudah ada
-        $cek = mysqli_query($koneksi, "SELECT * FROM ventra_produk_detail 
-                                    WHERE Kode_Brg = $kodeBarang 
-                                    AND produk_id = $produk_id 
-                                    AND ukuran = $ukuran");
-
-        if (mysqli_num_rows($cek) == 0) {
-            $sql = "INSERT INTO ventra_produk_detail (Kode_Brg, produk_id, ukuran, pattern, barcode, stock)
-                    VALUES ($kodeBarang, $produk_id, $ukuran, $photoData, $barcode, $stock)";
-            $hasil = mysqli_query($koneksi, $sql);
-            mysqli_close($koneksi);
-            return $hasil ? 1 : 0;
-        }
-
+    
+        // Escape string path (bukan file binary lagi)
+        $patternPath = mysqli_real_escape_string($koneksi, $patternPath);
+    
+        $sql = "INSERT INTO ventra_produk_detail (Kode_Brg, produk_id, ukuran, pattern, barcode, stock)
+                VALUES ('$kodeBarang', $produk_id, '$ukuran', '$patternPath', '$barcode', '$stock')";
+        
+        $hasil = mysqli_query($koneksi, $sql);
         mysqli_close($koneksi);
-        return 1; // Data sudah ada, dianggap sukses
+    
+        return $hasil ? 1 : 0;
     }
 
-    function updateDetailBarang($kodeBarangLama, $kodeBarangBaru, $produk_id, $ukuran, $pattern, $barcode, $stock) {
+
+    function updateDetailBarang($kodeBarangLama, $kodeBarangBaru, $produk_id, $ukuran, $patternPath, $barcode, $stock) {
         $koneksi = Connection();
         
         // Escape semua input teks
@@ -203,28 +181,29 @@
         $ukuran = mysqli_real_escape_string($koneksi, $ukuran);
         $barcode = mysqli_real_escape_string($koneksi, $barcode);
         $stock = mysqli_real_escape_string($koneksi, $stock);
-        
-        // Bangun query dasar
+        $patternPath = $patternPath !== null ? mysqli_real_escape_string($koneksi, $patternPath) : null;
+    
+        // Query dasar
         $sql = "UPDATE ventra_produk_detail SET 
                 Kode_Brg = '$kodeBarangBaru',
                 produk_id = '$produk_id', 
                 ukuran = '$ukuran', 
                 barcode = '$barcode', 
                 stock = '$stock'";
-        
-        // Tambahkan pattern ke query hanya jika ada gambar baru
-        if ($pattern !== null) {
-            $patternData = mysqli_real_escape_string($koneksi, $pattern);
-            $sql .= ", pattern = '$patternData'";
+    
+        // Tambahkan update path pattern jika ada file baru
+        if ($patternPath !== null) {
+            $sql .= ", pattern = '$patternPath'";
         }
-        
-        // Tambahkan kondisi WHERE dengan Kode Barang lama
+    
+        // WHERE untuk cari berdasarkan kode lama
         $sql .= " WHERE Kode_Brg = '$kodeBarangLama'";
-        
+    
         $result = mysqli_query($koneksi, $sql);
         mysqli_close($koneksi);
         return $result ? 1 : 0;
     }
+
 
 
     function deleteDetailBarangByProduk($kodeBarang) {
