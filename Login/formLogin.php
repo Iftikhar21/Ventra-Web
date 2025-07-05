@@ -1,31 +1,52 @@
 <?php
-    session_start();
-    include 'crud.php';
+session_start();
+include 'crud.php';
 
-    if (isset($_POST['submit'])) {
-        $result = Login($_POST);
+// Cek cookie remember me saat halaman dimuat
+if (isset($_COOKIE['remember_me']) && !isset($_SESSION['username'])) {
+    $login_result = validateRememberMeCookie($_COOKIE['remember_me']);
 
-        if ($result["status"]) {
-            $_SESSION['username'] = $result["user"]['username'];
-            $_SESSION['ID'] = $result["user"]['id'];
-            header("Location: ../Dashboard/index.php");
-            exit;
-        } else {
-            $error_message = $result["message"];
+    if ($login_result["status"]) {
+        $_SESSION['username'] = $login_result["user"]['username'];
+        $_SESSION['ID'] = $login_result["user"]['id'];
+        header("Location: ../Dashboard/index.php");
+        exit;
+    }
+}
+
+// Proses form login
+if (isset($_POST['submit'])) {
+    $result = Login($_POST);
+
+    if ($result["status"]) {
+        $_SESSION['username'] = $result["user"]['username'];
+        $_SESSION['ID'] = $result["user"]['id'];
+
+        // Set cookie remember me jika dicentang
+        if (isset($_POST['remember_me'])) {
+            createRememberMeCookie($result["user"]['username'], $result["user"]['id']);
         }
-    }
 
-    if (isset($_SESSION['success'])) {
-        echo "<script>
-                    const successModal = new bootstrap.Modal(document.getElementById('successModal'));
-                    successModal.show();
-                </script>";
-        unset($_SESSION['success']);
+        header("Location: ../Dashboard/index.php");
+        exit;
+    } else {
+        $error_message = $result["message"];
     }
+}
+
+// Tampilkan modal success jika ada
+if (isset($_SESSION['success'])) {
+    echo "<script>
+                const successModal = new bootstrap.Modal(document.getElementById('successModal'));
+                successModal.show();
+            </script>";
+    unset($_SESSION['success']);
+}
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -46,20 +67,21 @@
             cursor: pointer;
             z-index: 10;
         }
-        
+
         .password-toggle:hover {
             color: #495057;
         }
-        
+
         .password-input-wrapper {
             position: relative;
         }
-        
+
         .password-input-wrapper input {
             padding-right: 45px;
         }
     </style>
 </head>
+
 <body>
     <div class="login-container">
         <div class="form-section">
@@ -79,6 +101,10 @@
                         </button>
                     </div>
                 </div>
+                <div class="mb-3 form-check">
+                    <input type="checkbox" class="form-check-input" id="remember_me" name="remember_me">
+                    <label class="form-check-label" for="remember_me">Ingat saya selama 30 hari</label>
+                </div>
                 <div class="mb-3">
                     <a href="forgot-pass.php" class="text-center text-decoration-none">Forgot Password or Username?</a>
                 </div>
@@ -96,7 +122,7 @@
     </div>
 
     <!-- Error Modal -->
-   <div class="modal fade" id="errorModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
+    <div class="modal fade" id="errorModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content" role="alert">
                 <div class="modal-header bg-danger text-light">
@@ -127,7 +153,7 @@
         </div>
     </div>
 
-        <!-- Modal Success -->
+    <!-- Modal Success -->
     <div class="modal fade" id="successModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content text-success text-center">
@@ -174,4 +200,5 @@
         <?php endif; ?>
     </script>
 </body>
+
 </html>
