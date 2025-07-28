@@ -1316,6 +1316,63 @@ if (isset($_SESSION['delete_success'])) {
       showPage(currentPage);
       updateStatistics(); // Pastikan statistik dihitung dengan benar saat halaman dimuat
     });
+
+    setInterval(function() {
+      const tanggal = document.getElementById('tanggalFilter').value;
+
+      // Refresh tabel utama
+      fetch('laporan_table.php?tanggal=' + encodeURIComponent(tanggal))
+        .then(response => response.text())
+        .then(html => {
+          document.getElementById('myTable').innerHTML = html;
+          // ... (kode reset statistik jika data kosong tetap boleh di sini)
+          if (!html.includes('Data tidak ada')) {
+            if (typeof filteredRows !== 'undefined') filteredRows = Array.from(document.querySelectorAll('#myTable tr'));
+            if (typeof showPage === 'function') showPage(currentPage);
+          }
+        });
+
+      // Refresh statistik & rekap
+      fetch('laporan_stats.php?tanggal=' + encodeURIComponent(tanggal))
+        .then(response => response.json())
+        .then(data => {
+          // Statistik Penjualan
+          const statNumbers = document.querySelectorAll('.stat-number');
+          if (statNumbers.length >= 3) {
+            statNumbers[0].textContent = data.totalTransaksi;
+            statNumbers[1].textContent = data.totalItemTerjual;
+            statNumbers[2].textContent = "Rp " + Number(data.totalPendapatan).toLocaleString('id-ID');
+          }
+
+          // Tabel metode pembayaran
+          const tbody = document.querySelector('#paymentMethodTable tbody');
+          const tfoot = document.querySelector('#paymentMethodTable tfoot');
+          if (tbody) {
+            tbody.innerHTML = '';
+            if (data.rekap.length === 0) {
+              tbody.innerHTML = '<tr><td colspan="3" class="text-center">Data tidak ada.</td></tr>';
+            } else {
+              data.rekap.forEach(row => {
+                tbody.innerHTML += `
+                  <tr>
+                    <td class="text-start">${row.metode}</td>
+                    <td>${row.jumlah_transaksi}</td>
+                    <td>Rp ${Number(row.total).toLocaleString('id-ID')}</td>
+                  </tr>
+                `;
+              });
+            }
+          }
+          if (tfoot) {
+            tfoot.innerHTML = `
+              <tr>
+                <td colspan="2">TOTAL PENDAPATAN</td>
+                <td>Rp ${Number(data.grandTotal).toLocaleString('id-ID')}</td>
+              </tr>
+            `;
+          }
+        });
+    }, 10000); // 10 detik
   </script>
 </body>
 
