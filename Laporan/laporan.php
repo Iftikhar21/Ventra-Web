@@ -45,6 +45,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_date'])) {
   }
 }
 
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_row_id'])) {
+  $idToDelete = $_POST['delete_row_id'];
+  if (deleteLaporanById($idToDelete)) { // Buat fungsi ini di model
+    $_SESSION['delete_success'] = [
+      'message' => 'Laporan dengan ID ' . htmlspecialchars($idToDelete) . ' berhasil dihapus',
+      'id' => $idToDelete
+    ];
+    header("Location: laporan.php?tanggal=" . urlencode($tanggalFilter));
+    exit();
+  } else {
+    echo '<div class="alert alert-danger">Gagal menghapus laporan</div>';
+  }
+}
+
 // Tampilkan modal sukses jika ada session
 if (isset($_SESSION['delete_success'])) {
   echo '<script>
@@ -271,6 +285,7 @@ if (isset($_SESSION['delete_success'])) {
                         <th width="10%">Terjual</th>
                         <th width="10%">Sisa</th>
                         <th width="20%">Sub Total</th>
+                        <th width="10%">Aksi</th>
                       </tr>
                     </thead>
                     <tbody id="myTable">
@@ -315,6 +330,11 @@ if (isset($_SESSION['delete_success'])) {
                               <span class="badge bg-success">Diskon <?= $diskon ?></span>
                             <?php endif; ?>
                           </td> -->
+                          <td>
+                            <button class="btn btn-danger btn-sm" onclick="showDeleteRowConfirmation('<?= $laporan['id']; ?>', '<?= $laporan['nama_produk']; ?>')">
+                              <i class="fas fa-trash"></i> Hapus
+                            </button>
+                          </td>
                         </tr>
                       <?php endforeach; ?>
                     </tbody>
@@ -460,6 +480,32 @@ if (isset($_SESSION['delete_success'])) {
     </div>
   </div>
 
+  <!-- Delete Row Confirmation Modal -->
+<div class="modal fade" id="deleteRowModal" tabindex="-1" aria-labelledby="deleteRowModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header bg-danger text-white">
+        <h5 class="modal-title" id="deleteRowModalLabel">Konfirmasi Hapus Data</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p>Anda yakin ingin menghapus data laporan untuk produk:</p>
+        <p class="fw-bold" id="rowProductName"></p>
+        <p class="text-danger"><i class="fas fa-exclamation-triangle me-2"></i>Data yang dihapus tidak dapat dikembalikan!</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+        <form method="post" id="deleteRowForm">
+          <input type="hidden" name="delete_row_id" id="deleteRowIdInput">
+          <button type="submit" class="btn btn-danger">
+            <i class="fas fa-trash me-1"></i> Ya, Hapus
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
   <!-- Success Notification Modal -->
   <div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
     <div class="modal-dialog">
@@ -492,6 +538,15 @@ if (isset($_SESSION['delete_success'])) {
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
   <script src="index.js"></script>
   <script src="../js/sidebar.js"></script>
+
+  <script>
+    function showDeleteRowConfirmation(id, productName) {
+      const modal = new bootstrap.Modal(document.getElementById('deleteRowModal'));
+      document.getElementById('rowProductName').textContent = productName;
+      document.getElementById('deleteRowIdInput').value = id;
+      modal.show();
+    }
+  </script>
 
   <script>
     // Function to show delete confirmation modal

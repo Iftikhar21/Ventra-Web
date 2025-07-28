@@ -80,6 +80,7 @@
         
         // Query yang diperbaiki - ambil data per item transaksi tanpa SUM
         $sql = "SELECT 
+                    vdt.id,
                     vt.ID_Transaksi,
                     vt.tanggal_transaksi,
                     vt.Payment,
@@ -99,6 +100,7 @@
         $hasil = mysqli_query($koneksi, $sql);
         while ($baris = mysqli_fetch_assoc($hasil)) {
             $data[] = [
+                'id' => $baris['id'], 
                 'ID_Transaksi' => $baris['ID_Transaksi'],
                 'tanggal_transaksi' => $baris['tanggal_transaksi'],
                 'Payment' => $baris['Payment'],
@@ -141,6 +143,15 @@
         }
         mysqli_close($koneksi);
         return $data;
+    }
+
+    function deleteLaporanById($id) {
+        $koneksi = Connection();
+        $id = mysqli_real_escape_string($koneksi, $id);
+        $query = "DELETE FROM ventra_detail_transaksi WHERE id = '$id'";
+        $result = mysqli_query($koneksi, $query);
+        mysqli_close($koneksi);
+        return $result;
     }
 
     function deleteLaporanByTanggal($tanggal) {
