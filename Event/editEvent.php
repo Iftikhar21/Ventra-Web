@@ -7,9 +7,7 @@ if (!isset($_SESSION['username'])) {
   exit();
 }
 $username = $_SESSION['username'];
-?>
 
-<?php
 if (isset($_GET['id_event'])) {
   $idEvent = $_GET['id_event'];
 } else {
@@ -29,9 +27,7 @@ if (empty($data)) {
   $waktuAktif = $event['waktu_aktif'];
   $waktuNonAktif = $event['waktu_non_aktif'];
 }
-?>
 
-<?php
 if (isset($_POST['btnEdit'])) {
   $idEvent = $_POST['id_event'];
   $namaEvent = $_POST['nama_event'];

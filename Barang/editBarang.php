@@ -11,9 +11,7 @@ if (!isset($_SESSION['username'])) {
   exit();
 }
 $username = $_SESSION['username'];
-?>
 
-<?php
 if (isset($_GET['id'])) {
   $id = $_GET['id'];
 } else {
@@ -34,9 +32,7 @@ if (empty($data)) {
   $kategori = $barang['Kategori'];
   $gambar = base64_encode($barang['Gambar']); // BLOB dari DB → base64
 }
-?>
 
-<?php
 if (isset($_POST['btnEdit'])) {
   $id = $_POST['id'];
   $namaBarang = $_POST['Nama_Brg'];

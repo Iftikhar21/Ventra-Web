@@ -7,9 +7,7 @@ if (!isset($_SESSION['username'])) {
   exit();
 }
 $username = $_SESSION['username'];
-?>
 
-<?php
 if (isset($_GET['id_kategori'])) {
   $idKategori = $_GET['id_kategori'];
 } else {
@@ -26,9 +24,7 @@ if (empty($data)) {
   $idKategori = $kategori['id_kategori'];
   $namaKategori = $kategori['nama_kategori'];
 }
-?>
 
-<?php
 if (isset($_POST['btnEdit'])) {
   $idKategori = $_POST['id_kategori'];
   $namaKategori = $_POST['nama_kategori'];

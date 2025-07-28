@@ -11,9 +11,7 @@ if (!isset($_SESSION['username'])) {
 $data = getAllBarang();
 $dataKategori = getAllKategori();
 $username = $_SESSION['username'];
-?>
 
-<?php
 if (isset($_POST['btnTambah'])) {
   $id = $_POST['id'];
   $namaBarang = $_POST['Nama_Brg'];

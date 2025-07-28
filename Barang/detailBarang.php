@@ -9,9 +9,7 @@ if (!isset($_SESSION['username'])) {
 }
 
 $username = $_SESSION['username'];
-?>
 
-<?php
 // Get product code from URL parameter
 $id = isset($_GET['id']) ? $_GET['id'] : '';
 

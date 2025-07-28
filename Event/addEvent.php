@@ -7,9 +7,7 @@ if (!isset($_SESSION['username'])) {
   exit();
 }
 $username = $_SESSION['username'];
-?>
 
-<?php
 if (isset($_POST['btnTambah'])) {
   $idEvent = $_POST['id_event'];
   $namaEvent = $_POST['nama_event'];

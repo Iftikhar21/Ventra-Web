@@ -9,9 +9,7 @@ if (!isset($_SESSION['username'])) {
 
 $data = getAllKategori();
 $username = $_SESSION['username'];
-?>
 
-<?php
 if (isset($_POST['btnTambah'])) {
   $idKategori = $_POST['id_kategori'];
   $namaKategori = $_POST['nama_kategori'];
