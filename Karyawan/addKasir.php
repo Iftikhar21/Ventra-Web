@@ -7,9 +7,8 @@ if (!isset($_SESSION['username'])) {
   exit();
 }
 $username = $_SESSION['username'];
-?>
 
-<?php
+
 if (isset($_POST['btnTambah'])) {
   $kodeKasir = $_POST['kode_kasir'];
   $namaEvent = $_POST['nama_kasir']; // ini akan undefined karena tidak dikembalikan
